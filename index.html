@@ -1,0 +1,2363 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>여행 기록 | 韓國旅行記帳本</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --navy: #1E3A5F;
+            --teal: #4DB8AC;
+            --teal-dark: #3A9B91;
+            --teal-light: #E0F5F3;
+            --white: #FFFFFF;
+            --text-dark: #2C3E50;
+            --text-gray: #7F8C8D;
+            --text-light: #BDC3C7;
+            --shadow: 0 8px 24px rgba(30, 58, 95, 0.15);
+            --shadow-lg: 0 12px 32px rgba(30, 58, 95, 0.2);
+        }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: linear-gradient(180deg, var(--navy) 0%, #2C4A6F 100%);
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* 頂部區域 */
+        .header {
+            background: var(--navy);
+            padding: 20px 20px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 韓國地標背景 */
+        .landmarks {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 120px;
+            opacity: 0.1;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120"><path fill="%23ffffff" d="M0,60 L100,40 L150,50 L200,30 L250,50 L300,20 L350,40 L400,10 L450,30 L500,50 L550,40 L600,60 L650,50 L700,40 L750,50 L800,30 L850,40 L900,50 L950,60 L1000,50 L1050,40 L1100,50 L1150,60 L1200,50 L1200,120 L0,120 Z"/></svg>');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: bottom;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-title {
+            color: var(--white);
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-subtitle {
+            color: var(--teal-light);
+            font-size: 14px;
+            font-weight: 300;
+        }
+
+        /* 標籤頁 */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            padding: 0 20px;
+            margin-top: -20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 16px 16px 0 0;
+            color: var(--white);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab.active {
+            background: var(--white);
+            color: var(--navy);
+            box-shadow: var(--shadow);
+        }
+
+        /* 內容區域 */
+        .content {
+            background: #F7F9FC;
+            min-height: calc(100vh - 200px);
+            padding: 20px;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* 卡片樣式 */
+        .card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 16px;
+            animation: slideUp 0.4s ease;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 表單樣式 */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-gray);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        input[type="time"],
+        input[type="datetime-local"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #E8ECF0;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: 'Noto Sans TC', sans-serif;
+            transition: all 0.3s ease;
+            background: var(--white);
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--teal);
+            box-shadow: 0 0 0 3px var(--teal-light);
+        }
+
+        /* 按鈕樣式 */
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--teal) 0%, var(--teal-dark) 100%);
+            color: var(--white);
+            box-shadow: 0 4px 12px rgba(77, 184, 172, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(77, 184, 172, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--white);
+            color: var(--teal);
+            border: 2px solid var(--teal);
+        }
+
+        .btn-secondary:hover {
+            background: var(--teal-light);
+        }
+
+        /* 分類選擇 */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .category-option {
+            position: relative;
+        }
+
+        .category-option input {
+            display: none;
+        }
+
+        .category-option label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px 8px;
+            background: #F8F9FA;
+            border: 2px solid #E8ECF0;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .category-option input:checked + label {
+            background: var(--teal-light);
+            border-color: var(--teal);
+            transform: scale(1.05);
+        }
+
+        .category-icon {
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+
+        .category-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        /* 雙幣別輸入 */
+        .currency-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .currency-item {
+            background: #F8F9FA;
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        .currency-label {
+            font-size: 12px;
+            color: var(--text-gray);
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .currency-input {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .currency-symbol {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .currency-input input {
+            border: none;
+            background: transparent;
+            font-size: 18px;
+            font-weight: 600;
+            padding: 0;
+        }
+
+        /* 總覽統計卡片 */
+        .stats-card {
+            background: linear-gradient(135deg, var(--navy) 0%, #2C4A6F 100%);
+            border-radius: 20px;
+            padding: 24px;
+            color: var(--white);
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-card::before {
+            content: '₩';
+            position: absolute;
+            right: -20px;
+            top: -20px;
+            font-size: 120px;
+            opacity: 0.05;
+            font-weight: 700;
+        }
+
+        .stats-title {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 16px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        /* 動畫 */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* 支付方式 */
+        .payment-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .payment-option {
+            position: relative;
+        }
+
+        .payment-option input {
+            display: none;
+        }
+
+        .payment-option label {
+            display: block;
+            padding: 12px 8px;
+            background: #F8F9FA;
+            border: 2px solid #E8ECF0;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .payment-option input:checked + label {
+            background: var(--teal-light);
+            border-color: var(--teal);
+            color: var(--teal-dark);
+        }
+
+        /* 分帳開關 */
+        .split-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: #F8F9FA;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        .switch {
+            position: relative;
+            width: 52px;
+            height: 28px;
+        }
+
+        .switch input {
+            display: none;
+        }
+
+        .slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #CED4DA;
+            border-radius: 28px;
+            transition: all 0.3s ease;
+        }
+
+        .slider:before {
+            content: '';
+            position: absolute;
+            height: 22px;
+            width: 22px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .switch input:checked + .slider {
+            background: var(--teal);
+        }
+
+        .switch input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        /* 分帳人員標籤 */
+        .split-people {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .person-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: var(--teal-light);
+            border-radius: 20px;
+            font-size: 14px;
+            color: var(--teal-dark);
+            font-weight: 500;
+            animation: bounceIn 0.4s ease;
+        }
+
+        .person-tag button {
+            background: none;
+            border: none;
+            color: var(--teal-dark);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .person-tag button:hover {
+            background: var(--teal);
+            color: white;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* 空狀態 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-gray);
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-text {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        /* 費用卡片 */
+        .expense-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border-left: 4px solid var(--teal);
+            transition: all 0.3s ease;
+            animation: slideInLeft 0.4s ease;
+        }
+
+        .expense-card:hover {
+            transform: translateX(4px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+        }
+
+        .expense-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .expense-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .expense-date {
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+
+        .expense-amounts {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding: 12px 0;
+            border-top: 1px solid #F0F0F0;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .amount-item {
+            font-size: 14px;
+        }
+
+        .amount-label {
+            color: var(--text-gray);
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .amount-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        /* 浮動新增按鈕 */
+        .fab {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--teal) 0%, var(--teal-dark) 100%);
+            border-radius: 50%;
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(77, 184, 172, 0.4);
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+
+        .fab:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 6px 20px rgba(77, 184, 172, 0.5);
+        }
+
+        /* 圖片上傳區域 */
+        .image-upload-area {
+            cursor: pointer;
+        }
+
+        .image-preview {
+            width: 100%;
+            height: 200px;
+            border: 2px dashed #E8ECF0;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #F8F9FA;
+            transition: all 0.3s ease;
+        }
+
+        .image-preview:hover {
+            border-color: var(--teal);
+            background: var(--teal-light);
+        }
+
+        .upload-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-gray);
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 購物卡片 */
+        .shopping-card {
+            background: var(--white);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            animation: slideUp 0.4s ease;
+        }
+
+        .shopping-card.purchased {
+            opacity: 0.6;
+        }
+
+        .shopping-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background: #F8F9FA;
+        }
+
+        .shopping-content {
+            padding: 16px;
+        }
+
+        .shopping-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .shopping-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .shopping-title.purchased {
+            text-decoration: line-through;
+        }
+
+        .shopping-info {
+            font-size: 13px;
+            color: var(--text-gray);
+            margin-bottom: 8px;
+        }
+
+        .shopping-prices {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        .shopping-actions {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 8px;
+        }
+
+        .btn-purchase {
+            padding: 10px;
+            border: 2px solid var(--teal);
+            background: var(--white);
+            color: var(--teal);
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-purchase:hover {
+            background: var(--teal-light);
+        }
+
+        .btn-purchase.purchased {
+            background: var(--teal);
+            color: var(--white);
+        }
+
+        .btn-icon {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: #F8F9FA;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-icon:hover {
+            background: #FFE5E5;
+            color: #E74C3C;
+        }
+
+        /* 篩選標籤 */
+        .filter-tabs {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .filter-tab {
+            padding: 10px;
+            border: 2px solid #E8ECF0;
+            background: var(--white);
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-dark);
+        }
+
+        .filter-tab.active {
+            background: var(--teal);
+            color: var(--white);
+            border-color: var(--teal);
+        }
+
+        .filter-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .filter-option-btn {
+            padding: 10px 8px;
+            border: 2px solid #E8ECF0;
+            background: #F8F9FA;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .filter-option-btn:hover,
+        .filter-option-btn.active {
+            background: var(--teal-light);
+            border-color: var(--teal);
+            color: var(--teal-dark);
+        }
+
+        .btn-filter-clear {
+            padding: 8px 16px;
+            border: none;
+            background: #F8F9FA;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-gray);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-filter-clear:hover {
+            background: #E8ECF0;
+        }
+
+        /* 地點篩選 */
+        .location-filters {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .location-btn {
+            padding: 12px;
+            border: 2px solid #E8ECF0;
+            background: #F8F9FA;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .location-btn:hover,
+        .location-btn.active {
+            background: var(--teal-light);
+            border-color: var(--teal);
+            color: var(--teal-dark);
+        }
+
+        /* 動作按鈕 */
+        .btn-action {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 16px;
+            background: var(--white);
+            border: 2px solid var(--teal);
+            border-radius: 16px;
+            color: var(--teal);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .btn-action:hover {
+            background: var(--teal);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(77, 184, 172, 0.3);
+        }
+
+        /* 雲端同步按鈕 */
+        .btn-sync-upload,
+        .btn-sync-download {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 16px;
+            background: var(--white);
+            border: 2px solid #5DADE2;
+            border-radius: 16px;
+            color: #5DADE2;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .btn-sync-upload:hover {
+            background: linear-gradient(135deg, #5DADE2 0%, #3498DB 100%);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-sync-download:hover {
+            background: linear-gradient(135deg, #58D68D 0%, #28B463 100%);
+            color: var(--white);
+            border-color: #28B463;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(40, 180, 99, 0.3);
+        }
+
+        /* 同步狀態動畫 */
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -20px);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+            to {
+                opacity: 0;
+                transform: translate(-50%, -20px);
+            }
+        }
+
+        /* 彈出視窗 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background: var(--white);
+            border-radius: 24px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow: hidden;
+            z-index: 1001;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal.show {
+            opacity: 1;
+            pointer-events: all;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px;
+            border-bottom: 2px solid #F0F0F0;
+            background: var(--teal-light);
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .btn-close {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: var(--white);
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .btn-close:hover {
+            background: #F0F0F0;
+            transform: rotate(90deg);
+        }
+
+        .modal-content {
+            padding: 24px;
+            max-height: calc(80vh - 100px);
+            overflow-y: auto;
+        }
+
+        /* 分帳統計卡片 */
+        .split-card {
+            background: var(--teal-light);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border-left: 4px solid var(--teal);
+        }
+
+        .split-person-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 16px;
+        }
+
+        .split-stats {
+            display: grid;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .split-stat-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+
+        .split-stat-label {
+            color: var(--text-gray);
+        }
+
+        .split-stat-value {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .split-details {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px dashed var(--teal);
+        }
+
+        .split-detail-title {
+            font-size: 12px;
+            color: var(--text-gray);
+            margin-bottom: 8px;
+        }
+
+        .split-item {
+            font-size: 13px;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+            padding-left: 8px;
+        }
+
+        /* 費用卡片操作 */
+        .expense-menu {
+            position: relative;
+        }
+
+        .expense-menu-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: #F8F9FA;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .expense-menu-btn:hover {
+            background: var(--teal-light);
+        }
+
+        .expense-dropdown {
+            position: absolute;
+            right: 0;
+            top: 100%;
+            margin-top: 8px;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            min-width: 140px;
+            overflow: hidden;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .expense-dropdown.show {
+            opacity: 1;
+            pointer-events: all;
+            transform: translateY(0);
+        }
+
+        .expense-dropdown button {
+            width: 100%;
+            padding: 12px 16px;
+            border: none;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-dark);
+            transition: all 0.2s ease;
+        }
+
+        .expense-dropdown button:hover {
+            background: var(--teal-light);
+        }
+
+        .expense-dropdown button:not(:last-child) {
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .settled-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            background: var(--teal);
+            color: var(--white);
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 頂部 -->
+        <div class="header">
+            <div class="landmarks"></div>
+            <div class="header-content">
+                <div class="header-title">
+                    🇰🇷 여행 기록
+                </div>
+                <div class="header-subtitle">Korean Travel Expense Tracker</div>
+            </div>
+        </div>
+
+        <!-- 標籤頁 -->
+        <div class="tabs">
+            <button class="tab active" data-tab="expense">記帳</button>
+            <button class="tab" data-tab="shopping">購物</button>
+            <button class="tab" data-tab="overview">總覽</button>
+        </div>
+
+        <!-- 內容區 -->
+        <div class="content">
+            <!-- 記帳頁面 -->
+            <div class="tab-content active" id="expenseTab">
+                <div class="card">
+                    <div class="card-title">✍️ 新增記帳</div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">日期時間</label>
+                        <input type="datetime-local" id="datetime">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">項目名稱</label>
+                        <input type="text" id="itemName" placeholder="例如:明洞美妝店">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">分類</label>
+                        <div class="category-grid">
+                            <div class="category-option">
+                                <input type="radio" name="category" value="食" id="cat-food" checked>
+                                <label for="cat-food">
+                                    <div class="category-icon">🍽️</div>
+                                    <div class="category-name">食</div>
+                                </label>
+                            </div>
+                            <div class="category-option">
+                                <input type="radio" name="category" value="衣" id="cat-cloth">
+                                <label for="cat-cloth">
+                                    <div class="category-icon">👕</div>
+                                    <div class="category-name">衣</div>
+                                </label>
+                            </div>
+                            <div class="category-option">
+                                <input type="radio" name="category" value="住" id="cat-hotel">
+                                <label for="cat-hotel">
+                                    <div class="category-icon">🏨</div>
+                                    <div class="category-name">住</div>
+                                </label>
+                            </div>
+                            <div class="category-option">
+                                <input type="radio" name="category" value="行" id="cat-trans">
+                                <label for="cat-trans">
+                                    <div class="category-icon">🚇</div>
+                                    <div class="category-name">行</div>
+                                </label>
+                            </div>
+                            <div class="category-option">
+                                <input type="radio" name="category" value="樂" id="cat-fun">
+                                <label for="cat-fun">
+                                    <div class="category-icon">🎪</div>
+                                    <div class="category-name">樂</div>
+                                </label>
+                            </div>
+                            <div class="category-option">
+                                <input type="radio" name="category" value="其他" id="cat-other">
+                                <label for="cat-other">
+                                    <div class="category-icon">📦</div>
+                                    <div class="category-name">其他</div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">金額</label>
+                        <div class="currency-grid">
+                            <div class="currency-item">
+                                <div class="currency-label">韓元 KRW</div>
+                                <div class="currency-input">
+                                    <span class="currency-symbol">₩</span>
+                                    <input type="number" id="krw" placeholder="0">
+                                </div>
+                            </div>
+                            <div class="currency-item">
+                                <div class="currency-label">台幣 TWD</div>
+                                <div class="currency-input">
+                                    <span class="currency-symbol">NT$</span>
+                                    <input type="number" id="twd" placeholder="0">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">付款方式</label>
+                        <div class="payment-grid">
+                            <div class="payment-option">
+                                <input type="radio" name="payment" value="現金" id="pay-cash" checked>
+                                <label for="pay-cash">現金</label>
+                            </div>
+                            <div class="payment-option">
+                                <input type="radio" name="payment" value="信用卡" id="pay-card">
+                                <label for="pay-card">信用卡</label>
+                            </div>
+                            <div class="payment-option">
+                                <input type="radio" name="payment" value="電子支付" id="pay-epay">
+                                <label for="pay-epay">電子支付</label>
+                            </div>
+                            <div class="payment-option">
+                                <input type="radio" name="payment" value="TM/WP" id="pay-tm">
+                                <label for="pay-tm">TM/WP</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="split-toggle" onclick="toggleSplit()">
+                            <span style="font-weight: 600; color: var(--text-dark);">👥 需要分帳</span>
+                            <div class="switch">
+                                <input type="checkbox" id="enableSplit">
+                                <span class="slider"></span>
+                            </div>
+                        </div>
+                        <div id="splitContent" style="display: none; margin-top: 12px;">
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" id="personName" placeholder="輸入姓名" style="flex: 1;">
+                                <button class="btn-secondary" onclick="addPerson()" style="width: auto; padding: 14px 24px;">新增</button>
+                            </div>
+                            <div class="split-people" id="splitPeople"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">備註 (選填)</label>
+                        <textarea id="note" rows="3" placeholder="記錄心情或其他資訊..."></textarea>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="saveExpense()">💾 儲存記帳</button>
+                </div>
+            </div>
+
+            <!-- 購物清單頁面 -->
+            <div class="tab-content" id="shoppingTab">
+                <div class="card">
+                    <div class="card-title">🛍️ 新增商品</div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">商品圖片 (選填)</label>
+                        <div class="image-upload-area" onclick="document.getElementById('shoppingImage').click()">
+                            <input type="file" id="shoppingImage" accept="image/*" style="display: none;" onchange="previewShoppingImage()">
+                            <div id="imagePreview" class="image-preview">
+                                <div class="upload-placeholder">
+                                    <span style="font-size: 48px;">📷</span>
+                                    <div style="margin-top: 8px; font-size: 14px;">點擊上傳圖片</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">商品名稱 (選填)</label>
+                        <input type="text" id="shoppingItem" placeholder="例如:CEZANNE 101號唇膏">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">購買地點 (選填)</label>
+                        <input type="text" id="shoppingLocation" placeholder="例如:明洞 Olive Young">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">預計價格 (選填)</label>
+                        <div class="currency-grid">
+                            <div class="currency-item">
+                                <div class="currency-label">韓元 KRW</div>
+                                <div class="currency-input">
+                                    <span class="currency-symbol">₩</span>
+                                    <input type="number" id="shoppingKRW" placeholder="0">
+                                </div>
+                            </div>
+                            <div class="currency-item">
+                                <div class="currency-label">台幣 TWD</div>
+                                <div class="currency-input">
+                                    <span class="currency-symbol">NT$</span>
+                                    <input type="number" id="shoppingTWD" placeholder="0">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">備註 (選填)</label>
+                        <textarea id="shoppingNote" rows="2" placeholder="顏色、規格等..."></textarea>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="addShopping()">➕ 加入購物清單</button>
+                </div>
+
+                <!-- 雲端同步提示 -->
+                <div style="background: #E8F5F3; padding: 12px; border-radius: 12px; margin-top: 16px; font-size: 13px; color: var(--text-gray); text-align: center;">
+                    💡 購物清單圖片存在本機,雲端只同步文字資訊
+                </div>
+
+                <!-- 統計卡片 -->
+                <div class="stats-card" id="shoppingStatsCard" style="display: none; margin-top: 20px;">
+                    <div class="stats-title">📊 購物統計</div>
+                    <div class="stats-grid" id="shoppingStats"></div>
+                </div>
+
+                <!-- 地點篩選 -->
+                <div class="card" id="locationFilterCard" style="display: none; margin-top: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <div style="font-weight: 600; color: var(--text-dark);">🔍 按地點篩選</div>
+                        <button class="btn-filter-clear" onclick="clearShoppingFilter()" id="clearShoppingBtn" style="display: none;">✕ 清除</button>
+                    </div>
+                    <div class="location-filters" id="locationFilters"></div>
+                </div>
+
+                <!-- 購物清單 -->
+                <div id="shoppingList" style="margin-top: 20px;"></div>
+            </div>
+
+            <!-- 總覽頁面 -->
+            <div class="tab-content" id="overviewTab">
+                <div class="stats-card">
+                    <div class="stats-title">📊 總計金額</div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-label">韓元</div>
+                            <div class="stat-value" id="totalKRW">₩0</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">台幣</div>
+                            <div class="stat-value" id="totalTWD">NT$0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+                    <button class="btn-action" onclick="showSplitReport()">
+                        <span style="font-size: 20px;">👥</span>
+                        <span>分帳統計</span>
+                    </button>
+                    <button class="btn-action" onclick="exportToExcel()">
+                        <span style="font-size: 20px;">📥</span>
+                        <span>匯出Excel</span>
+                    </button>
+                </div>
+
+                <!-- 雲端同步按鈕 -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+                    <button class="btn-sync-upload" onclick="uploadToCloud()">
+                        <span style="font-size: 20px;">☁️⬆️</span>
+                        <span>上傳雲端</span>
+                    </button>
+                    <button class="btn-sync-download" onclick="downloadFromCloud()">
+                        <span style="font-size: 20px;">☁️⬇️</span>
+                        <span>下載雲端</span>
+                    </button>
+                </div>
+
+                <!-- 篩選區 -->
+                <div class="card">
+                    <div style="font-weight: 600; color: var(--text-dark); margin-bottom: 12px;">🔍 篩選記帳</div>
+                    <div class="filter-tabs">
+                        <button class="filter-tab active" onclick="switchFilter('all')">全部</button>
+                        <button class="filter-tab" onclick="switchFilter('category')">分類</button>
+                        <button class="filter-tab" onclick="switchFilter('date')">日期</button>
+                        <button class="filter-tab" onclick="switchFilter('payment')">付款</button>
+                    </div>
+                    
+                    <div id="filterContent" style="margin-top: 16px;"></div>
+                    
+                    <button class="btn-filter-clear" onclick="clearExpenseFilter()" id="clearExpenseBtn" style="display: none; margin-top: 12px;">
+                        ✕ 清除篩選
+                    </button>
+                </div>
+
+                <div id="expenseList" style="margin-top: 20px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 分帳統計彈出視窗 -->
+    <div class="modal-overlay" id="splitModalOverlay" onclick="closeSplitModal()"></div>
+    <div class="modal" id="splitModal">
+        <div class="modal-header">
+            <div class="modal-title">👥 分帳統計報表</div>
+            <button class="btn-close" onclick="closeSplitModal()">✕</button>
+        </div>
+        <div class="modal-content" id="splitModalContent"></div>
+    </div>
+
+    <script>
+        // ========== Google Apps Script API 設定 ==========
+        const API_URL = 'https://script.google.com/macros/s/AKfycbwg73REqKMTqtaBXs-IlAmKXkpx1qOv0l5mMiXNSAk9ZiOjiip8CE8g1yKcAYGLzlvO/exec';
+        
+        let expenses = [];
+        let splitPeople = [];
+        let shoppingList = [];
+        let currentImageData = null;
+        let currentExpenseFilter = null;
+        let currentShoppingFilter = null;
+        let isSyncing = false;
+
+        // ========== 雲端同步功能 ==========
+        
+        async function uploadToCloud() {
+            if (isSyncing) return;
+            
+            isSyncing = true;
+            showSyncStatus('上傳中...', 'uploading');
+            
+            try {
+                // 準備資料 (移除圖片以減少大小)
+                const shoppingForCloud = shoppingList.map(item => ({
+                    ...item,
+                    image: item.image ? '有圖片' : null
+                }));
+                
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'syncAll',
+                        expenses: expenses,
+                        shopping: shoppingForCloud
+                    })
+                });
+                
+                // no-cors 模式無法讀取回應,但請求已送出
+                showSyncStatus('✅ 上傳成功!', 'success');
+                
+            } catch (error) {
+                console.error('上傳失敗:', error);
+                showSyncStatus('❌ 上傳失敗', 'error');
+            } finally {
+                isSyncing = false;
+            }
+        }
+        
+        async function downloadFromCloud() {
+            if (isSyncing) return;
+            
+            isSyncing = true;
+            showSyncStatus('下載中...', 'downloading');
+            
+            try {
+                const response = await fetch(API_URL + '?action=getAll', {
+                    method: 'GET',
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // 合併資料 (保留本地圖片)
+                    const localImages = {};
+                    shoppingList.forEach(item => {
+                        if (item.image && item.image !== '有圖片') {
+                            localImages[item.id] = item.image;
+                        }
+                    });
+                    
+                    // 更新資料
+                    expenses = data.expenses || [];
+                    shoppingList = (data.shopping || []).map(item => ({
+                        ...item,
+                        image: localImages[item.id] || null
+                    }));
+                    
+                    // 儲存到 localStorage
+                    saveToStorage();
+                    saveShopping();
+                    
+                    // 重新渲染
+                    renderExpenses();
+                    renderShopping();
+                    updateLocationFilters();
+                    
+                    showSyncStatus(`✅ 下載成功! (${expenses.length}筆記帳, ${shoppingList.length}項購物)`, 'success');
+                } else {
+                    showSyncStatus('❌ 下載失敗: ' + data.message, 'error');
+                }
+                
+            } catch (error) {
+                console.error('下載失敗:', error);
+                showSyncStatus('❌ 下載失敗', 'error');
+            } finally {
+                isSyncing = false;
+            }
+        }
+        
+        function showSyncStatus(message, type) {
+            // 移除舊的提示
+            const oldStatus = document.getElementById('syncStatus');
+            if (oldStatus) oldStatus.remove();
+            
+            // 建立新提示
+            const status = document.createElement('div');
+            status.id = 'syncStatus';
+            status.style.cssText = `
+                position: fixed;
+                top: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+                padding: 12px 24px;
+                border-radius: 50px;
+                font-size: 14px;
+                font-weight: 600;
+                box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+                z-index: 10000;
+                animation: slideDown 0.3s ease;
+                white-space: nowrap;
+            `;
+            
+            if (type === 'uploading' || type === 'downloading') {
+                status.style.background = 'var(--teal)';
+                status.style.color = 'white';
+                status.innerHTML = `
+                    <span style="display: inline-block; animation: spin 1s linear infinite;">⟳</span>
+                    ${message}
+                `;
+            } else if (type === 'success') {
+                status.style.background = '#4CAF50';
+                status.style.color = 'white';
+                status.textContent = message;
+            } else if (type === 'error') {
+                status.style.background = '#E74C3C';
+                status.style.color = 'white';
+                status.textContent = message;
+            }
+            
+            document.body.appendChild(status);
+            
+            // 3秒後移除
+            if (type === 'success' || type === 'error') {
+                setTimeout(() => {
+                    status.style.animation = 'slideUp 0.3s ease';
+                    setTimeout(() => status.remove(), 300);
+                }, 3000);
+            }
+        }
+
+        // ========== 標籤切換 ==========
+
+        // 標籤切換
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                const tabName = this.dataset.tab;
+                document.getElementById(tabName + 'Tab').classList.add('active');
+                
+                if (tabName === 'overview') {
+                    renderExpenses();
+                } else if (tabName === 'shopping') {
+                    renderShopping();
+                    updateLocationFilters();
+                }
+            });
+        });
+
+        // 初始化
+        function init() {
+            loadExpenses();
+            loadShopping();
+            setCurrentDateTime();
+        }
+
+        function setCurrentDateTime() {
+            const now = new Date();
+            const offset = now.getTimezoneOffset() * 60000;
+            const localISOTime = new Date(now - offset).toISOString().slice(0, 16);
+            document.getElementById('datetime').value = localISOTime;
+        }
+
+        // ========== 記帳功能 ==========
+        
+        function toggleSplit() {
+            const checkbox = document.getElementById('enableSplit');
+            checkbox.checked = !checkbox.checked;
+            document.getElementById('splitContent').style.display = checkbox.checked ? 'block' : 'none';
+        }
+
+        function addPerson() {
+            const input = document.getElementById('personName');
+            const name = input.value.trim();
+            
+            if (name && !splitPeople.includes(name)) {
+                splitPeople.push(name);
+                renderSplitPeople();
+                input.value = '';
+            }
+        }
+
+        function removePerson(name) {
+            splitPeople = splitPeople.filter(p => p !== name);
+            renderSplitPeople();
+        }
+
+        function renderSplitPeople() {
+            const container = document.getElementById('splitPeople');
+            container.innerHTML = splitPeople.map(name => `
+                <div class="person-tag">
+                    ${name}
+                    <button onclick="removePerson('${name}')">×</button>
+                </div>
+            `).join('');
+        }
+
+        function saveExpense() {
+            const expense = {
+                id: Date.now(),
+                datetime: document.getElementById('datetime').value,
+                itemName: document.getElementById('itemName').value.trim(),
+                category: document.querySelector('input[name="category"]:checked').value,
+                krw: parseFloat(document.getElementById('krw').value) || 0,
+                twd: parseFloat(document.getElementById('twd').value) || 0,
+                payment: document.querySelector('input[name="payment"]:checked').value,
+                split: document.getElementById('enableSplit').checked,
+                splitPeople: [...splitPeople],
+                note: document.getElementById('note').value.trim(),
+                settled: false
+            };
+
+            if (!expense.itemName) {
+                alert('請填寫項目名稱!');
+                return;
+            }
+
+            if (expense.krw === 0 && expense.twd === 0) {
+                alert('請至少填寫一種金額!');
+                return;
+            }
+
+            expenses.push(expense);
+            expenses.sort((a, b) => new Date(b.datetime) - new Date(a.datetime));
+            
+            saveToStorage();
+            resetForm();
+            
+            // 切換到總覽頁面
+            document.querySelector('.tab[data-tab="overview"]').click();
+            
+            showToast('記帳成功!');
+        }
+
+        function resetForm() {
+            document.getElementById('itemName').value = '';
+            document.getElementById('krw').value = '';
+            document.getElementById('twd').value = '';
+            document.getElementById('note').value = '';
+            document.querySelector('input[name="category"][value="食"]').checked = true;
+            document.querySelector('input[name="payment"][value="現金"]').checked = true;
+            document.getElementById('enableSplit').checked = false;
+            document.getElementById('splitContent').style.display = 'none';
+            splitPeople = [];
+            renderSplitPeople();
+            setCurrentDateTime();
+        }
+
+        function renderExpenses() {
+            const container = document.getElementById('expenseList');
+            
+            // 決定顯示的清單
+            let displayList = expenses;
+            if (currentExpenseFilter) {
+                displayList = filterExpenses(currentExpenseFilter);
+            }
+            
+            // 更新統計
+            const totalKRW = displayList.reduce((sum, e) => sum + e.krw, 0);
+            const totalTWD = displayList.reduce((sum, e) => sum + e.twd, 0);
+            document.getElementById('totalKRW').textContent = '₩' + totalKRW.toLocaleString();
+            document.getElementById('totalTWD').textContent = 'NT$' + totalTWD.toLocaleString();
+
+            if (displayList.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📝</div>
+                        <div class="empty-text">${currentExpenseFilter ? '沒有符合條件的記錄' : '還沒有記帳記錄'}</div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = displayList.map((expense) => {
+                const actualIndex = expenses.indexOf(expense);
+                const date = new Date(expense.datetime);
+                const dateStr = `${date.getMonth() + 1}/${date.getDate()} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+                const icon = getCategoryIcon(expense.category);
+                const perPersonKRW = expense.split ? Math.round(expense.krw / (expense.splitPeople.length + 1)) : 0;
+                const perPersonTWD = expense.split ? Math.round(expense.twd / (expense.splitPeople.length + 1)) : 0;
+                
+                return `
+                    <div class="expense-card">
+                        <div class="expense-header">
+                            <div class="expense-title">
+                                <span>${icon}</span>
+                                <span>${expense.itemName}</span>
+                                ${expense.settled ? '<span class="settled-badge">已結清</span>' : ''}
+                            </div>
+                            <div class="expense-menu">
+                                <button class="expense-menu-btn" onclick="toggleExpenseMenu(${actualIndex})">⋯</button>
+                                <div class="expense-dropdown" id="menu-${actualIndex}">
+                                    <button onclick="toggleSettle(${actualIndex})">
+                                        ${expense.settled ? '↩️ 取消結清' : '✓ 標記結清'}
+                                    </button>
+                                    <button onclick="deleteExpense(${actualIndex})" style="color: #E74C3C;">🗑️ 刪除</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="expense-date">${dateStr}</div>
+                        
+                        ${expense.note ? `<div style="font-size: 13px; color: var(--text-gray); margin: 8px 0;">📌 ${expense.note}</div>` : ''}
+                        
+                        <div class="expense-amounts">
+                            <div class="amount-item">
+                                <div class="amount-label">韓元</div>
+                                <div class="amount-value">₩${expense.krw.toLocaleString()}</div>
+                                ${expense.split ? `<div style="font-size: 12px; color: var(--text-gray); margin-top: 4px;">每人 ₩${perPersonKRW.toLocaleString()}</div>` : ''}
+                            </div>
+                            <div class="amount-item">
+                                <div class="amount-label">台幣</div>
+                                <div class="amount-value">NT$${expense.twd.toLocaleString()}</div>
+                                ${expense.split ? `<div style="font-size: 12px; color: var(--text-gray); margin-top: 4px;">每人 NT$${perPersonTWD.toLocaleString()}</div>` : ''}
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; gap: 8px; margin-top: 12px; font-size: 13px; color: var(--text-gray); flex-wrap: wrap;">
+                            <span>💳 ${expense.payment}</span>
+                            ${expense.split ? `<span>👥 與 ${expense.splitPeople.join(', ')} 分帳</span>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleExpenseMenu(index) {
+            const menu = document.getElementById(`menu-${index}`);
+            const allMenus = document.querySelectorAll('.expense-dropdown');
+            
+            allMenus.forEach(m => {
+                if (m.id !== `menu-${index}`) {
+                    m.classList.remove('show');
+                }
+            });
+            
+            menu.classList.toggle('show');
+        }
+
+        function toggleSettle(index) {
+            expenses[index].settled = !expenses[index].settled;
+            saveToStorage();
+            renderExpenses();
+            document.querySelectorAll('.expense-dropdown').forEach(m => m.classList.remove('show'));
+        }
+
+        function deleteExpense(index) {
+            expenses.splice(index, 1);
+            saveToStorage();
+            renderExpenses();
+            showToast('記帳已刪除');
+        }
+
+        // ========== 篩選功能 ==========
+        
+        function switchFilter(type) {
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const content = document.getElementById('filterContent');
+            
+            if (type === 'all') {
+                content.innerHTML = '';
+                clearExpenseFilter();
+                return;
+            }
+            
+            if (type === 'category') {
+                content.innerHTML = `
+                    <div class="filter-options">
+                        <button class="filter-option-btn" onclick="filterByCategory('食')">🍽️ 食</button>
+                        <button class="filter-option-btn" onclick="filterByCategory('衣')">👕 衣</button>
+                        <button class="filter-option-btn" onclick="filterByCategory('住')">🏨 住</button>
+                        <button class="filter-option-btn" onclick="filterByCategory('行')">🚇 行</button>
+                        <button class="filter-option-btn" onclick="filterByCategory('樂')">🎪 樂</button>
+                        <button class="filter-option-btn" onclick="filterByCategory('其他')">📦 其他</button>
+                    </div>
+                `;
+            } else if (type === 'date') {
+                const dates = [...new Set(expenses.map(e => {
+                    const d = new Date(e.datetime);
+                    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                }))].sort().reverse();
+                
+                content.innerHTML = `
+                    <select id="dateSelect" onchange="filterByDate()" style="width: 100%; padding: 12px; border-radius: 12px; border: 2px solid #E8ECF0;">
+                        <option value="">選擇日期</option>
+                        ${dates.map(date => `<option value="${date}">${date}</option>`).join('')}
+                    </select>
+                `;
+            } else if (type === 'payment') {
+                content.innerHTML = `
+                    <div class="filter-options">
+                        <button class="filter-option-btn" onclick="filterByPayment('現金')">現金</button>
+                        <button class="filter-option-btn" onclick="filterByPayment('信用卡')">信用卡</button>
+                        <button class="filter-option-btn" onclick="filterByPayment('電子支付')">電子支付</button>
+                        <button class="filter-option-btn" onclick="filterByPayment('TM/WP')">TM/WP</button>
+                    </div>
+                `;
+            }
+        }
+
+        function filterByCategory(category) {
+            currentExpenseFilter = { type: 'category', value: category };
+            document.getElementById('clearExpenseBtn').style.display = 'block';
+            renderExpenses();
+        }
+
+        function filterByDate() {
+            const date = document.getElementById('dateSelect').value;
+            if (!date) {
+                clearExpenseFilter();
+                return;
+            }
+            currentExpenseFilter = { type: 'date', value: date };
+            document.getElementById('clearExpenseBtn').style.display = 'block';
+            renderExpenses();
+        }
+
+        function filterByPayment(payment) {
+            currentExpenseFilter = { type: 'payment', value: payment };
+            document.getElementById('clearExpenseBtn').style.display = 'block';
+            renderExpenses();
+        }
+
+        function filterExpenses(filter) {
+            if (!filter) return expenses;
+            
+            if (filter.type === 'category') {
+                return expenses.filter(e => e.category === filter.value);
+            } else if (filter.type === 'date') {
+                return expenses.filter(e => {
+                    const d = new Date(e.datetime);
+                    const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                    return dateStr === filter.value;
+                });
+            } else if (filter.type === 'payment') {
+                return expenses.filter(e => e.payment === filter.value);
+            }
+            return expenses;
+        }
+
+        function clearExpenseFilter() {
+            currentExpenseFilter = null;
+            document.getElementById('clearExpenseBtn').style.display = 'none';
+            document.getElementById('filterContent').innerHTML = '';
+            renderExpenses();
+        }
+
+        // ========== 購物清單功能 ==========
+        
+        function previewShoppingImage() {
+            const file = document.getElementById('shoppingImage').files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentImageData = e.target.result;
+                document.getElementById('imagePreview').innerHTML = `<img src="${currentImageData}" alt="preview">`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function addShopping() {
+            const item = document.getElementById('shoppingItem').value.trim();
+            const location = document.getElementById('shoppingLocation').value.trim();
+            const krw = parseFloat(document.getElementById('shoppingKRW').value) || 0;
+            const twd = parseFloat(document.getElementById('shoppingTWD').value) || 0;
+            const note = document.getElementById('shoppingNote').value.trim();
+
+            if (!currentImageData && !item) {
+                alert('請至少上傳圖片或填寫商品名稱!');
+                return;
+            }
+
+            const shopping = {
+                id: Date.now(),
+                image: currentImageData,
+                item: item || '未命名商品',
+                location: location,
+                krw: krw,
+                twd: twd,
+                note: note,
+                purchased: false
+            };
+
+            shoppingList.push(shopping);
+            saveShopping();
+            renderShopping();
+            updateLocationFilters();
+            resetShoppingForm();
+            showToast('已加入購物清單!');
+        }
+
+        function resetShoppingForm() {
+            document.getElementById('shoppingItem').value = '';
+            document.getElementById('shoppingLocation').value = '';
+            document.getElementById('shoppingKRW').value = '';
+            document.getElementById('shoppingTWD').value = '';
+            document.getElementById('shoppingNote').value = '';
+            document.getElementById('shoppingImage').value = '';
+            document.getElementById('imagePreview').innerHTML = `
+                <div class="upload-placeholder">
+                    <span style="font-size: 48px;">📷</span>
+                    <div style="margin-top: 8px; font-size: 14px;">點擊上傳圖片</div>
+                </div>
+            `;
+            currentImageData = null;
+        }
+
+        function renderShopping() {
+            const container = document.getElementById('shoppingList');
+            const statsCard = document.getElementById('shoppingStatsCard');
+            const statsGrid = document.getElementById('shoppingStats');
+            
+            let displayList = shoppingList;
+            if (currentShoppingFilter) {
+                displayList = shoppingList.filter(s => s.location === currentShoppingFilter);
+            }
+            
+            // 統計
+            const total = displayList.length;
+            const purchased = displayList.filter(s => s.purchased).length;
+            const totalKRW = displayList.reduce((sum, s) => sum + s.krw, 0);
+            const totalTWD = displayList.reduce((sum, s) => sum + s.twd, 0);
+            
+            if (shoppingList.length > 0) {
+                statsCard.style.display = 'block';
+                statsGrid.innerHTML = `
+                    <div class="stat-item">
+                        <div class="stat-label">${currentShoppingFilter ? '篩選結果' : '總數'}</div>
+                        <div class="stat-value">${total} 項</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">已購買</div>
+                        <div class="stat-value">${purchased} 項</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">預計韓元</div>
+                        <div class="stat-value">₩${totalKRW.toLocaleString()}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">預計台幣</div>
+                        <div class="stat-value">NT$${totalTWD.toLocaleString()}</div>
+                    </div>
+                `;
+            } else {
+                statsCard.style.display = 'none';
+            }
+
+            if (displayList.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🛍️</div>
+                        <div class="empty-text">${currentShoppingFilter ? '此地點沒有商品' : '購物清單是空的'}</div>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = displayList.map((shopping) => {
+                const actualIndex = shoppingList.indexOf(shopping);
+                const purchasedClass = shopping.purchased ? 'purchased' : '';
+                
+                return `
+                    <div class="shopping-card ${purchasedClass}">
+                        ${shopping.image ? `<img src="${shopping.image}" class="shopping-image" alt="${shopping.item}">` : ''}
+                        <div class="shopping-content">
+                            <div class="shopping-header">
+                                <div class="shopping-title ${purchasedClass}">${shopping.item}</div>
+                            </div>
+                            ${shopping.location ? `<div class="shopping-info">📍 ${shopping.location}</div>` : ''}
+                            ${(shopping.krw > 0 || shopping.twd > 0) ? `
+                                <div class="shopping-prices">
+                                    ${shopping.krw > 0 ? `<span>₩${shopping.krw.toLocaleString()}</span>` : ''}
+                                    ${shopping.twd > 0 ? `<span>NT$${shopping.twd.toLocaleString()}</span>` : ''}
+                                </div>
+                            ` : ''}
+                            ${shopping.note ? `<div class="shopping-info">📌 ${shopping.note}</div>` : ''}
+                            <div class="shopping-actions">
+                                <button class="btn-purchase ${shopping.purchased ? 'purchased' : ''}" onclick="togglePurchase(${actualIndex})">
+                                    ${shopping.purchased ? '✓ 已購買' : '標記已購買'}
+                                </button>
+                                <button class="btn-icon" onclick="deleteShopping(${actualIndex})">🗑️</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function togglePurchase(index) {
+            shoppingList[index].purchased = !shoppingList[index].purchased;
+            saveShopping();
+            renderShopping();
+        }
+
+        function deleteShopping(index) {
+            shoppingList.splice(index, 1);
+            saveShopping();
+            renderShopping();
+            updateLocationFilters();
+            showToast('已從購物清單移除');
+        }
+
+        function updateLocationFilters() {
+            const filterCard = document.getElementById('locationFilterCard');
+            const container = document.getElementById('locationFilters');
+            
+            const locations = [...new Set(shoppingList.map(s => s.location).filter(l => l))];
+            
+            if (locations.length === 0) {
+                filterCard.style.display = 'none';
+                return;
+            }
+            
+            filterCard.style.display = 'block';
+            
+            container.innerHTML = locations.map(location => {
+                const count = shoppingList.filter(s => s.location === location).length;
+                const activeClass = currentShoppingFilter === location ? 'active' : '';
+                return `
+                    <button class="location-btn ${activeClass}" onclick="filterByLocation('${location}')">
+                        📍 ${location} (${count})
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function filterByLocation(location) {
+            if (currentShoppingFilter === location) {
+                clearShoppingFilter();
+                return;
+            }
+            
+            currentShoppingFilter = location;
+            document.getElementById('clearShoppingBtn').style.display = 'block';
+            updateLocationFilters();
+            renderShopping();
+        }
+
+        function clearShoppingFilter() {
+            currentShoppingFilter = null;
+            document.getElementById('clearShoppingBtn').style.display = 'none';
+            updateLocationFilters();
+            renderShopping();
+        }
+
+        // ========== 分帳統計 ==========
+        
+        function showSplitReport() {
+            const splitExpenses = expenses.filter(e => e.split && e.splitPeople.length > 0);
+            
+            if (splitExpenses.length === 0) {
+                document.getElementById('splitModalContent').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📊</div>
+                        <div class="empty-text">目前沒有分帳記錄</div>
+                    </div>
+                `;
+            } else {
+                const peopleStats = {};
+                
+                splitExpenses.forEach(expense => {
+                    const totalPeople = expense.splitPeople.length + 1;
+                    const perPersonKRW = expense.krw / totalPeople;
+                    const perPersonTWD = expense.twd / totalPeople;
+                    
+                    expense.splitPeople.forEach(person => {
+                        if (!peopleStats[person]) {
+                            peopleStats[person] = {
+                                name: person,
+                                totalKRW: 0,
+                                totalTWD: 0,
+                                count: 0,
+                                expenses: []
+                            };
+                        }
+                        
+                        peopleStats[person].totalKRW += perPersonKRW;
+                        peopleStats[person].totalTWD += perPersonTWD;
+                        peopleStats[person].count += 1;
+                        peopleStats[person].expenses.push({
+                            item: expense.itemName,
+                            krw: Math.round(perPersonKRW),
+                            twd: Math.round(perPersonTWD),
+                            datetime: expense.datetime
+                        });
+                    });
+                });
+                
+                const sortedPeople = Object.values(peopleStats).sort((a, b) => b.totalTWD - a.totalTWD);
+                
+                document.getElementById('splitModalContent').innerHTML = sortedPeople.map(person => {
+                    return `
+                        <div class="split-card">
+                            <div class="split-person-name">👤 ${person.name}</div>
+                            <div class="split-stats">
+                                <div class="split-stat-row">
+                                    <span class="split-stat-label">參與分帳次數</span>
+                                    <span class="split-stat-value">${person.count} 次</span>
+                                </div>
+                                <div class="split-stat-row">
+                                    <span class="split-stat-label">應付韓元</span>
+                                    <span class="split-stat-value">₩${Math.round(person.totalKRW).toLocaleString()}</span>
+                                </div>
+                                <div class="split-stat-row">
+                                    <span class="split-stat-label">應付台幣</span>
+                                    <span class="split-stat-value">NT$${Math.round(person.totalTWD).toLocaleString()}</span>
+                                </div>
+                            </div>
+                            <div class="split-details">
+                                <div class="split-detail-title">分帳明細:</div>
+                                ${person.expenses.map(exp => {
+                                    const date = new Date(exp.datetime);
+                                    const dateStr = `${date.getMonth() + 1}/${date.getDate()}`;
+                                    return `<div class="split-item">• ${dateStr} ${exp.item}: ₩${exp.krw.toLocaleString()} / NT$${exp.twd.toLocaleString()}</div>`;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            document.getElementById('splitModalOverlay').classList.add('show');
+            document.getElementById('splitModal').classList.add('show');
+        }
+
+        function closeSplitModal() {
+            document.getElementById('splitModalOverlay').classList.remove('show');
+            document.getElementById('splitModal').classList.remove('show');
+        }
+
+        // ========== 匯出 Excel ==========
+        
+        function exportToExcel() {
+            if (expenses.length === 0) {
+                alert('目前沒有記帳記錄可以匯出');
+                return;
+            }
+
+            let csvContent = '\uFEFF';
+            csvContent += '日期,時間,項目,分類,韓元,台幣,付款方式,是否分帳,分帳對象,每人韓元,每人台幣,備註,已結清\n';
+            
+            expenses.forEach(expense => {
+                const date = new Date(expense.datetime);
+                const dateStr = `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`;
+                const timeStr = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+                
+                const perPersonKRW = expense.split ? Math.round(expense.krw / (expense.splitPeople.length + 1)) : '';
+                const perPersonTWD = expense.split ? Math.round(expense.twd / (expense.splitPeople.length + 1)) : '';
+                
+                csvContent += [
+                    dateStr,
+                    timeStr,
+                    `"${expense.itemName}"`,
+                    expense.category,
+                    expense.krw,
+                    expense.twd,
+                    expense.payment,
+                    expense.split ? '是' : '否',
+                    expense.split ? `"${expense.splitPeople.join(', ')}"` : '',
+                    perPersonKRW,
+                    perPersonTWD,
+                    `"${expense.note || ''}"`,
+                    expense.settled ? '已結清' : '未結清'
+                ].join(',') + '\n';
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            const now = new Date();
+            const filename = `韓國旅行記帳_${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}.csv`;
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showToast('已匯出 Excel 檔案!');
+        }
+
+        // ========== 工具函數 ==========
+        
+        function getCategoryIcon(category) {
+            const icons = {
+                '食': '🍽️',
+                '衣': '👕',
+                '住': '🏨',
+                '行': '🚇',
+                '樂': '🎪',
+                '其他': '📦'
+            };
+            return icons[category] || '📦';
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: var(--teal);
+                color: white;
+                padding: 16px 32px;
+                border-radius: 50px;
+                font-size: 15px;
+                font-weight: 600;
+                box-shadow: 0 4px 16px rgba(77, 184, 172, 0.4);
+                z-index: 10000;
+                animation: slideDown 0.3s ease;
+            `;
+            toast.textContent = '✅ ' + message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideUp 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+
+        // LocalStorage
+        function saveToStorage() {
+            localStorage.setItem('koreaExpenses', JSON.stringify(expenses));
+        }
+
+        function loadExpenses() {
+            const saved = localStorage.getItem('koreaExpenses');
+            if (saved) {
+                expenses = JSON.parse(saved);
+            }
+        }
+
+        function saveShopping() {
+            localStorage.setItem('koreaShopping', JSON.stringify(shoppingList));
+        }
+
+        function loadShopping() {
+            const saved = localStorage.getItem('koreaShopping');
+            if (saved) {
+                shoppingList = JSON.parse(saved);
+            }
+        }
+
+        // 點擊外部關閉選單
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.expense-menu')) {
+                document.querySelectorAll('.expense-dropdown').forEach(m => m.classList.remove('show'));
+            }
+        });
+
+        // 初始化
+        init();
+    </script>
+</body>
+</html>
+
