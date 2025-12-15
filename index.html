@@ -118,7 +118,7 @@
             border-radius: 16px;
             box-shadow: var(--shadow-lg);
             overflow: hidden;
-            z-index: 100;
+            z-index: 999999;
             min-width: 180px;
             opacity: 0;
             transform: translateY(-10px);
@@ -1168,6 +1168,146 @@
             font-weight: 600;
             margin-left: 8px;
         }
+
+        /* 多使用者：切換視窗 */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 20000;
+            padding: 16px;
+        }
+
+        .modal-card {
+            width: 100%;
+            max-width: 420px;
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            padding: 18px;
+        }
+
+        .user-btn {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #E8ECF0;
+            background: #F8F9FA;
+            border-radius: 14px;
+            text-align: left;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+            transition: all 0.2s ease;
+        }
+
+        .user-btn:hover {
+            background: var(--teal-light);
+            border-color: var(--teal);
+            color: var(--teal-dark);
+        }
+
+        .user-btn.active {
+            background: var(--teal);
+            border-color: var(--teal);
+            color: var(--white);
+        }
+    
+        /* =========================
+           側欄選單（取代 dropdown）
+        ========================= */
+        .sidebar-overlay{
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.35);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+            z-index: 99990;
+        }
+        .sidebar-overlay.show{
+            opacity: 1;
+            pointer-events: all;
+        }
+        .sidebar{
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100vh;
+            width: min(320px, 86vw);
+            background: var(--white);
+            box-shadow: var(--shadow-lg);
+            transform: translateX(110%);
+            transition: transform 0.25s ease;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar.open{
+            transform: translateX(0);
+        }
+        .sidebar-header{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 18px 12px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+        .sidebar-title{
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text-dark);
+        }
+        .sidebar-close{
+            width: 38px;
+            height: 38px;
+            border: none;
+            border-radius: 12px;
+            background: #F5F7FA;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-dark);
+        }
+        .sidebar-body{
+            padding: 8px;
+            overflow: auto;
+        }
+        .sidebar-item{
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 14px;
+            border: none;
+            border-radius: 14px;
+            background: var(--white);
+            color: var(--text-dark);
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+        .sidebar-item:hover{
+            background: var(--teal-light);
+            color: var(--teal-dark);
+        }
+        .sidebar-item:active{
+            transform: scale(0.99);
+        }
+        .sidebar-icon{
+            width: 28px;
+            height: 28px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
     </style>
 </head>
 <body>
@@ -1181,29 +1321,42 @@
                         <div class="header-title">
                             🇰🇷 여행 기록
                         </div>
-                        <div class="header-subtitle">Korean Travel Expense Tracker</div>
+                        <div class="header-subtitle">
+                            Korean Travel Expense Tracker · <span id="currentUserLabel">未選擇使用者</span>
+                        </div>
                     </div>
-                    <button class="menu-btn" onclick="toggleMenu()">
+                    <button class="menu-btn" onclick="toggleSidebar()">
                         <span>⋮</span>
                     </button>
                 </div>
             </div>
             
             <!-- 下拉選單 -->
-            <div class="dropdown-menu" id="dropdownMenu">
-                <button class="menu-item" onclick="uploadToCloud(); toggleMenu();">
-                    <span style="font-size: 20px;">☁️⬆️</span>
-                    <span>上傳雲端</span>
-                </button>
-                <button class="menu-item" onclick="downloadFromCloud(); toggleMenu();">
-                    <span style="font-size: 20px;">☁️⬇️</span>
-                    <span>下載雲端</span>
-                </button>
-                <button class="menu-item" onclick="exportToExcel(); toggleMenu();">
-                    <span style="font-size: 20px;">📥</span>
-                    <span>匯出Excel</span>
-                </button>
-            </div>
+            <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+            <aside class="sidebar" id="sidebar" aria-label="側欄選單">
+                <div class="sidebar-header">
+                    <div class="sidebar-title">功能選單</div>
+                    <button class="sidebar-close" onclick="closeSidebar()" aria-label="關閉側欄">✕</button>
+                </div>
+                <div class="sidebar-body">
+                    <button class="sidebar-item" onclick="openUserSwitcher(); closeSidebar();">
+                        <span class="sidebar-icon">👤</span>
+                        <span>切換使用者</span>
+                    </button>
+                    <button class="sidebar-item" onclick="uploadToCloud(); closeSidebar();">
+                        <span class="sidebar-icon">☁️</span>
+                        <span>上傳雲端</span>
+                    </button>
+                    <button class="sidebar-item" onclick="downloadFromCloud(); closeSidebar();">
+                        <span class="sidebar-icon">⬇</span>
+                        <span>下載雲端</span>
+                    </button>
+                    <button class="sidebar-item" onclick="exportToExcel(); closeSidebar();">
+                        <span class="sidebar-icon">📥</span>
+                        <span>匯出Excel</span>
+                    </button>
+                </div>
+            </aside>
         </div>
 
         <!-- 標籤頁 -->
@@ -1470,6 +1623,27 @@
         </div>
     </div>
 
+    <!-- 多使用者：切換視窗 -->
+    <div class="modal-overlay" id="userModal" onclick="if(event.target===this) closeUserSwitcher();">
+        <div class="modal-card" role="dialog" aria-modal="true" aria-label="切換使用者">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px;">
+                <div style="font-size:16px; font-weight:800; color:var(--text-dark);">👤 切換使用者</div>
+                <button class="btn-icon" style="width:36px;height:36px;" onclick="closeUserSwitcher()" aria-label="關閉">✕</button>
+            </div>
+
+            <div style="display:grid; gap:10px; margin-bottom:12px;" id="userList"></div>
+
+            <div style="display:flex; gap:8px;">
+                <input type="text" id="newUserInput" placeholder="輸入新使用者名稱（例如：Yukie）" style="flex:1;" onkeydown="if(event.key==='Enter'){createUserFromInput();}">
+                <button class="btn btn-secondary" style="width:auto; padding:14px 18px;" onclick="createUserFromInput()">新增/切換</button>
+            </div>
+
+            <div style="margin-top:10px; font-size:12px; color:var(--text-gray); line-height:1.4;">
+                💡 這是「同一台裝置」的多帳切換（用 localStorage 分開存）。不是安全登入，請避免在公用電腦使用。
+            </div>
+        </div>
+    </div>
+
     <script>
         // ========== Google Apps Script API 設定 ==========
         const API_URL = 'https://script.google.com/macros/s/AKfycbwg73REqKMTqtaBXs-IlAmKXkpx1qOv0l5mMiXNSAk9ZiOjiip8CE8g1yKcAYGLzlvO/exec';
@@ -1482,10 +1656,131 @@
         let currentShoppingFilter = null;
         let isSyncing = false;
 
+        // ========== 使用者(多帳) ==========
+        // 這個版本是「同一個網頁、同一台裝置/瀏覽器」的多使用者：
+        // 透過 localStorage key 加上 userId 前綴，達到資料彼此隔離。
+        // ⚠️ 這不是安全的登入系統：只要能用到這台裝置/瀏覽器的人都能切換看到資料。
+        const USERS_KEY = 'koreaUsers';
+        const CURRENT_USER_KEY = 'koreaCurrentUser';
+
+        let currentUserId = null; // 會存「已過濾」的 id (只含安全字元)
+
+        function sanitizeUserId(raw) {
+            return String(raw || '')
+                .trim()
+                .replace(/\s+/g, '_')
+                .replace(/[^a-zA-Z0-9_\-\u4e00-\u9fa5]/g, '')
+                .slice(0, 24);
+        }
+
+        function getUserStorageKey(baseKey) {
+            // 例如: koreaExpenses -> koreaExpenses__Yukie
+            if (!currentUserId) return baseKey;
+            return `${baseKey}__${currentUserId}`;
+        }
+
+        function getUsers() {
+            try {
+                return JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+            } catch {
+                return [];
+            }
+        }
+
+        function saveUsers(users) {
+            localStorage.setItem(USERS_KEY, JSON.stringify(users));
+        }
+
+        function setCurrentUser(userId) {
+            const safeId = sanitizeUserId(userId);
+            if (!safeId) {
+                alert('使用者名稱不可為空');
+                return;
+            }
+
+            // 先把目前畫面的資料存起來（避免切換時遺失）
+            saveToStorage();
+            saveShopping();
+
+            // 記錄 current user
+            currentUserId = safeId;
+            localStorage.setItem(CURRENT_USER_KEY, currentUserId);
+
+            // 若新用戶不在清單就加入
+            const users = getUsers();
+            if (!users.includes(currentUserId)) {
+                users.push(currentUserId);
+                saveUsers(users);
+            }
+
+            // 載入該用戶資料
+            loadExpenses();
+            loadShopping();
+
+            // 重新渲染
+            renderExpenses();
+            renderShopping();
+            updateLocationFilters();
+            renderSplitReport();
+
+            updateUserLabel();
+            closeUserSwitcher();
+        }
+
+        function loadCurrentUser() {
+            const saved = localStorage.getItem(CURRENT_USER_KEY);
+            const safeId = sanitizeUserId(saved);
+            currentUserId = safeId || null;
+        }
+
+        function updateUserLabel() {
+            const el = document.getElementById('currentUserLabel');
+            if (!el) return;
+            el.textContent = currentUserId ? currentUserId : '未選擇使用者';
+        }
+
+        function openUserSwitcher() {
+            const modal = document.getElementById('userModal');
+            const list = document.getElementById('userList');
+            const input = document.getElementById('newUserInput');
+            if (!modal || !list || !input) return;
+
+            const users = getUsers();
+            list.innerHTML = users.length
+                ? users.map(u => `
+                    <button class="user-btn ${u === currentUserId ? 'active' : ''}" onclick="setCurrentUser('${u.replace(/'/g, "\\'")}')">
+                        ${u}${u === currentUserId ? '（目前）' : ''}
+                    </button>
+                `).join('')
+                : '<div style="color: var(--text-gray); font-size: 13px;">還沒有使用者，先新增一個吧</div>';
+
+            input.value = '';
+            modal.style.display = 'flex';
+            input.focus();
+        }
+
+        function closeUserSwitcher() {
+            const modal = document.getElementById('userModal');
+            if (!modal) return;
+            modal.style.display = 'none';
+        }
+
+        function createUserFromInput() {
+            const input = document.getElementById('newUserInput');
+            if (!input) return;
+            const name = input.value;
+            setCurrentUser(name);
+        }
+
         // ========== 雲端同步功能 ==========
         
         async function uploadToCloud() {
             if (isSyncing) return;
+
+            if (!currentUserId) {
+                showSyncStatus('❌ 請先選擇使用者', 'error');
+                return;
+            }
             
             isSyncing = true;
             showSyncStatus('上傳中...', 'uploading');
@@ -1505,6 +1800,7 @@
                     },
                     body: JSON.stringify({
                         action: 'syncAll',
+                        userId: currentUserId,
                         expenses: expenses,
                         shopping: shoppingForCloud
                     })
@@ -1528,7 +1824,13 @@
             showSyncStatus('下載中...', 'downloading');
             
             try {
-                const response = await fetch(API_URL + '?action=getAll', {
+                if (!currentUserId) {
+                    showSyncStatus('❌ 請先選擇使用者', 'error');
+                    isSyncing = false;
+                    return;
+                }
+
+                const response = await fetch(API_URL + '?action=getAll&userId=' + encodeURIComponent(currentUserId), {
                     method: 'GET',
                 });
                 
@@ -1651,15 +1953,43 @@
 
         // ========== 選單功能 ==========
         
-        function toggleMenu() {
-            const menu = document.getElementById('dropdownMenu');
-            menu.classList.toggle('show');
+        
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const isOpen = sidebar.classList.contains('open');
+
+            if (isOpen) {
+                closeSidebar();
+            } else {
+                sidebar.classList.add('open');
+                overlay.classList.add('show');
+            }
         }
 
-        // 初始化
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.remove('open');
+            overlay.classList.remove('show');
+        }
+
+        // ESC 關閉
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeSidebar();
+        });
+// 初始化
         function init() {
-            loadExpenses();
-            loadShopping();
+            loadCurrentUser();
+            updateUserLabel();
+
+            // 沒選使用者就先跳出切換視窗
+            if (!currentUserId) {
+                openUserSwitcher();
+            } else {
+                loadExpenses();
+                loadShopping();
+            }
             setCurrentDateTime();
         }
 
@@ -1735,8 +2065,6 @@
             saveToStorage();
             resetForm();
             
-            // 切換到總覽頁面
-            document.querySelector('.tab[data-tab="overview"]').click();
             
             showToast('記帳成功!');
         }
@@ -2427,35 +2755,43 @@
 
         // LocalStorage
         function saveToStorage() {
-            localStorage.setItem('koreaExpenses', JSON.stringify(expenses));
+            if (!currentUserId) return;
+            localStorage.setItem(getUserStorageKey('koreaExpenses'), JSON.stringify(expenses));
         }
 
         function loadExpenses() {
-            const saved = localStorage.getItem('koreaExpenses');
+            if (!currentUserId) { expenses = []; return; }
+            const saved = localStorage.getItem(getUserStorageKey('koreaExpenses'));
             if (saved) {
                 expenses = JSON.parse(saved);
+            } else {
+                expenses = [];
             }
         }
 
         function saveShopping() {
-            localStorage.setItem('koreaShopping', JSON.stringify(shoppingList));
+            if (!currentUserId) return;
+            localStorage.setItem(getUserStorageKey('koreaShopping'), JSON.stringify(shoppingList));
         }
 
         function loadShopping() {
-            const saved = localStorage.getItem('koreaShopping');
+            if (!currentUserId) { shoppingList = []; return; }
+            const saved = localStorage.getItem(getUserStorageKey('koreaShopping'));
             if (saved) {
                 shoppingList = JSON.parse(saved);
+            } else {
+                shoppingList = [];
             }
         }
 
         // 點擊外部關閉選單
         document.addEventListener('click', function(e) {
-            // 關閉下拉選單
-            if (!e.target.closest('.menu-btn') && !e.target.closest('.dropdown-menu')) {
-                document.getElementById('dropdownMenu').classList.remove('show');
+            // 關閉側欄（點到側欄以外的地方就關）
+            if (!e.target.closest('.menu-btn') && !e.target.closest('#sidebar')) {
+                closeSidebar();
             }
-            
-            // 關閉費用選單
+
+// 關閉費用選單
             if (!e.target.closest('.expense-menu')) {
                 document.querySelectorAll('.expense-dropdown').forEach(m => m.classList.remove('show'));
             }
