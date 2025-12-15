@@ -81,9 +81,90 @@
             font-weight: 300;
         }
 
+        /* 選單按鈕 */
+        .menu-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            color: var(--white);
+            font-size: 24px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .menu-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .menu-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* 下拉選單 */
+        .dropdown-menu {
+            position: absolute;
+            top: 70px;
+            right: 20px;
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            z-index: 100;
+            min-width: 180px;
+            opacity: 0;
+            transform: translateY(-10px);
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-menu.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: all;
+        }
+
+        .menu-item {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            border: none;
+            background: var(--white);
+            color: var(--text-dark);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+
+        .menu-item:not(:last-child) {
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .menu-item:hover {
+            background: var(--teal-light);
+            color: var(--teal-dark);
+        }
+
+        .menu-item:active {
+            transform: scale(0.98);
+        }
+
         /* 標籤頁 */
         .tabs {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
             gap: 8px;
             padding: 0 20px;
             margin-top: -20px;
@@ -92,8 +173,7 @@
         }
 
         .tab {
-            flex: 1;
-            padding: 14px;
+            padding: 14px 8px;
             background: rgba(255, 255, 255, 0.2);
             border: none;
             border-radius: 16px 16px 0 0;
@@ -959,89 +1039,6 @@
             }
         }
 
-        /* 彈出視窗 */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.3s ease;
-        }
-
-        .modal-overlay.show {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        .modal {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0.9);
-            background: var(--white);
-            border-radius: 24px;
-            width: 90%;
-            max-width: 500px;
-            max-height: 80vh;
-            overflow: hidden;
-            z-index: 1001;
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.3s ease;
-            box-shadow: var(--shadow-lg);
-        }
-
-        .modal.show {
-            opacity: 1;
-            pointer-events: all;
-            transform: translate(-50%, -50%) scale(1);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 24px;
-            border-bottom: 2px solid #F0F0F0;
-            background: var(--teal-light);
-        }
-
-        .modal-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--text-dark);
-        }
-
-        .btn-close {
-            width: 36px;
-            height: 36px;
-            border: none;
-            background: var(--white);
-            border-radius: 50%;
-            font-size: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-
-        .btn-close:hover {
-            background: #F0F0F0;
-            transform: rotate(90deg);
-        }
-
-        .modal-content {
-            padding: 24px;
-            max-height: calc(80vh - 100px);
-            overflow-y: auto;
-        }
-
         /* 分帳統計卡片 */
         .split-card {
             background: var(--teal-light);
@@ -1179,10 +1176,33 @@
         <div class="header">
             <div class="landmarks"></div>
             <div class="header-content">
-                <div class="header-title">
-                    🇰🇷 여행 기록
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div class="header-title">
+                            🇰🇷 여행 기록
+                        </div>
+                        <div class="header-subtitle">Korean Travel Expense Tracker</div>
+                    </div>
+                    <button class="menu-btn" onclick="toggleMenu()">
+                        <span>⋮</span>
+                    </button>
                 </div>
-                <div class="header-subtitle">Korean Travel Expense Tracker</div>
+            </div>
+            
+            <!-- 下拉選單 -->
+            <div class="dropdown-menu" id="dropdownMenu">
+                <button class="menu-item" onclick="uploadToCloud(); toggleMenu();">
+                    <span style="font-size: 20px;">☁️⬆️</span>
+                    <span>上傳雲端</span>
+                </button>
+                <button class="menu-item" onclick="downloadFromCloud(); toggleMenu();">
+                    <span style="font-size: 20px;">☁️⬇️</span>
+                    <span>下載雲端</span>
+                </button>
+                <button class="menu-item" onclick="exportToExcel(); toggleMenu();">
+                    <span style="font-size: 20px;">📥</span>
+                    <span>匯出Excel</span>
+                </button>
             </div>
         </div>
 
@@ -1191,6 +1211,7 @@
             <button class="tab active" data-tab="expense">記帳</button>
             <button class="tab" data-tab="shopping">購物</button>
             <button class="tab" data-tab="overview">總覽</button>
+            <button class="tab" data-tab="split">分帳</button>
         </div>
 
         <!-- 內容區 -->
@@ -1409,7 +1430,7 @@
             <!-- 總覽頁面 -->
             <div class="tab-content" id="overviewTab">
                 <div class="stats-card">
-                    <div class="stats-title">📊 總計金額</div>
+                    <div class="stats-title">📊 我的總支出</div>
                     <div class="stats-grid">
                         <div class="stat-item">
                             <div class="stat-label">韓元</div>
@@ -1420,29 +1441,6 @@
                             <div class="stat-value" id="totalTWD">NT$0</div>
                         </div>
                     </div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
-                    <button class="btn-action" onclick="showSplitReport()">
-                        <span style="font-size: 20px;">👥</span>
-                        <span>分帳統計</span>
-                    </button>
-                    <button class="btn-action" onclick="exportToExcel()">
-                        <span style="font-size: 20px;">📥</span>
-                        <span>匯出Excel</span>
-                    </button>
-                </div>
-
-                <!-- 雲端同步按鈕 -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
-                    <button class="btn-sync-upload" onclick="uploadToCloud()">
-                        <span style="font-size: 20px;">☁️⬆️</span>
-                        <span>上傳雲端</span>
-                    </button>
-                    <button class="btn-sync-download" onclick="downloadFromCloud()">
-                        <span style="font-size: 20px;">☁️⬇️</span>
-                        <span>下載雲端</span>
-                    </button>
                 </div>
 
                 <!-- 篩選區 -->
@@ -1464,17 +1462,12 @@
 
                 <div id="expenseList" style="margin-top: 20px;"></div>
             </div>
-        </div>
-    </div>
 
-    <!-- 分帳統計彈出視窗 -->
-    <div class="modal-overlay" id="splitModalOverlay" onclick="closeSplitModal()"></div>
-    <div class="modal" id="splitModal">
-        <div class="modal-header">
-            <div class="modal-title">👥 分帳統計報表</div>
-            <button class="btn-close" onclick="closeSplitModal()">✕</button>
+            <!-- 分帳統計頁面 -->
+            <div class="tab-content" id="splitTab">
+                <div id="splitReportContent"></div>
+            </div>
         </div>
-        <div class="modal-content" id="splitModalContent"></div>
     </div>
 
     <script>
@@ -1650,9 +1643,18 @@
                 } else if (tabName === 'shopping') {
                     renderShopping();
                     updateLocationFilters();
+                } else if (tabName === 'split') {
+                    renderSplitReport();
                 }
             });
         });
+
+        // ========== 選單功能 ==========
+        
+        function toggleMenu() {
+            const menu = document.getElementById('dropdownMenu');
+            menu.classList.toggle('show');
+        }
 
         // 初始化
         function init() {
@@ -1762,11 +1764,25 @@
                 displayList = filterExpenses(currentExpenseFilter);
             }
             
-            // 更新統計
-            const totalKRW = displayList.reduce((sum, e) => sum + e.krw, 0);
-            const totalTWD = displayList.reduce((sum, e) => sum + e.twd, 0);
-            document.getElementById('totalKRW').textContent = '₩' + totalKRW.toLocaleString();
-            document.getElementById('totalTWD').textContent = 'NT$' + totalTWD.toLocaleString();
+            // 更新統計 - 只計算自己付的部分
+            let totalKRW = 0;
+            let totalTWD = 0;
+            
+            displayList.forEach(e => {
+                if (e.split && e.splitPeople.length > 0) {
+                    // 分帳:只計算自己的部分
+                    const totalPeople = e.splitPeople.length + 1;
+                    totalKRW += e.krw / totalPeople;
+                    totalTWD += e.twd / totalPeople;
+                } else {
+                    // 沒分帳:全額計入
+                    totalKRW += e.krw;
+                    totalTWD += e.twd;
+                }
+            });
+            
+            document.getElementById('totalKRW').textContent = '₩' + Math.round(totalKRW).toLocaleString();
+            document.getElementById('totalTWD').textContent = 'NT$' + Math.round(totalTWD).toLocaleString();
 
             if (displayList.length === 0) {
                 container.innerHTML = `
@@ -2155,7 +2171,85 @@
 
         // ========== 分帳統計 ==========
         
+        function renderSplitReport() {
+            const container = document.getElementById('splitReportContent');
+            const splitExpenses = expenses.filter(e => e.split && e.splitPeople.length > 0);
+            
+            if (splitExpenses.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📊</div>
+                        <div class="empty-text">目前沒有分帳記錄</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            const peopleStats = {};
+            
+            splitExpenses.forEach(expense => {
+                const totalPeople = expense.splitPeople.length + 1;
+                const perPersonKRW = expense.krw / totalPeople;
+                const perPersonTWD = expense.twd / totalPeople;
+                
+                expense.splitPeople.forEach(person => {
+                    if (!peopleStats[person]) {
+                        peopleStats[person] = {
+                            name: person,
+                            totalKRW: 0,
+                            totalTWD: 0,
+                            count: 0,
+                            expenses: []
+                        };
+                    }
+                    
+                    peopleStats[person].totalKRW += perPersonKRW;
+                    peopleStats[person].totalTWD += perPersonTWD;
+                    peopleStats[person].count += 1;
+                    peopleStats[person].expenses.push({
+                        item: expense.itemName,
+                        krw: Math.round(perPersonKRW),
+                        twd: Math.round(perPersonTWD),
+                        datetime: expense.datetime
+                    });
+                });
+            });
+            
+            const sortedPeople = Object.values(peopleStats).sort((a, b) => b.totalTWD - a.totalTWD);
+            
+            container.innerHTML = sortedPeople.map(person => {
+                return `
+                    <div class="split-card">
+                        <div class="split-person-name">👤 ${person.name}</div>
+                        <div class="split-stats">
+                            <div class="split-stat-row">
+                                <span class="split-stat-label">參與分帳次數</span>
+                                <span class="split-stat-value">${person.count} 次</span>
+                            </div>
+                            <div class="split-stat-row">
+                                <span class="split-stat-label">應付韓元</span>
+                                <span class="split-stat-value">₩${Math.round(person.totalKRW).toLocaleString()}</span>
+                            </div>
+                            <div class="split-stat-row">
+                                <span class="split-stat-label">應付台幣</span>
+                                <span class="split-stat-value">NT$${Math.round(person.totalTWD).toLocaleString()}</span>
+                            </div>
+                        </div>
+                        <div class="split-details">
+                            <div class="split-detail-title">分帳明細:</div>
+                            ${person.expenses.map(exp => {
+                                const date = new Date(exp.datetime);
+                                const dateStr = `${date.getMonth() + 1}/${date.getDate()}`;
+                                return `<div class="split-item">• ${dateStr} ${exp.item}: ₩${exp.krw.toLocaleString()} / NT$${exp.twd.toLocaleString()}</div>`;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
         function showSplitReport() {
+            // 保留舊函數以防其他地方使用
             const splitExpenses = expenses.filter(e => e.split && e.splitPeople.length > 0);
             
             if (splitExpenses.length === 0) {
@@ -2356,6 +2450,12 @@
 
         // 點擊外部關閉選單
         document.addEventListener('click', function(e) {
+            // 關閉下拉選單
+            if (!e.target.closest('.menu-btn') && !e.target.closest('.dropdown-menu')) {
+                document.getElementById('dropdownMenu').classList.remove('show');
+            }
+            
+            // 關閉費用選單
             if (!e.target.closest('.expense-menu')) {
                 document.querySelectorAll('.expense-dropdown').forEach(m => m.classList.remove('show'));
             }
@@ -2366,4 +2466,3 @@
     </script>
 </body>
 </html>
-
