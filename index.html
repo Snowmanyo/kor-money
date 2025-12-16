@@ -81,118 +81,197 @@
             font-weight: 300;
         }
 
-        /* 選單按鈕 */
-        .user-switch {
-            display: flex;
-            gap: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 4px;
-            border-radius: 12px;
-            backdrop-filter: blur(10px);
-        }
-
-        .user-btn {
-            padding: 8px 16px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            background: transparent;
-            color: rgba(255, 255, 255, 0.7);
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Noto Sans TC', sans-serif;
-        }
-
-        .user-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            color: var(--white);
-        }
-
-        .user-btn.active {
-            background: var(--teal);
-            border-color: var(--teal);
-            color: var(--white);
-            box-shadow: 0 4px 12px rgba(77, 184, 172, 0.4);
-        }
-
-        .menu-btn {
+        /* 漢堡選單按鈕 */
+        .hamburger-btn {
             width: 40px;
             height: 40px;
             background: rgba(255, 255, 255, 0.2);
             border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 12px;
-            color: var(--white);
-            font-size: 24px;
-            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
+            gap: 5px;
             padding: 0;
         }
 
-        .menu-btn:hover {
+        .hamburger-btn span {
+            width: 20px;
+            height: 2px;
+            background: var(--white);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-btn:hover {
             background: rgba(255, 255, 255, 0.3);
             transform: scale(1.05);
         }
 
-        .menu-btn:active {
+        .hamburger-btn:active {
             transform: scale(0.95);
         }
 
-        /* 下拉選單 */
-        .dropdown-menu {
-            position: absolute;
-            top: 70px;
-            right: 20px;
-            background: var(--white);
-            border-radius: 16px;
-            box-shadow: var(--shadow-lg);
-            overflow: hidden;
-            z-index: 100;
-            min-width: 180px;
+        /* 側邊欄遮罩 */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 998;
             opacity: 0;
-            transform: translateY(-10px);
             pointer-events: none;
             transition: all 0.3s ease;
         }
 
-        .dropdown-menu.show {
+        .sidebar-overlay.show {
             opacity: 1;
-            transform: translateY(0);
             pointer-events: all;
         }
 
-        .menu-item {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 16px 20px;
-            border: none;
+        /* 側邊欄 */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 85%;
+            max-width: 320px;
+            height: 100vh;
             background: var(--white);
-            color: var(--text-dark);
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-align: left;
+            z-index: 999;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+            overflow-y: auto;
+            box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
         }
 
-        .menu-item:not(:last-child) {
+        .sidebar.show {
+            transform: translateX(0);
+        }
+
+        /* 側邊欄頂部 */
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 20px;
+            background: linear-gradient(135deg, var(--navy) 0%, #2C4A6F 100%);
+            color: var(--white);
+        }
+
+        .sidebar-close {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            color: var(--white);
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        /* 側邊欄區塊 */
+        .sidebar-section {
+            padding: 20px;
             border-bottom: 1px solid #F0F0F0;
         }
 
-        .menu-item:hover {
-            background: var(--teal-light);
-            color: var(--teal-dark);
+        .sidebar-section-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
         }
 
-        .menu-item:active {
-            transform: scale(0.98);
+        /* 使用者切換 (側邊欄版) */
+        .user-switch-sidebar {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .user-btn-sidebar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 12px;
+            border: 2px solid #E8ECF0;
+            background: #F8F9FA;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .user-btn-sidebar:hover {
+            background: var(--teal-light);
+            border-color: var(--teal);
+        }
+
+        .user-btn-sidebar.active {
+            background: var(--teal);
+            border-color: var(--teal);
+            color: var(--white);
+            box-shadow: 0 4px 12px rgba(77, 184, 172, 0.3);
+        }
+
+        /* 側邊欄選單項目 */
+        .sidebar-menu-item {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            border: none;
+            background: #F8F9FA;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 12px;
+            text-align: left;
+        }
+
+        .sidebar-menu-item:hover {
+            background: var(--teal-light);
+            transform: translateX(4px);
+        }
+
+        .sidebar-item-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+
+        .sidebar-item-desc {
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+
+        /* 側邊欄底部 */
+        .sidebar-footer {
+            padding: 20px;
+            margin-top: auto;
         }
 
         /* 標籤頁 */
@@ -1217,34 +1296,13 @@
                         </div>
                         <div class="header-subtitle">Korean Travel Expense Tracker</div>
                     </div>
-                    <div style="display: flex; gap: 8px; align-items: center;">
-                        <!-- 使用者切換 -->
-                        <div class="user-switch">
-                            <button class="user-btn" data-user="Chi" onclick="switchUser('Chi')">Chi</button>
-                            <button class="user-btn" data-user="Jhen" onclick="switchUser('Jhen')">Jhen</button>
-                        </div>
-                        <!-- 選單按鈕 -->
-                        <button class="menu-btn" onclick="toggleMenu()">
-                            <span>⋮</span>
-                        </button>
-                    </div>
+                    <!-- 漢堡選單按鈕 -->
+                    <button class="hamburger-btn" onclick="toggleSidebar()">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
                 </div>
-            </div>
-            
-            <!-- 下拉選單 -->
-            <div class="dropdown-menu" id="dropdownMenu">
-                <button class="menu-item" onclick="uploadToCloud(); toggleMenu();">
-                    <span style="font-size: 20px;">☁️⬆️</span>
-                    <span>上傳雲端</span>
-                </button>
-                <button class="menu-item" onclick="downloadFromCloud(); toggleMenu();">
-                    <span style="font-size: 20px;">☁️⬇️</span>
-                    <span>下載雲端</span>
-                </button>
-                <button class="menu-item" onclick="exportToExcel(); toggleMenu();">
-                    <span style="font-size: 20px;">📥</span>
-                    <span>匯出Excel</span>
-                </button>
             </div>
         </div>
 
@@ -1512,6 +1570,73 @@
         </div>
     </div>
 
+    <!-- 側邊欄遮罩 -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <!-- 側邊欄 -->
+    <div class="sidebar" id="sidebar">
+        <!-- 側邊欄頂部 -->
+        <div class="sidebar-header">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="font-size: 28px;">👤</div>
+                <div>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--text-dark);" id="sidebarUserName">Chi</div>
+                    <div style="font-size: 13px; color: var(--text-gray);">當前使用者</div>
+                </div>
+            </div>
+            <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+        </div>
+
+        <!-- 切換使用者區域 -->
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">切換使用者</div>
+            <div class="user-switch-sidebar">
+                <button class="user-btn-sidebar active" data-user="Chi" onclick="switchUser('Chi')">
+                    <span style="font-size: 24px;">👤</span>
+                    <span>Chi</span>
+                </button>
+                <button class="user-btn-sidebar" data-user="Jhen" onclick="switchUser('Jhen')">
+                    <span style="font-size: 24px;">👤</span>
+                    <span>Jhen</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 資料管理區域 -->
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">資料管理</div>
+            <button class="sidebar-menu-item" onclick="uploadToCloud(); closeSidebar();">
+                <span style="font-size: 24px;">☁️</span>
+                <div>
+                    <div class="sidebar-item-title">上傳雲端</div>
+                    <div class="sidebar-item-desc">同步到 Google 試算表</div>
+                </div>
+            </button>
+            <button class="sidebar-menu-item" onclick="downloadFromCloud(); closeSidebar();">
+                <span style="font-size: 24px;">⬇</span>
+                <div>
+                    <div class="sidebar-item-title">下載雲端</div>
+                    <div class="sidebar-item-desc">從試算表載入資料</div>
+                </div>
+            </button>
+            <button class="sidebar-menu-item" onclick="exportToExcel(); closeSidebar();">
+                <span style="font-size: 24px;">📥</span>
+                <div>
+                    <div class="sidebar-item-title">匯出 Excel</div>
+                    <div class="sidebar-item-desc">下載 CSV 檔案</div>
+                </div>
+            </button>
+        </div>
+
+        <!-- 底部資訊 -->
+        <div class="sidebar-footer">
+            <div style="font-size: 12px; color: var(--text-gray); text-align: center;">
+                韓國旅行記帳本 v2.0<br>
+                🇰🇷 여행 기록
+            </div>
+        </div>
+    </div>
+
     <script>
         // ========== Google Apps Script API 設定 ==========
         const API_URL = 'https://script.google.com/macros/s/AKfycbwg73REqKMTqtaBXs-IlAmKXkpx1qOv0l5mMiXNSAk9ZiOjiip8CE8g1yKcAYGLzlvO/exec';
@@ -1530,7 +1655,10 @@
         // ========== 使用者切換 ==========
         
         function switchUser(userName) {
-            if (currentUser === userName) return;
+            if (currentUser === userName) {
+                closeSidebar();
+                return;
+            }
             
             // 儲存當前使用者資料
             saveToStorage();
@@ -1540,8 +1668,11 @@
             currentUser = userName;
             localStorage.setItem('currentUser', userName);
             
+            // 更新側邊欄使用者名稱
+            document.getElementById('sidebarUserName').textContent = userName;
+            
             // 更新按鈕狀態
-            document.querySelectorAll('.user-btn').forEach(btn => {
+            document.querySelectorAll('.user-btn-sidebar').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.user === userName);
             });
             
@@ -1555,6 +1686,25 @@
             updateLocationFilters();
             
             showToast(`切換到 ${userName} 的記帳本`);
+            
+            // 關閉側邊欄
+            closeSidebar();
+        }
+
+        // ========== 側邊欄功能 ==========
+        
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('show');
+            overlay.classList.toggle('show');
+        }
+
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.remove('show');
+            overlay.classList.remove('show');
         }
 
         // ========== 雲端同步功能 ==========
@@ -1734,8 +1884,11 @@
 
         // 初始化
         function init() {
+            // 設定側邊欄使用者名稱
+            document.getElementById('sidebarUserName').textContent = currentUser;
+            
             // 設定使用者按鈕狀態
-            document.querySelectorAll('.user-btn').forEach(btn => {
+            document.querySelectorAll('.user-btn-sidebar').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.user === currentUser);
             });
             
@@ -2535,11 +2688,6 @@
 
         // 點擊外部關閉選單
         document.addEventListener('click', function(e) {
-            // 關閉下拉選單
-            if (!e.target.closest('.menu-btn') && !e.target.closest('.dropdown-menu')) {
-                document.getElementById('dropdownMenu').classList.remove('show');
-            }
-            
             // 關閉費用選單
             if (!e.target.closest('.expense-menu')) {
                 document.querySelectorAll('.expense-dropdown').forEach(m => m.classList.remove('show'));
