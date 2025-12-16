@@ -1552,14 +1552,29 @@
                             </div>
                         </div>
                         <div id="splitContent" style="display: none;">
+                            <!-- 第一層:分帳/代購選擇 -->
                             <div class="split-mode">
                                 <div class="split-mode-option">
-                                    <input type="radio" name="splitMode" value="split" id="mode-split" checked>
-                                    <label for="mode-split">💰 平分</label>
+                                    <input type="radio" name="mainMode" value="split" id="main-split" checked onchange="toggleSplitSubMode()">
+                                    <label for="main-split">💰 分帳</label>
                                 </div>
                                 <div class="split-mode-option">
-                                    <input type="radio" name="splitMode" value="proxy" id="mode-proxy">
-                                    <label for="mode-proxy">🎁 代購</label>
+                                    <input type="radio" name="mainMode" value="proxy" id="main-proxy" onchange="toggleSplitSubMode()">
+                                    <label for="main-proxy">🎁 代購</label>
+                                </div>
+                            </div>
+                            
+                            <!-- 第二層:分帳時的平分/自訂選擇 -->
+                            <div id="splitSubMode" style="margin-top: 12px;">
+                                <div class="split-mode" style="grid-template-columns: repeat(2, 1fr);">
+                                    <div class="split-mode-option">
+                                        <input type="radio" name="splitMethod" value="equal" id="method-equal" checked>
+                                        <label for="method-equal">平分</label>
+                                    </div>
+                                    <div class="split-mode-option">
+                                        <input type="radio" name="splitMethod" value="custom" id="method-custom">
+                                        <label for="method-custom">自訂金額</label>
+                                    </div>
                                 </div>
                             </div>
                             
@@ -1568,6 +1583,17 @@
                                 <button class="btn-secondary" onclick="addPerson()" style="width: auto; padding: 14px 24px;">新增</button>
                             </div>
                             <div class="split-people" id="splitPeople"></div>
+                            <!-- 每人金額輸入區（自訂 / 代購用） -->
+                            <div id="splitAllocationsWrap" style="display:none; margin-top: 12px;">
+                                <div style="font-size: 12px; color: var(--text-gray); margin-bottom: 8px; line-height: 1.4;">
+                                💡 這裡填「對方各自應付」金額；系統會自動算你要負擔多少（= 總額 - 對方合計）
+                                </div>
+                                <div id="splitAllocations"></div>
+                            </div>
+                            
+                            <!-- 即時計算預覽 -->
+                            <div id="splitPreview" style="margin-top: 12px; font-size: 13px; color: var(--text-gray); line-height: 1.5;"></div>
+                            
                         </div>
                     </div>
 
@@ -1771,6 +1797,7 @@
         let currentUser = localStorage.getItem('currentUser') || 'Chi';
         let expenses = [];
         let splitPeople = [];
+        let splitAllocations = {}; // { [name]: { krw: number, twd: number } }
         let shoppingList = [];
         let currentImageData = null;
         let currentExpenseFilter = null;
@@ -2088,9 +2115,109 @@
             if (checkbox.checked && splitPeople.length === 0) {
                 const otherPerson = currentUser === 'Chi' ? 'Jhen' : 'Chi';
                 splitPeople.push(otherPerson);
+                ensureAllocation(otherPerson);
                 renderSplitPeople();
+                renderSplitAllocations();
+                updateSplitPreview();
+
             }
         }
+
+        function toggleSplitSubMode() {
+            const mainMode = document.querySelector('input[name="mainMode"]:checked')?.value || 'split';
+            const subMode = document.getElementById('splitSubMode');
+
+            if (mainMode === 'proxy') {
+                // ✅ 代購：不需要平分，強制用 custom
+                subMode.style.display = 'none';
+                const customRadio = document.getElementById('method-custom');
+                if (customRadio) customRadio.checked = true;
+            } else {
+                // 分帳：可平分/自訂
+                subMode.style.display = 'block';
+            }
+
+            renderSplitAllocations();
+            updateSplitPreview();
+        }
+
+        function getMyShareFromCurrentInput() {
+    const totalKRW = Number(document.getElementById('krw').value) || 0;
+    const totalTWD = Number(document.getElementById('twd').value) || 0;
+
+    const enabled = document.getElementById('enableSplit').checked;
+    if (!enabled || splitPeople.length === 0) {
+        return { myKRW: totalKRW, myTWD: totalTWD, otherKRW: 0, otherTWD: 0 };
+    }
+
+    const mainMode = document.querySelector('input[name="mainMode"]:checked')?.value || 'split';
+    const splitMethod = document.querySelector('input[name="splitMethod"]:checked')?.value || 'equal';
+
+    if (mainMode === 'split' && splitMethod === 'equal') {
+        const denom = splitPeople.length + 1;
+        const myKRW = denom > 0 ? totalKRW / denom : 0;
+        const myTWD = denom > 0 ? totalTWD / denom : 0;
+        const otherKRW = totalKRW - myKRW;
+        const otherTWD = totalTWD - myTWD;
+        return { myKRW, myTWD, otherKRW, otherTWD };
+    }
+
+    // proxy 或 split+custom：用每人輸入金額加總
+    let otherKRW = 0;
+    let otherTWD = 0;
+    splitPeople.forEach(p => {
+        const a = splitAllocations[p] || { krw: 0, twd: 0 };
+        otherKRW += Number(a.krw) || 0;
+        otherTWD += Number(a.twd) || 0;
+    });
+
+    // ✅ 防呆：對方合計不能超過總額（超過就視覺提醒，但不硬改）
+    const myKRW = totalKRW - otherKRW;
+    const myTWD = totalTWD - otherTWD;
+
+    return { myKRW, myTWD, otherKRW, otherTWD };
+}
+
+    function updateSplitPreview() {
+        const preview = document.getElementById('splitPreview');
+        if (!preview) return;
+
+        const enabled = document.getElementById('enableSplit').checked;
+
+        if (!enabled) {
+            preview.innerHTML = '';
+            return;
+        }
+
+        if (splitPeople.length === 0) {
+            preview.innerHTML = '👥 請先新增分帳/代購對象';
+            return;
+        }
+
+        const mainMode = document.querySelector('input[name="mainMode"]:checked')?.value || 'split';
+        const splitMethod = document.querySelector('input[name="splitMethod"]:checked')?.value || 'equal';
+
+        const totalKRW = Number(document.getElementById('krw').value) || 0;
+        const totalTWD = Number(document.getElementById('twd').value) || 0;
+
+        const { myKRW, myTWD, otherKRW, otherTWD } = getMyShareFromCurrentInput();
+
+        const overKRW = myKRW < 0;
+        const overTWD = myTWD < 0;
+
+        const title = (mainMode === 'proxy') ? '🎁 代購' : (splitMethod === 'equal' ? '👥 分帳・平分' : '👥 分帳・自訂');
+
+        preview.innerHTML = `
+        ✅ ${title}<br>
+        總額：₩${Math.round(totalKRW).toLocaleString()} / NT$${Math.round(totalTWD).toLocaleString()}<br>
+        對方合計：₩${Math.round(otherKRW).toLocaleString()} / NT$${Math.round(otherTWD).toLocaleString()}<br>
+        <b style="color:${(overKRW || overTWD) ? '#E74C3C' : 'var(--text-dark)'}">
+            你負擔：₩${Math.round(myKRW).toLocaleString()} / NT$${Math.round(myTWD).toLocaleString()}
+        </b>
+        ${(overKRW || overTWD) ? `<div style="margin-top:6px; color:#E74C3C;">⚠️ 對方合計不能超過總額</div>` : ''}
+        `;
+    }
+
 
         function addPerson() {
             const input = document.getElementById('personName');
@@ -2098,6 +2225,9 @@
             
             if (name && !splitPeople.includes(name)) {
                 splitPeople.push(name);
+                ensureAllocation(name);
+                renderSplitAllocations();
+                updateSplitPreview();
                 renderSplitPeople();
                 input.value = '';
             }
@@ -2105,6 +2235,9 @@
 
         function removePerson(name) {
             splitPeople = splitPeople.filter(p => p !== name);
+            delete splitAllocations[name];
+            renderSplitAllocations();
+            updateSplitPreview();
             renderSplitPeople();
         }
 
@@ -2118,23 +2251,99 @@
             `).join('');
         }
 
+        function ensureAllocation(name) {
+                if (!splitAllocations[name]) {
+                    splitAllocations[name] = { krw: 0, twd: 0 };
+                }
+            }
+
+            function renderSplitAllocations() {
+                const wrap = document.getElementById('splitAllocationsWrap');
+                const container = document.getElementById('splitAllocations');
+
+                if (!wrap || !container) return;
+
+                const enabled = document.getElementById('enableSplit').checked;
+                if (!enabled || splitPeople.length === 0) {
+                    wrap.style.display = 'none';
+                    container.innerHTML = '';
+                    return;
+                }
+
+                const mainMode = document.querySelector('input[name="mainMode"]:checked')?.value || 'split';
+                const splitMethod = document.querySelector('input[name="splitMethod"]:checked')?.value || 'equal';
+
+                // ✅ 代購一定要能填「每人不同金額」；分帳只有 custom 才需要每人輸入
+                const shouldShow = (mainMode === 'proxy') || (mainMode === 'split' && splitMethod === 'custom');
+                wrap.style.display = shouldShow ? 'block' : 'none';
+
+                if (!shouldShow) {
+                    container.innerHTML = '';
+                    return;
+                }
+
+                // 確保每個人都有 allocation
+                splitPeople.forEach(ensureAllocation);
+
+                container.innerHTML = splitPeople.map(name => {
+                    const a = splitAllocations[name] || { krw: 0, twd: 0 };
+                    return `
+                    <div class="currency-item" style="margin-bottom: 10px;">
+                        <div class="currency-label">👤 ${name} 應付</div>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div class="currency-input" style="background:#fff; border:2px solid #E8ECF0; border-radius:12px; padding:12px 14px;">
+                            <span class="currency-symbol">₩</span>
+                            <input type="number" value="${a.krw || 0}" min="0"
+                            style="border:none; background:transparent; width:100%; font-size:16px; font-weight:600;"
+                            oninput="setPersonAllocation('${name}', 'krw', this.value)">
+                        </div>
+                        <div class="currency-input" style="background:#fff; border:2px solid #E8ECF0; border-radius:12px; padding:12px 14px;">
+                            <span class="currency-symbol">NT$</span>
+                            <input type="number" value="${a.twd || 0}" min="0"
+                            style="border:none; background:transparent; width:100%; font-size:16px; font-weight:600;"
+                            oninput="setPersonAllocation('${name}', 'twd', this.value)">
+                        </div>
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+            }
+
+            function setPersonAllocation(name, currency, value) {
+                ensureAllocation(name);
+                const v = Math.max(0, Number(value) || 0);
+                splitAllocations[name][currency] = v;
+                updateSplitPreview();
+            }
+
+
         function saveExpense() {
-            const splitMode = document.querySelector('input[name="splitMode"]:checked').value;
-            
-            const expense = {
-                id: editingExpenseId || Date.now(),
-                datetime: document.getElementById('datetime').value,
-                itemName: document.getElementById('itemName').value.trim(),
-                category: document.querySelector('input[name="category"]:checked').value,
-                krw: parseFloat(document.getElementById('krw').value) || 0,
-                twd: parseFloat(document.getElementById('twd').value) || 0,
-                payment: document.querySelector('input[name="payment"]:checked').value,
-                split: document.getElementById('enableSplit').checked,
-                splitMode: splitMode,
-                splitPeople: [...splitPeople],
-                note: document.getElementById('note').value.trim(),
-                settled: false
-            };
+            const mainMode = document.querySelector('input[name="mainMode"]:checked').value;
+            let splitMethod = null;
+
+            if (mainMode === 'proxy') {
+                splitMethod = 'custom';
+            } else {
+                splitMethod = document.querySelector('input[name="splitMethod"]:checked').value;
+            }
+
+        
+        const expense = {
+            id: editingExpenseId || Date.now(),
+            datetime: document.getElementById('datetime').value,
+            itemName: document.getElementById('itemName').value.trim(),
+            category: document.querySelector('input[name="category"]:checked').value,
+            krw: parseFloat(document.getElementById('krw').value) || 0,
+            twd: parseFloat(document.getElementById('twd').value) || 0,
+            payment: document.querySelector('input[name="payment"]:checked').value,
+            split: document.getElementById('enableSplit').checked,
+            splitMode: mainMode,  // 'split' 或 'proxy'
+            splitMethod: splitMethod,  // 'equal' 或 'custom' (只在 split 模式有值)
+            splitPeople: [...splitPeople],
+            splitAllocations: JSON.parse(JSON.stringify(splitAllocations)), // 深拷貝避免被後續改到
+            note: document.getElementById('note').value.trim(),
+            settled: false
+        };
 
             if (!expense.itemName) {
                 showToast('請填寫項目名稱!');
@@ -2172,12 +2381,17 @@
             document.getElementById('note').value = '';
             document.querySelector('input[name="category"][value="食"]').checked = true;
             document.querySelector('input[name="payment"][value="現金"]').checked = true;
-            document.querySelector('input[name="splitMode"][value="split"]').checked = true;
+            document.querySelector('input[name="mainMode"][value="split"]').checked = true;
+            document.querySelector('input[name="splitMethod"][value="equal"]').checked = true;
+            document.getElementById('splitSubMode').style.display = 'block';
             document.getElementById('enableSplit').checked = false;
             document.getElementById('splitContent').style.display = 'none';
             document.getElementById('formModeTitle').textContent = '新增記帳';
             splitPeople = [];
+            splitAllocations = {};
             renderSplitPeople();
+            renderSplitAllocations();
+            updateSplitPreview();
             setCurrentDateTime();
             editingExpenseId = null;
         }
@@ -2194,19 +2408,40 @@
             let totalTWD = 0;
             
             displayList.forEach(e => {
-                if (e.split && e.splitPeople.length > 0) {
-                    if (e.splitMode === 'proxy') {
-                        // 代購不計入
-                    } else {
-                        const totalPeople = e.splitPeople.length + 1;
-                        totalKRW += e.krw / totalPeople;
-                        totalTWD += e.twd / totalPeople;
-                    }
-                } else {
-                    totalKRW += e.krw;
-                    totalTWD += e.twd;
+                const totalK = Number(e.krw) || 0;
+                const totalT = Number(e.twd) || 0;
+
+                if (!e.split || !e.splitPeople || e.splitPeople.length === 0) {
+                    totalKRW += totalK;
+                    totalTWD += totalT;
+                    return;
                 }
+
+                const mode = e.splitMode || 'split';
+                const method = e.splitMethod || 'equal';
+
+                if (mode === 'split' && method === 'equal') {
+                    const denom = (e.splitPeople.length + 1);
+                    totalKRW += denom > 0 ? totalK / denom : 0;
+                    totalTWD += denom > 0 ? totalT / denom : 0;
+                    return;
+                }
+
+                // proxy 或 split+custom：用 splitAllocations 加總
+                const alloc = e.splitAllocations || {};
+                let otherKRW = 0;
+                let otherTWD = 0;
+
+                e.splitPeople.forEach(p => {
+                    const a = alloc[p] || { krw: 0, twd: 0 };
+                    otherKRW += Number(a.krw) || 0;
+                    otherTWD += Number(a.twd) || 0;
+                });
+
+                totalKRW += (totalK - otherKRW);
+                totalTWD += (totalT - otherTWD);
             });
+
             
             document.getElementById('totalKRW').textContent = '₩' + Math.round(totalKRW).toLocaleString();
             document.getElementById('totalTWD').textContent = 'NT$' + Math.round(totalTWD).toLocaleString();
@@ -2319,7 +2554,13 @@
             if (expense.split) {
                 document.getElementById('enableSplit').checked = true;
                 document.getElementById('splitContent').style.display = 'block';
-                document.querySelector(`input[name="splitMode"][value="${expense.splitMode || 'split'}"]`).checked = true;
+                document.querySelector(`input[name="mainMode"][value="${expense.splitMode || 'split'}"]`).checked = true;
+                if (expense.splitMode === 'split' && expense.splitMethod) {
+                    document.querySelector(`input[name="splitMethod"][value="${expense.splitMethod}"]`).checked = true;
+                    document.getElementById('splitSubMode').style.display = 'block';
+                } else {
+                    document.getElementById('splitSubMode').style.display = expense.splitMode === 'split' ? 'block' : 'none';
+                }
                 splitPeople = [...expense.splitPeople];
                 renderSplitPeople();
             }
