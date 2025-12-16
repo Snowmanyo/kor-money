@@ -46,7 +46,6 @@
             overflow: hidden;
         }
 
-        /* 韓國地標背景 */
         .landmarks {
             position: absolute;
             bottom: 0;
@@ -81,7 +80,6 @@
             font-weight: 300;
         }
 
-        /* 漢堡選單按鈕 */
         .hamburger-btn {
             width: 40px;
             height: 40px;
@@ -116,7 +114,6 @@
             transform: scale(0.95);
         }
 
-        /* 側邊欄遮罩 */
         .sidebar-overlay {
             position: fixed;
             top: 0;
@@ -135,7 +132,6 @@
             pointer-events: all;
         }
 
-        /* 側邊欄 */
         .sidebar {
             position: fixed;
             top: 0;
@@ -155,7 +151,6 @@
             transform: translateX(0);
         }
 
-        /* 側邊欄頂部 */
         .sidebar-header {
             display: flex;
             justify-content: space-between;
@@ -185,7 +180,6 @@
             transform: rotate(90deg);
         }
 
-        /* 側邊欄區塊 */
         .sidebar-section {
             padding: 20px;
             border-bottom: 1px solid #F0F0F0;
@@ -200,7 +194,6 @@
             margin-bottom: 12px;
         }
 
-        /* 使用者切換 (側邊欄版) */
         .user-switch-sidebar {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -235,7 +228,6 @@
             box-shadow: 0 4px 12px rgba(77, 184, 172, 0.3);
         }
 
-        /* 側邊欄選單項目 */
         .sidebar-menu-item {
             width: 100%;
             display: flex;
@@ -268,13 +260,872 @@
             color: var(--text-gray);
         }
 
-        /* 側邊欄底部 */
         .sidebar-footer {
             padding: 20px;
             margin-top: auto;
         }
 
-        /* 購物清單數量管理 */
+        .tabs {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            padding: 0 20px;
+            margin-top: -20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .tab {
+            padding: 14px 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 16px 16px 0 0;
+            color: var(--white);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab.active {
+            background: var(--white);
+            color: var(--navy);
+            box-shadow: var(--shadow);
+        }
+
+        .content {
+            background: #F7F9FC;
+            min-height: calc(100vh - 200px);
+            padding: 20px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 16px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-gray);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        input[type="time"],
+        input[type="datetime-local"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #E8ECF0;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: 'Noto Sans TC', sans-serif;
+            transition: all 0.3s ease;
+            background: var(--white);
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--teal);
+            box-shadow: 0 0 0 3px var(--teal-light);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Noto Sans TC', sans-serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--teal) 0%, var(--teal-dark) 100%);
+            color: var(--white);
+            box-shadow: 0 4px 12px rgba(77, 184, 172, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(77, 184, 172, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--white);
+            color: var(--teal);
+            border: 2px solid var(--teal);
+        }
+
+        .btn-secondary:hover {
+            background: var(--teal-light);
+        }
+
+        .category-grid-horizontal {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+        }
+
+        .category-option {
+            position: relative;
+        }
+
+        .category-option input {
+            display: none;
+        }
+
+        .category-option label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 6px;
+            background: #F8F9FA;
+            border: 2px solid #E8ECF0;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .category-option input:checked + label {
+            background: var(--teal-light);
+            border-color: var(--teal);
+            transform: scale(1.05);
+        }
+
+        .category-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .category-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .currency-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .currency-item {
+            background: #F8F9FA;
+            border-radius: 12px;
+            padding: 12px;
+            position: relative;
+        }
+
+        .currency-label {
+            font-size: 12px;
+            color: var(--text-gray);
+            margin-bottom: 6px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .currency-input {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .currency-symbol {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .currency-input input {
+            border: none;
+            background: transparent;
+            font-size: 18px;
+            font-weight: 600;
+            padding: 0;
+        }
+
+        /* 計算機 */
+        .calculator {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            padding: 12px;
+            z-index: 100;
+            width: 200px;
+            display: none;
+            margin-top: 8px;
+        }
+
+        .calculator.show {
+            display: block;
+            animation: slideDown 0.2s ease;
+        }
+
+        .calc-display {
+            background: #F8F9FA;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: right;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            min-height: 40px;
+            word-break: break-all;
+        }
+
+        .calc-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+        }
+
+        .calc-btn {
+            padding: 12px;
+            border: none;
+            background: #F8F9FA;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .calc-btn:hover {
+            background: var(--teal-light);
+        }
+
+        .calc-btn:active {
+            transform: scale(0.95);
+        }
+
+        .calc-btn.operator {
+            background: var(--teal);
+            color: white;
+        }
+
+        .calc-btn.equals {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .calc-btn.clear {
+            background: #EF4444;
+            color: white;
+        }
+
+        .calc-icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+            transition: all 0.2s;
+        }
+
+        .calc-icon-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, var(--navy) 0%, #2C4A6F 100%);
+            border-radius: 20px;
+            padding: 24px;
+            color: var(--white);
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-card::before {
+            content: '₩';
+            position: absolute;
+            right: -20px;
+            top: -20px;
+            font-size: 120px;
+            opacity: 0.05;
+            font-weight: 700;
+        }
+
+        .stats-title {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 16px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .payment-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .payment-option {
+            position: relative;
+        }
+
+        .payment-option input {
+            display: none;
+        }
+
+        .payment-option label {
+            display: block;
+            padding: 12px 8px;
+            background: #F8F9FA;
+            border: 2px solid #E8ECF0;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .payment-option input:checked + label {
+            background: var(--teal-light);
+            border-color: var(--teal);
+            color: var(--teal-dark);
+        }
+
+        .split-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: #F8F9FA;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        .switch {
+            position: relative;
+            width: 52px;
+            height: 28px;
+        }
+
+        .switch input {
+            display: none;
+        }
+
+        .slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #CED4DA;
+            border-radius: 28px;
+            transition: all 0.3s ease;
+        }
+
+        .slider:before {
+            content: '';
+            position: absolute;
+            height: 22px;
+            width: 22px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .switch input:checked + .slider {
+            background: var(--teal);
+        }
+
+        .switch input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        .split-mode {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .split-mode-option {
+            position: relative;
+        }
+
+        .split-mode-option input {
+            display: none;
+        }
+
+        .split-mode-option label {
+            display: block;
+            padding: 12px;
+            background: #F8F9FA;
+            border: 2px solid #E8ECF0;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .split-mode-option input:checked + label {
+            background: var(--teal-light);
+            border-color: var(--teal);
+            color: var(--teal-dark);
+        }
+
+        .split-people {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .person-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: var(--teal-light);
+            border-radius: 20px;
+            font-size: 14px;
+            color: var(--teal-dark);
+            font-weight: 500;
+            animation: bounceIn 0.4s ease;
+        }
+
+        .person-tag button {
+            background: none;
+            border: none;
+            color: var(--teal-dark);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .person-tag button:hover {
+            background: var(--teal);
+            color: white;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-gray);
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-text {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .expense-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border-left: 4px solid var(--teal);
+            transition: all 0.3s ease;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .expense-card:hover {
+            transform: translateX(4px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+        }
+
+        .expense-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .expense-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .expense-date {
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+
+        .expense-amounts {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding: 12px 0;
+            border-top: 1px solid #F0F0F0;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .amount-item {
+            font-size: 14px;
+        }
+
+        .amount-label {
+            color: var(--text-gray);
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .amount-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .expense-menu {
+            position: relative;
+        }
+
+        .expense-menu-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: #F8F9FA;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .expense-menu-btn:hover {
+            background: var(--teal-light);
+        }
+
+        .expense-dropdown {
+            position: absolute;
+            right: 0;
+            top: 100%;
+            margin-top: 8px;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            min-width: 140px;
+            overflow: hidden;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .expense-dropdown.show {
+            opacity: 1;
+            pointer-events: all;
+            transform: translateY(0);
+        }
+
+        .expense-dropdown button {
+            width: 100%;
+            padding: 12px 16px;
+            border: none;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-dark);
+            transition: all 0.2s ease;
+        }
+
+        .expense-dropdown button:hover {
+            background: var(--teal-light);
+        }
+
+        .expense-dropdown button:not(:last-child) {
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .settled-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            background: var(--teal);
+            color: var(--white);
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .proxy-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            background: #FFE5B4;
+            color: #D97706;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .image-upload-area {
+            cursor: pointer;
+        }
+
+        .image-preview {
+            width: 100%;
+            height: 200px;
+            border: 2px dashed #E8ECF0;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #F8F9FA;
+            transition: all 0.3s ease;
+        }
+
+        .image-preview:hover {
+            border-color: var(--teal);
+            background: var(--teal-light);
+        }
+
+        .upload-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-gray);
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .shopping-card {
+            background: var(--white);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .shopping-card.purchased {
+            opacity: 0.6;
+        }
+
+        .shopping-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background: #F8F9FA;
+        }
+
+        .shopping-content {
+            padding: 16px;
+        }
+
+        .shopping-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .shopping-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-dark);
+            flex: 1;
+        }
+
+        .shopping-title.purchased {
+            text-decoration: line-through;
+        }
+
+        .shopping-info {
+            font-size: 13px;
+            color: var(--text-gray);
+            margin-bottom: 8px;
+        }
+
+        .shopping-prices {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        .shopping-actions {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 8px;
+        }
+
+        .btn-purchase {
+            padding: 10px;
+            border: 2px solid var(--teal);
+            background: var(--white);
+            color: var(--teal);
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-purchase:hover {
+            background: var(--teal-light);
+        }
+
+        .btn-purchase.purchased {
+            background: var(--teal);
+            color: var(--white);
+        }
+
+        .btn-icon {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: #F8F9FA;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-icon:hover {
+            background: #FFE5E5;
+            color: #E74C3C;
+        }
+
+        .btn-icon.edit:hover {
+            background: var(--teal-light);
+            color: var(--teal);
+        }
+
         .shopping-quantity {
             background: #F8F9FA;
             padding: 12px;
@@ -360,769 +1211,6 @@
             text-align: center;
         }
 
-        /* 購物清單選單 */
-        .shopping-menu {
-            position: relative;
-        }
-
-        .menu-dot {
-            width: 32px;
-            height: 32px;
-            border: none;
-            background: #F8F9FA;
-            border-radius: 8px;
-            color: var(--text-gray);
-            font-size: 18px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .menu-dot:hover {
-            background: #E8ECF0;
-        }
-
-        .shopping-dropdown {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            background: var(--white);
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            overflow: hidden;
-            z-index: 10;
-            min-width: 120px;
-            opacity: 0;
-            transform: translateY(-10px);
-            pointer-events: none;
-            transition: all 0.2s ease;
-        }
-
-        .shopping-dropdown.show {
-            opacity: 1;
-            transform: translateY(4px);
-            pointer-events: all;
-        }
-
-        .shopping-dropdown button {
-            width: 100%;
-            padding: 12px 16px;
-            border: none;
-            background: var(--white);
-            color: var(--text-dark);
-            font-size: 14px;
-            text-align: left;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .shopping-dropdown button:not(:last-child) {
-            border-bottom: 1px solid #F0F0F0;
-        }
-
-        .shopping-dropdown button:hover {
-            background: #F8F9FA;
-        }
-
-        /* 標籤頁 */
-        .tabs {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            padding: 0 20px;
-            margin-top: -20px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .tab {
-            padding: 14px 8px;
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            border-radius: 16px 16px 0 0;
-            color: var(--white);
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .tab.active {
-            background: var(--white);
-            color: var(--navy);
-            box-shadow: var(--shadow);
-        }
-
-        /* 內容區域 */
-        .content {
-            background: #F7F9FC;
-            min-height: calc(100vh - 200px);
-            padding: 20px;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-
-        /* 卡片樣式 */
-        .card {
-            background: var(--white);
-            border-radius: 20px;
-            padding: 24px;
-            box-shadow: var(--shadow);
-            margin-bottom: 16px;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .card-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        /* 表單樣式 */
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-gray);
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        input[type="text"],
-        input[type="number"],
-        input[type="date"],
-        input[type="time"],
-        input[type="datetime-local"],
-        textarea,
-        select {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid #E8ECF0;
-            border-radius: 12px;
-            font-size: 15px;
-            font-family: 'Noto Sans TC', sans-serif;
-            transition: all 0.3s ease;
-            background: var(--white);
-        }
-
-        input:focus,
-        textarea:focus,
-        select:focus {
-            outline: none;
-            border-color: var(--teal);
-            box-shadow: 0 0 0 3px var(--teal-light);
-        }
-
-        /* 按鈕樣式 */
-        .btn {
-            width: 100%;
-            padding: 16px;
-            border: none;
-            border-radius: 16px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Noto Sans TC', sans-serif;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--teal) 0%, var(--teal-dark) 100%);
-            color: var(--white);
-            box-shadow: 0 4px 12px rgba(77, 184, 172, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(77, 184, 172, 0.4);
-        }
-
-        .btn-primary:active {
-            transform: translateY(0);
-        }
-
-        .btn-secondary {
-            background: var(--white);
-            color: var(--teal);
-            border: 2px solid var(--teal);
-        }
-
-        .btn-secondary:hover {
-            background: var(--teal-light);
-        }
-
-        /* 分類選擇 */
-        .category-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-        }
-
-        .category-grid-horizontal {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 8px;
-        }
-
-        .category-option {
-            position: relative;
-        }
-
-        .category-option input {
-            display: none;
-        }
-
-        .category-option label {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 12px 6px;
-            background: #F8F9FA;
-            border: 2px solid #E8ECF0;
-            border-radius: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .category-option input:checked + label {
-            background: var(--teal-light);
-            border-color: var(--teal);
-            transform: scale(1.05);
-        }
-
-        .category-icon {
-            font-size: 24px;
-            margin-bottom: 4px;
-        }
-
-        .category-name {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
-        /* 雙幣別輸入 */
-        .currency-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
-
-        .currency-item {
-            background: #F8F9FA;
-            border-radius: 12px;
-            padding: 12px;
-        }
-
-        .currency-label {
-            font-size: 12px;
-            color: var(--text-gray);
-            margin-bottom: 6px;
-            font-weight: 600;
-        }
-
-        .currency-input {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .currency-symbol {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--text-dark);
-        }
-
-        .currency-input input {
-            border: none;
-            background: transparent;
-            font-size: 18px;
-            font-weight: 600;
-            padding: 0;
-        }
-
-        /* 總覽統計卡片 */
-        .stats-card {
-            background: linear-gradient(135deg, var(--navy) 0%, #2C4A6F 100%);
-            border-radius: 20px;
-            padding: 24px;
-            color: var(--white);
-            box-shadow: var(--shadow-lg);
-            margin-bottom: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stats-card::before {
-            content: '₩';
-            position: absolute;
-            right: -20px;
-            top: -20px;
-            font-size: 120px;
-            opacity: 0.05;
-            font-weight: 700;
-        }
-
-        .stats-title {
-            font-size: 14px;
-            opacity: 0.9;
-            margin-bottom: 16px;
-            font-weight: 500;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-        }
-
-        .stat-item {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 16px;
-            border-radius: 12px;
-            backdrop-filter: blur(10px);
-        }
-
-        .stat-label {
-            font-size: 12px;
-            opacity: 0.8;
-            margin-bottom: 6px;
-        }
-
-        .stat-value {
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        /* 動畫 */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        /* 支付方式 */
-        .payment-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-        }
-
-        .payment-option {
-            position: relative;
-        }
-
-        .payment-option input {
-            display: none;
-        }
-
-        .payment-option label {
-            display: block;
-            padding: 12px 8px;
-            background: #F8F9FA;
-            border: 2px solid #E8ECF0;
-            border-radius: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .payment-option input:checked + label {
-            background: var(--teal-light);
-            border-color: var(--teal);
-            color: var(--teal-dark);
-        }
-
-        /* 分帳開關 */
-        .split-toggle {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px;
-            background: #F8F9FA;
-            border-radius: 12px;
-            cursor: pointer;
-        }
-
-        .switch {
-            position: relative;
-            width: 52px;
-            height: 28px;
-        }
-
-        .switch input {
-            display: none;
-        }
-
-        .slider {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: #CED4DA;
-            border-radius: 28px;
-            transition: all 0.3s ease;
-        }
-
-        .slider:before {
-            content: '';
-            position: absolute;
-            height: 22px;
-            width: 22px;
-            left: 3px;
-            bottom: 3px;
-            background: white;
-            border-radius: 50%;
-            transition: all 0.3s ease;
-        }
-
-        .switch input:checked + .slider {
-            background: var(--teal);
-        }
-
-        .switch input:checked + .slider:before {
-            transform: translateX(24px);
-        }
-
-        /* 分帳人員標籤 */
-        .split-people {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 12px;
-        }
-
-        .person-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 12px;
-            background: var(--teal-light);
-            border-radius: 20px;
-            font-size: 14px;
-            color: var(--teal-dark);
-            font-weight: 500;
-            animation: bounceIn 0.4s ease;
-        }
-
-        .person-tag button {
-            background: none;
-            border: none;
-            color: var(--teal-dark);
-            cursor: pointer;
-            font-size: 16px;
-            padding: 0;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: all 0.2s ease;
-        }
-
-        .person-tag button:hover {
-            background: var(--teal);
-            color: white;
-        }
-
-        @keyframes bounceIn {
-            0% {
-                opacity: 0;
-                transform: scale(0.3);
-            }
-            50% {
-                opacity: 1;
-                transform: scale(1.05);
-            }
-            100% {
-                transform: scale(1);
-            }
-        }
-
-        /* 空狀態 */
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text-gray);
-        }
-
-        .empty-icon {
-            font-size: 64px;
-            margin-bottom: 16px;
-            opacity: 0.5;
-        }
-
-        .empty-text {
-            font-size: 16px;
-            font-weight: 500;
-        }
-
-        /* 費用卡片 */
-        .expense-card {
-            background: var(--white);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            border-left: 4px solid var(--teal);
-            transition: all 0.3s ease;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .expense-card:hover {
-            transform: translateX(4px);
-            box-shadow: 0 6px 16px rgba(0,0,0,0.12);
-        }
-
-        .expense-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 12px;
-        }
-
-        .expense-title {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
-        .expense-date {
-            font-size: 12px;
-            color: var(--text-gray);
-        }
-
-        .expense-amounts {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            padding: 12px 0;
-            border-top: 1px solid #F0F0F0;
-            border-bottom: 1px solid #F0F0F0;
-        }
-
-        .amount-item {
-            font-size: 14px;
-        }
-
-        .amount-label {
-            color: var(--text-gray);
-            font-size: 12px;
-            margin-bottom: 4px;
-        }
-
-        .amount-value {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--text-dark);
-        }
-
-        /* 浮動新增按鈕 */
-        .fab {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--teal) 0%, var(--teal-dark) 100%);
-            border-radius: 50%;
-            border: none;
-            color: white;
-            font-size: 28px;
-            cursor: pointer;
-            box-shadow: 0 4px 16px rgba(77, 184, 172, 0.4);
-            z-index: 10;
-            transition: all 0.3s ease;
-        }
-
-        .fab:hover {
-            transform: scale(1.1) rotate(90deg);
-            box-shadow: 0 6px 20px rgba(77, 184, 172, 0.5);
-        }
-
-        /* 圖片上傳區域 */
-        .image-upload-area {
-            cursor: pointer;
-        }
-
-        .image-preview {
-            width: 100%;
-            height: 200px;
-            border: 2px dashed #E8ECF0;
-            border-radius: 16px;
-            overflow: hidden;
-            background: #F8F9FA;
-            transition: all 0.3s ease;
-        }
-
-        .image-preview:hover {
-            border-color: var(--teal);
-            background: var(--teal-light);
-        }
-
-        .upload-placeholder {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-gray);
-        }
-
-        .image-preview img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* 購物卡片 */
-        .shopping-card {
-            background: var(--white);
-            border-radius: 16px;
-            overflow: hidden;
-            margin-bottom: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            transition: all 0.3s ease;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .shopping-card.purchased {
-            opacity: 0.6;
-        }
-
-        .shopping-image {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            background: #F8F9FA;
-        }
-
-        .shopping-content {
-            padding: 16px;
-        }
-
-        .shopping-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 12px;
-        }
-
-        .shopping-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
-        .shopping-title.purchased {
-            text-decoration: line-through;
-        }
-
-        .shopping-info {
-            font-size: 13px;
-            color: var(--text-gray);
-            margin-bottom: 8px;
-        }
-
-        .shopping-prices {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 12px;
-            font-size: 14px;
-            color: var(--text-dark);
-            font-weight: 600;
-        }
-
-        .shopping-actions {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 8px;
-        }
-
-        .btn-purchase {
-            padding: 10px;
-            border: 2px solid var(--teal);
-            background: var(--white);
-            color: var(--teal);
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-purchase:hover {
-            background: var(--teal-light);
-        }
-
-        .btn-purchase.purchased {
-            background: var(--teal);
-            color: var(--white);
-        }
-
-        .btn-icon {
-            width: 40px;
-            height: 40px;
-            border: none;
-            background: #F8F9FA;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 18px;
-            transition: all 0.3s ease;
-        }
-
-        .btn-icon:hover {
-            background: #FFE5E5;
-            color: #E74C3C;
-        }
-
-        /* 篩選標籤 */
         .filter-tabs {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -1188,7 +1276,6 @@
             background: #E8ECF0;
         }
 
-        /* 地點篩選 */
         .location-filters {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -1214,94 +1301,6 @@
             color: var(--teal-dark);
         }
 
-        /* 動作按鈕 */
-        .btn-action {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            padding: 16px;
-            background: var(--white);
-            border: 2px solid var(--teal);
-            border-radius: 16px;
-            color: var(--teal);
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-
-        .btn-action:hover {
-            background: var(--teal);
-            color: var(--white);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(77, 184, 172, 0.3);
-        }
-
-        /* 雲端同步按鈕 */
-        .btn-sync-upload,
-        .btn-sync-download {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            padding: 16px;
-            background: var(--white);
-            border: 2px solid #5DADE2;
-            border-radius: 16px;
-            color: #5DADE2;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-
-        .btn-sync-upload:hover {
-            background: linear-gradient(135deg, #5DADE2 0%, #3498DB 100%);
-            color: var(--white);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(52, 152, 219, 0.3);
-        }
-
-        .btn-sync-download:hover {
-            background: linear-gradient(135deg, #58D68D 0%, #28B463 100%);
-            color: var(--white);
-            border-color: #28B463;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(40, 180, 99, 0.3);
-        }
-
-        /* 同步狀態動畫 */
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translate(-50%, -20px);
-            }
-            to {
-                opacity: 1;
-                transform: translate(-50%, 0);
-            }
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 1;
-                transform: translate(-50%, 0);
-            }
-            to {
-                opacity: 0;
-                transform: translate(-50%, -20px);
-            }
-        }
-
-        /* 分帳統計卡片 */
         .split-card {
             background: var(--teal-light);
             border-radius: 16px;
@@ -1356,80 +1355,6 @@
             margin-bottom: 6px;
             padding-left: 8px;
         }
-
-        /* 費用卡片操作 */
-        .expense-menu {
-            position: relative;
-        }
-
-        .expense-menu-btn {
-            width: 32px;
-            height: 32px;
-            border: none;
-            background: #F8F9FA;
-            border-radius: 8px;
-            font-size: 18px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .expense-menu-btn:hover {
-            background: var(--teal-light);
-        }
-
-        .expense-dropdown {
-            position: absolute;
-            right: 0;
-            top: 100%;
-            margin-top: 8px;
-            background: var(--white);
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            min-width: 140px;
-            overflow: hidden;
-            opacity: 0;
-            pointer-events: none;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
-            z-index: 10;
-        }
-
-        .expense-dropdown.show {
-            opacity: 1;
-            pointer-events: all;
-            transform: translateY(0);
-        }
-
-        .expense-dropdown button {
-            width: 100%;
-            padding: 12px 16px;
-            border: none;
-            background: none;
-            text-align: left;
-            cursor: pointer;
-            font-size: 14px;
-            color: var(--text-dark);
-            transition: all 0.2s ease;
-        }
-
-        .expense-dropdown button:hover {
-            background: var(--teal-light);
-        }
-
-        .expense-dropdown button:not(:last-child) {
-            border-bottom: 1px solid #F0F0F0;
-        }
-
-        .settled-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            background: var(--teal);
-            color: var(--white);
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-left: 8px;
-        }
     </style>
 </head>
 <body>
@@ -1445,7 +1370,6 @@
                         </div>
                         <div class="header-subtitle">Korean Travel Expense Tracker</div>
                     </div>
-                    <!-- 漢堡選單按鈕 -->
                     <button class="hamburger-btn" onclick="toggleSidebar()">
                         <span></span>
                         <span></span>
@@ -1468,7 +1392,7 @@
             <!-- 記帳頁面 -->
             <div class="tab-content active" id="expenseTab">
                 <div class="card">
-                    <div class="card-title">✍️ 新增記帳</div>
+                    <div class="card-title">✍️ <span id="formModeTitle">新增記帳</span></div>
                     
                     <div class="form-group">
                         <label class="form-label">日期時間</label>
@@ -1532,17 +1456,66 @@
                         <label class="form-label">金額</label>
                         <div class="currency-grid">
                             <div class="currency-item">
-                                <div class="currency-label">韓元 KRW</div>
+                                <div class="currency-label">
+                                    韓元 KRW
+                                    <button type="button" class="calc-icon-btn" onclick="toggleCalculator('krw')">🧮</button>
+                                </div>
                                 <div class="currency-input">
                                     <span class="currency-symbol">₩</span>
                                     <input type="number" id="krw" placeholder="0">
                                 </div>
+                                <div class="calculator" id="calc-krw">
+                                    <div class="calc-display" id="calc-display-krw">0</div>
+                                    <div class="calc-buttons">
+                                        <button class="calc-btn" onclick="calcInput('krw', '7')">7</button>
+                                        <button class="calc-btn" onclick="calcInput('krw', '8')">8</button>
+                                        <button class="calc-btn" onclick="calcInput('krw', '9')">9</button>
+                                        <button class="calc-btn operator" onclick="calcInput('krw', '/')">÷</button>
+                                        <button class="calc-btn" onclick="calcInput('krw', '4')">4</button>
+                                        <button class="calc-btn" onclick="calcInput('krw', '5')">5</button>
+                                        <button class="calc-btn" onclick="calcInput('krw', '6')">6</button>
+                                        <button class="calc-btn operator" onclick="calcInput('krw', '*')">×</button>
+                                        <button class="calc-btn" onclick="calcInput('krw', '1')">1</button>
+                                        <button class="calc-btn" onclick="calcInput('krw', '2')">2</button>
+                                        <button class="calc-btn" onclick="calcInput('krw', '3')">3</button>
+                                        <button class="calc-btn operator" onclick="calcInput('krw', '-')">－</button>
+                                        <button class="calc-btn" onclick="calcInput('krw', '0')">0</button>
+                                        <button class="calc-btn clear" onclick="calcClear('krw')">C</button>
+                                        <button class="calc-btn equals" onclick="calcEquals('krw')">=</button>
+                                        <button class="calc-btn operator" onclick="calcInput('krw', '+')">＋</button>
+                                    </div>
+                                </div>
                             </div>
+                            
                             <div class="currency-item">
-                                <div class="currency-label">台幣 TWD</div>
+                                <div class="currency-label">
+                                    台幣 TWD
+                                    <button type="button" class="calc-icon-btn" onclick="toggleCalculator('twd')">🧮</button>
+                                </div>
                                 <div class="currency-input">
                                     <span class="currency-symbol">NT$</span>
                                     <input type="number" id="twd" placeholder="0">
+                                </div>
+                                <div class="calculator" id="calc-twd">
+                                    <div class="calc-display" id="calc-display-twd">0</div>
+                                    <div class="calc-buttons">
+                                        <button class="calc-btn" onclick="calcInput('twd', '7')">7</button>
+                                        <button class="calc-btn" onclick="calcInput('twd', '8')">8</button>
+                                        <button class="calc-btn" onclick="calcInput('twd', '9')">9</button>
+                                        <button class="calc-btn operator" onclick="calcInput('twd', '/')">÷</button>
+                                        <button class="calc-btn" onclick="calcInput('twd', '4')">4</button>
+                                        <button class="calc-btn" onclick="calcInput('twd', '5')">5</button>
+                                        <button class="calc-btn" onclick="calcInput('twd', '6')">6</button>
+                                        <button class="calc-btn operator" onclick="calcInput('twd', '*')">×</button>
+                                        <button class="calc-btn" onclick="calcInput('twd', '1')">1</button>
+                                        <button class="calc-btn" onclick="calcInput('twd', '2')">2</button>
+                                        <button class="calc-btn" onclick="calcInput('twd', '3')">3</button>
+                                        <button class="calc-btn operator" onclick="calcInput('twd', '-')">－</button>
+                                        <button class="calc-btn" onclick="calcInput('twd', '0')">0</button>
+                                        <button class="calc-btn clear" onclick="calcClear('twd')">C</button>
+                                        <button class="calc-btn equals" onclick="calcEquals('twd')">=</button>
+                                        <button class="calc-btn operator" onclick="calcInput('twd', '+')">＋</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1572,14 +1545,25 @@
 
                     <div class="form-group">
                         <div class="split-toggle" onclick="toggleSplit()">
-                            <span style="font-weight: 600; color: var(--text-dark);">👥 需要分帳</span>
+                            <span style="font-weight: 600; color: var(--text-dark);">👥 需要分帳/代購</span>
                             <div class="switch">
                                 <input type="checkbox" id="enableSplit">
                                 <span class="slider"></span>
                             </div>
                         </div>
-                        <div id="splitContent" style="display: none; margin-top: 12px;">
-                            <div style="display: flex; gap: 8px;">
+                        <div id="splitContent" style="display: none;">
+                            <div class="split-mode">
+                                <div class="split-mode-option">
+                                    <input type="radio" name="splitMode" value="split" id="mode-split" checked>
+                                    <label for="mode-split">💰 平分</label>
+                                </div>
+                                <div class="split-mode-option">
+                                    <input type="radio" name="splitMode" value="proxy" id="mode-proxy">
+                                    <label for="mode-proxy">🎁 代購</label>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; gap: 8px; margin-top: 12px;">
                                 <input type="text" id="personName" placeholder="輸入姓名" style="flex: 1;">
                                 <button class="btn-secondary" onclick="addPerson()" style="width: auto; padding: 14px 24px;">新增</button>
                             </div>
@@ -1599,7 +1583,7 @@
             <!-- 購物清單頁面 -->
             <div class="tab-content" id="shoppingTab">
                 <div class="card">
-                    <div class="card-title">🛍️ 新增商品</div>
+                    <div class="card-title">🛍️ <span id="shoppingFormModeTitle">新增商品</span></div>
                     
                     <div class="form-group">
                         <label class="form-label">商品圖片 (選填)</label>
@@ -1655,31 +1639,14 @@
                         <textarea id="shoppingNote" rows="2" placeholder="顏色、規格等..."></textarea>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label">
-                            <input type="checkbox" id="shoppingIsProxy" style="margin-right: 8px;">
-                            這是代購商品 (會另外統計金額)
-                        </label>
-                    </div>
-
                     <button class="btn btn-primary" onclick="addShoppingItem()">➕ 加入購物清單</button>
                 </div>
 
-                <!-- 雲端同步提示 -->
-                <div style="background: #FFF9E6; border: 1px solid #FFD666; padding: 12px; border-radius: 12px; margin-top: 16px; font-size: 13px; color: #8B6914;">
-                    <div style="font-weight: 600; margin-bottom: 4px;">💡 關於圖片同步</div>
-                    <div>• 圖片會自動上傳到 imgur 圖床</div>
-                    <div>• 可以跨裝置同步圖片</div>
-                    <div>• 免費服務,每小時 50 張圖片上限</div>
-                </div>
-
-                <!-- 統計卡片 -->
                 <div class="stats-card" id="shoppingStatsCard" style="display: none; margin-top: 20px;">
                     <div class="stats-title">📊 購物統計</div>
                     <div class="stats-grid" id="shoppingStats"></div>
                 </div>
 
-                <!-- 地點篩選 -->
                 <div class="card" id="locationFilterCard" style="display: none; margin-top: 20px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                         <div style="font-weight: 600; color: var(--text-dark);">🔍 按地點篩選</div>
@@ -1688,7 +1655,6 @@
                     <div class="location-filters" id="locationFilters"></div>
                 </div>
 
-                <!-- 購物清單 -->
                 <div id="shoppingList" style="margin-top: 20px;"></div>
             </div>
 
@@ -1708,7 +1674,6 @@
                     </div>
                 </div>
 
-                <!-- 篩選區 -->
                 <div class="card">
                     <div style="font-weight: 600; color: var(--text-dark); margin-bottom: 12px;">🔍 篩選記帳</div>
                     <div class="filter-tabs">
@@ -1740,19 +1705,17 @@
 
     <!-- 側邊欄 -->
     <div class="sidebar" id="sidebar">
-        <!-- 側邊欄頂部 -->
         <div class="sidebar-header">
             <div style="display: flex; align-items: center; gap: 12px;">
                 <div style="font-size: 28px;">👤</div>
                 <div>
-                    <div style="font-size: 18px; font-weight: 700; color: var(--text-dark);" id="sidebarUserName">Chi</div>
-                    <div style="font-size: 13px; color: var(--text-gray);">當前使用者</div>
+                    <div style="font-size: 18px; font-weight: 700;" id="sidebarUserName">Chi</div>
+                    <div style="font-size: 13px; opacity: 0.8;">當前使用者</div>
                 </div>
             </div>
             <button class="sidebar-close" onclick="closeSidebar()">✕</button>
         </div>
 
-        <!-- 切換使用者區域 -->
         <div class="sidebar-section">
             <div class="sidebar-section-title">切換使用者</div>
             <div class="user-switch-sidebar">
@@ -1767,18 +1730,17 @@
             </div>
         </div>
 
-        <!-- 資料管理區域 -->
         <div class="sidebar-section">
             <div class="sidebar-section-title">資料管理</div>
             <button class="sidebar-menu-item" onclick="uploadToCloud(); closeSidebar();">
-                <span style="font-size: 24px;">☁️⬆️</span>
+                <span style="font-size: 24px;">☁️</span>
                 <div>
                     <div class="sidebar-item-title">上傳雲端</div>
                     <div class="sidebar-item-desc">同步到 Google 試算表</div>
                 </div>
             </button>
             <button class="sidebar-menu-item" onclick="downloadFromCloud(); closeSidebar();">
-                <span style="font-size: 24px;">☁️⬇️</span>
+                <span style="font-size: 24px;">⬇</span>
                 <div>
                     <div class="sidebar-item-title">下載雲端</div>
                     <div class="sidebar-item-desc">從試算表載入資料</div>
@@ -1793,22 +1755,20 @@
             </button>
         </div>
 
-        <!-- 底部資訊 -->
         <div class="sidebar-footer">
             <div style="font-size: 12px; color: var(--text-gray); text-align: center;">
-                韓國旅行記帳本 v2.0<br>
+                韓國旅行記帳本 v5.0<br>
                 🇰🇷 여행 기록
             </div>
         </div>
     </div>
 
+
     <script>
-        // ========== Google Apps Script API 設定 ==========
+        // ========== 全域變數 ==========
         const API_URL = 'https://script.google.com/macros/s/AKfycbwg73REqKMTqtaBXs-IlAmKXkpx1qOv0l5mMiXNSAk9ZiOjiip8CE8g1yKcAYGLzlvO/exec';
         
-        // ========== 使用者管理 ==========
-        let currentUser = localStorage.getItem('currentUser') || 'Chi'; // 預設 Chi
-        
+        let currentUser = localStorage.getItem('currentUser') || 'Chi';
         let expenses = [];
         let splitPeople = [];
         let shoppingList = [];
@@ -1816,6 +1776,81 @@
         let currentExpenseFilter = null;
         let currentShoppingFilter = null;
         let isSyncing = false;
+        let editingExpenseId = null;
+        let editingShoppingId = null;
+
+        // ========== 計算機功能 ==========
+        
+        let calcState = {
+            krw: { display: '0' },
+            twd: { display: '0' }
+        };
+
+        function toggleCalculator(currency) {
+            const calc = document.getElementById(`calc-${currency}`);
+            const allCalcs = document.querySelectorAll('.calculator');
+            
+            allCalcs.forEach(c => {
+                if (c.id !== `calc-${currency}`) c.classList.remove('show');
+            });
+            
+            calc.classList.toggle('show');
+            
+            if (calc.classList.contains('show')) {
+                calcClear(currency);
+            }
+        }
+
+        function calcInput(currency, value) {
+            const state = calcState[currency];
+            
+            if (state.display === '0') {
+                state.display = value;
+            } else {
+                state.display += value;
+            }
+            
+            document.getElementById(`calc-display-${currency}`).textContent = state.display;
+        }
+
+        function calcClear(currency) {
+            calcState[currency] = { display: '0' };
+            document.getElementById(`calc-display-${currency}`).textContent = '0';
+        }
+
+        function calcEquals(currency) {
+            const state = calcState[currency];
+            try {
+                const result = eval(state.display);
+                const roundedResult = Math.round(result);
+                state.display = String(roundedResult);
+                document.getElementById(`calc-display-${currency}`).textContent = roundedResult;
+                
+                document.getElementById(currency).value = roundedResult;
+                
+                setTimeout(() => {
+                    document.getElementById(`calc-${currency}`).classList.remove('show');
+                }, 500);
+            } catch (e) {
+                state.display = 'Error';
+                document.getElementById(`calc-display-${currency}`).textContent = 'Error';
+                setTimeout(() => {
+                    calcClear(currency);
+                }, 1000);
+            }
+        }
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.currency-item') && !e.target.closest('.calculator')) {
+                document.querySelectorAll('.calculator').forEach(calc => {
+                    calc.classList.remove('show');
+                });
+            }
+            
+            if (!e.target.closest('.expense-menu')) {
+                document.querySelectorAll('.expense-dropdown').forEach(m => m.classList.remove('show'));
+            }
+        });
 
         // ========== 使用者切換 ==========
         
@@ -1825,34 +1860,27 @@
                 return;
             }
             
-            // 儲存當前使用者資料
             saveToStorage();
             saveShopping();
             
-            // 切換使用者
             currentUser = userName;
             localStorage.setItem('currentUser', userName);
             
-            // 更新側邊欄使用者名稱
             document.getElementById('sidebarUserName').textContent = userName;
             
-            // 更新按鈕狀態
             document.querySelectorAll('.user-btn-sidebar').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.user === userName);
             });
             
-            // 載入新使用者資料
             loadExpenses();
             loadShopping();
             
-            // 重新渲染
             renderExpenses();
             renderShopping();
             updateLocationFilters();
             
             showToast(`切換到 ${userName} 的記帳本`);
             
-            // 關閉側邊欄
             closeSidebar();
         }
 
@@ -1881,7 +1909,6 @@
             showSyncStatus(`上傳 ${currentUser} 的資料中...`, 'uploading');
             
             try {
-                // 準備資料 (移除圖片以減少大小)
                 const shoppingForCloud = shoppingList.map(item => ({
                     ...item,
                     image: item.image ? '有圖片' : null
@@ -1895,13 +1922,12 @@
                     },
                     body: JSON.stringify({
                         action: 'syncAll',
-                        userId: currentUser, // ✅ 加入 userId
+                        userId: currentUser,
                         expenses: expenses,
                         shopping: shoppingForCloud
                     })
                 });
                 
-                // no-cors 模式無法讀取回應,但請求已送出
                 showSyncStatus(`✅ ${currentUser} 的資料上傳成功!`, 'success');
                 
             } catch (error) {
@@ -1919,14 +1945,13 @@
             showSyncStatus(`下載 ${currentUser} 的資料中...`, 'downloading');
             
             try {
-                const response = await fetch(API_URL + `?action=getAll&userId=${currentUser}`, { // ✅ 加入 userId
+                const response = await fetch(API_URL + `?action=getAll&userId=${currentUser}`, {
                     method: 'GET',
                 });
                 
                 const data = await response.json();
                 
                 if (data.success) {
-                    // 合併資料 (保留本地圖片)
                     const localImages = {};
                     shoppingList.forEach(item => {
                         if (item.image && item.image !== '有圖片') {
@@ -1934,18 +1959,15 @@
                         }
                     });
                     
-                    // 更新資料
                     expenses = data.expenses || [];
                     shoppingList = (data.shopping || []).map(item => ({
                         ...item,
                         image: localImages[item.id] || null
                     }));
                     
-                    // 儲存到 localStorage
                     saveToStorage();
                     saveShopping();
                     
-                    // 重新渲染
                     renderExpenses();
                     renderShopping();
                     updateLocationFilters();
@@ -1964,11 +1986,9 @@
         }
         
         function showSyncStatus(message, type) {
-            // 移除舊的提示
             const oldStatus = document.getElementById('syncStatus');
             if (oldStatus) oldStatus.remove();
             
-            // 建立新提示
             const status = document.createElement('div');
             status.id = 'syncStatus';
             status.style.cssText = `
@@ -2005,18 +2025,15 @@
             
             document.body.appendChild(status);
             
-            // 3秒後移除
             if (type === 'success' || type === 'error') {
                 setTimeout(() => {
-                    status.style.animation = 'slideUp 0.3s ease';
-                    setTimeout(() => status.remove(), 300);
+                    status.remove();
                 }, 3000);
             }
         }
 
         // ========== 標籤切換 ==========
 
-        // 標籤切換
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', function() {
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -2040,19 +2057,11 @@
             });
         });
 
-        // ========== 選單功能 ==========
+        // ========== 初始化 ==========
         
-        function toggleMenu() {
-            const menu = document.getElementById('dropdownMenu');
-            menu.classList.toggle('show');
-        }
-
-        // 初始化
         function init() {
-            // 設定側邊欄使用者名稱
             document.getElementById('sidebarUserName').textContent = currentUser;
             
-            // 設定使用者按鈕狀態
             document.querySelectorAll('.user-btn-sidebar').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.user === currentUser);
             });
@@ -2076,7 +2085,6 @@
             checkbox.checked = !checkbox.checked;
             document.getElementById('splitContent').style.display = checkbox.checked ? 'block' : 'none';
             
-            // 自動加入對方 (Chi <-> Jhen)
             if (checkbox.checked && splitPeople.length === 0) {
                 const otherPerson = currentUser === 'Chi' ? 'Jhen' : 'Chi';
                 splitPeople.push(otherPerson);
@@ -2111,6 +2119,8 @@
         }
 
         function saveExpense() {
+            const splitMode = document.querySelector('input[name="splitMode"]:checked').value;
+            
             const expense = {
                 id: editingExpenseId || Date.now(),
                 datetime: document.getElementById('datetime').value,
@@ -2120,6 +2130,7 @@
                 twd: parseFloat(document.getElementById('twd').value) || 0,
                 payment: document.querySelector('input[name="payment"]:checked').value,
                 split: document.getElementById('enableSplit').checked,
+                splitMode: splitMode,
                 splitPeople: [...splitPeople],
                 note: document.getElementById('note').value.trim(),
                 settled: false
@@ -2136,7 +2147,6 @@
             }
 
             if (editingExpenseId) {
-                // 編輯模式
                 const index = expenses.findIndex(e => e.id === editingExpenseId);
                 if (index !== -1) {
                     expenses[index] = expense;
@@ -2144,7 +2154,6 @@
                 }
                 editingExpenseId = null;
             } else {
-                // 新增模式
                 expenses.push(expense);
                 showToast('記帳成功!');
             }
@@ -2163,34 +2172,37 @@
             document.getElementById('note').value = '';
             document.querySelector('input[name="category"][value="食"]').checked = true;
             document.querySelector('input[name="payment"][value="現金"]').checked = true;
+            document.querySelector('input[name="splitMode"][value="split"]').checked = true;
             document.getElementById('enableSplit').checked = false;
             document.getElementById('splitContent').style.display = 'none';
+            document.getElementById('formModeTitle').textContent = '新增記帳';
             splitPeople = [];
             renderSplitPeople();
             setCurrentDateTime();
+            editingExpenseId = null;
         }
 
         function renderExpenses() {
             const container = document.getElementById('expenseList');
             
-            // 決定顯示的清單
             let displayList = expenses;
             if (currentExpenseFilter) {
                 displayList = filterExpenses(currentExpenseFilter);
             }
             
-            // 更新統計 - 只計算自己付的部分
             let totalKRW = 0;
             let totalTWD = 0;
             
             displayList.forEach(e => {
                 if (e.split && e.splitPeople.length > 0) {
-                    // 分帳:只計算自己的部分
-                    const totalPeople = e.splitPeople.length + 1;
-                    totalKRW += e.krw / totalPeople;
-                    totalTWD += e.twd / totalPeople;
+                    if (e.splitMode === 'proxy') {
+                        // 代購不計入
+                    } else {
+                        const totalPeople = e.splitPeople.length + 1;
+                        totalKRW += e.krw / totalPeople;
+                        totalTWD += e.twd / totalPeople;
+                    }
                 } else {
-                    // 沒分帳:全額計入
                     totalKRW += e.krw;
                     totalTWD += e.twd;
                 }
@@ -2214,8 +2226,17 @@
                 const date = new Date(expense.datetime);
                 const dateStr = `${date.getMonth() + 1}/${date.getDate()} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
                 const icon = getCategoryIcon(expense.category);
-                const perPersonKRW = expense.split ? Math.round(expense.krw / (expense.splitPeople.length + 1)) : 0;
-                const perPersonTWD = expense.split ? Math.round(expense.twd / (expense.splitPeople.length + 1)) : 0;
+                
+                let splitInfo = '';
+                if (expense.split && expense.splitPeople.length > 0) {
+                    if (expense.splitMode === 'proxy') {
+                        splitInfo = `<span>🎁 代購給 ${expense.splitPeople.join(', ')}</span>`;
+                    } else {
+                        const perPersonKRW = Math.round(expense.krw / (expense.splitPeople.length + 1));
+                        const perPersonTWD = Math.round(expense.twd / (expense.splitPeople.length + 1));
+                        splitInfo = `<span>👥 與 ${expense.splitPeople.join(', ')} 平分 (每人 ₩${perPersonKRW.toLocaleString()} / NT$${perPersonTWD.toLocaleString()})</span>`;
+                    }
+                }
                 
                 return `
                     <div class="expense-card">
@@ -2224,6 +2245,7 @@
                                 <span>${icon}</span>
                                 <span>${expense.itemName}</span>
                                 ${expense.settled ? '<span class="settled-badge">已結清</span>' : ''}
+                                ${expense.splitMode === 'proxy' ? '<span class="proxy-badge">代購</span>' : ''}
                             </div>
                             <div class="expense-menu">
                                 <button class="expense-menu-btn" onclick="toggleExpenseMenu(${actualIndex})">⋯</button>
@@ -2245,18 +2267,16 @@
                             <div class="amount-item">
                                 <div class="amount-label">韓元</div>
                                 <div class="amount-value">₩${expense.krw.toLocaleString()}</div>
-                                ${expense.split ? `<div style="font-size: 12px; color: var(--text-gray); margin-top: 4px;">每人 ₩${perPersonKRW.toLocaleString()}</div>` : ''}
                             </div>
                             <div class="amount-item">
                                 <div class="amount-label">台幣</div>
                                 <div class="amount-value">NT$${expense.twd.toLocaleString()}</div>
-                                ${expense.split ? `<div style="font-size: 12px; color: var(--text-gray); margin-top: 4px;">每人 NT$${perPersonTWD.toLocaleString()}</div>` : ''}
                             </div>
                         </div>
                         
                         <div style="display: flex; gap: 8px; margin-top: 12px; font-size: 13px; color: var(--text-gray); flex-wrap: wrap;">
                             <span>💳 ${expense.payment}</span>
-                            ${expense.split ? `<span>👥 與 ${expense.splitPeople.join(', ')} 分帳</span>` : ''}
+                            ${splitInfo}
                         </div>
                     </div>
                 `;
@@ -2283,13 +2303,10 @@
             document.querySelectorAll('.expense-dropdown').forEach(m => m.classList.remove('show'));
         }
 
-        let editingExpenseId = null;
-
         function editExpense(index) {
             const expense = expenses[index];
             editingExpenseId = expense.id;
             
-            // 填入表單
             document.getElementById('datetime').value = expense.datetime;
             document.getElementById('itemName').value = expense.itemName;
             document.querySelector(`input[name="category"][value="${expense.category}"]`).checked = true;
@@ -2297,22 +2314,20 @@
             document.getElementById('twd').value = expense.twd || '';
             document.querySelector(`input[name="payment"][value="${expense.payment}"]`).checked = true;
             document.getElementById('note').value = expense.note || '';
+            document.getElementById('formModeTitle').textContent = '編輯記帳';
             
-            // 處理分帳
             if (expense.split) {
                 document.getElementById('enableSplit').checked = true;
                 document.getElementById('splitContent').style.display = 'block';
+                document.querySelector(`input[name="splitMode"][value="${expense.splitMode || 'split'}"]`).checked = true;
                 splitPeople = [...expense.splitPeople];
                 renderSplitPeople();
             }
             
-            // 切換到記帳頁面
             document.querySelector('.tab[data-tab="expense"]').click();
             
-            // 捲動到表單頂部
             window.scrollTo({ top: 0, behavior: 'smooth' });
             
-            // 關閉選單
             document.querySelectorAll('.expense-dropdown').forEach(m => m.classList.remove('show'));
             
             showToast('編輯模式 - 修改後點儲存');
@@ -2325,6 +2340,7 @@
                 renderExpenses();
                 showToast('記帳已刪除');
             }
+            document.querySelectorAll('.expense-dropdown').forEach(m => m.classList.remove('show'));
         }
 
         // ========== 篩選功能 ==========
@@ -2422,10 +2438,7 @@
             document.getElementById('filterContent').innerHTML = '';
             renderExpenses();
         }
-
         // ========== 購物清單功能 ==========
-        
-        const IMGUR_CLIENT_ID = 'YOUR_IMGUR_CLIENT_ID'; // 待設定
         
         function previewShoppingImage() {
             const file = document.getElementById('shoppingImage').files[0];
@@ -2439,56 +2452,17 @@
             reader.readAsDataURL(file);
         }
 
-        async function uploadToImgur(base64Image) {
-            if (!base64Image || IMGUR_CLIENT_ID === 'YOUR_IMGUR_CLIENT_ID') {
-                return null; // 如果沒設定 Client ID,跳過上傳
-            }
-            
-            try {
-                const response = await fetch('https://api.imgur.com/3/image', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Client-ID ${IMGUR_CLIENT_ID}`
-                    },
-                    body: JSON.stringify({
-                        image: base64Image.split(',')[1],
-                        type: 'base64'
-                    })
-                });
-                
-                const data = await response.json();
-                if (data.success) {
-                    return data.data.link;
-                }
-            } catch (error) {
-                console.error('圖片上傳失敗:', error);
-            }
-            return null;
-        }
-
-        async function addShoppingItem() {
+        function addShoppingItem() {
             const item = document.getElementById('shoppingItem').value.trim();
             
             if (!item) {
                 showToast('請輸入商品名稱');
                 return;
             }
-            
-            let imageUrl = currentImageData; // 預設用 base64
-            
-            // 如果有圖片且設定了 imgur,嘗試上傳
-            if (currentImageData && IMGUR_CLIENT_ID !== 'YOUR_IMGUR_CLIENT_ID') {
-                showToast('正在上傳圖片...');
-                const uploaded = await uploadToImgur(currentImageData);
-                if (uploaded) {
-                    imageUrl = uploaded;
-                    showToast('圖片上傳成功!');
-                }
-            }
 
             const shopping = {
-                id: Date.now(),
-                image: imageUrl,
+                id: editingShoppingId || Date.now(),
+                image: currentImageData,
                 item: item,
                 location: document.getElementById('shoppingLocation').value.trim(),
                 targetQty: parseInt(document.getElementById('shoppingTargetQty').value) || 1,
@@ -2496,54 +2470,28 @@
                 krw: parseFloat(document.getElementById('shoppingKRW').value) || 0,
                 twd: parseFloat(document.getElementById('shoppingTWD').value) || 0,
                 note: document.getElementById('shoppingNote').value.trim(),
-                isProxy: document.getElementById('shoppingIsProxy').checked,
                 purchased: false
             };
 
-            shoppingList.push(shopping);
-            saveShoppingToStorage();
+            if (editingShoppingId) {
+                const index = shoppingList.findIndex(s => s.id === editingShoppingId);
+                if (index !== -1) {
+                    shoppingList[index] = {
+                        ...shopping,
+                        purchasedQty: shoppingList[index].purchasedQty
+                    };
+                    showToast('商品已更新!');
+                }
+                editingShoppingId = null;
+            } else {
+                shoppingList.push(shopping);
+                showToast('已加入購物清單');
+            }
+
+            saveShopping();
             renderShopping();
             updateLocationFilters();
             resetShoppingForm();
-            showToast('已加入購物清單');
-        }
-
-        function updatePurchasedQty(index, change) {
-            const item = shoppingList[index];
-            const newQty = (item.purchasedQty || 0) + change;
-            
-            if (newQty < 0) return;
-            
-            shoppingList[index].purchasedQty = newQty;
-            
-            // 如果達到目標數量,自動標記為已購買
-            if (item.targetQty && newQty >= item.targetQty) {
-                shoppingList[index].purchased = true;
-            } else if (newQty < item.targetQty) {
-                shoppingList[index].purchased = false;
-            }
-            
-            saveShoppingToStorage();
-            renderShopping();
-        }
-
-        function updateTargetQty(index, change) {
-            const item = shoppingList[index];
-            const newQty = (item.targetQty || 0) + change;
-            
-            if (newQty < 1) return;
-            
-            shoppingList[index].targetQty = newQty;
-            saveShoppingToStorage();
-            renderShopping();
-        }
-
-        function closeAllShoppingMenus() {
-            document.querySelectorAll('.shopping-dropdown').forEach(m => m.classList.remove('show'));
-        }
-
-        function saveShoppingToStorage() {
-            localStorage.setItem(`koreaShopping_${currentUser}`, JSON.stringify(shoppingList));
         }
 
         function resetShoppingForm() {
@@ -2553,8 +2501,8 @@
             document.getElementById('shoppingKRW').value = '';
             document.getElementById('shoppingTWD').value = '';
             document.getElementById('shoppingNote').value = '';
-            document.getElementById('shoppingIsProxy').checked = false;
             document.getElementById('shoppingImage').value = '';
+            document.getElementById('shoppingFormModeTitle').textContent = '新增商品';
             document.getElementById('imagePreview').innerHTML = `
                 <div class="upload-placeholder">
                     <span style="font-size: 48px;">📷</span>
@@ -2562,6 +2510,30 @@
                 </div>
             `;
             currentImageData = null;
+            editingShoppingId = null;
+        }
+
+        function editShopping(index) {
+            const shopping = shoppingList[index];
+            editingShoppingId = shopping.id;
+            
+            document.getElementById('shoppingItem').value = shopping.item;
+            document.getElementById('shoppingLocation').value = shopping.location || '';
+            document.getElementById('shoppingTargetQty').value = shopping.targetQty || 1;
+            document.getElementById('shoppingKRW').value = shopping.krw || '';
+            document.getElementById('shoppingTWD').value = shopping.twd || '';
+            document.getElementById('shoppingNote').value = shopping.note || '';
+            document.getElementById('shoppingFormModeTitle').textContent = '編輯商品';
+            
+            if (shopping.image) {
+                document.getElementById('imagePreview').innerHTML = `<img src="${shopping.image}" alt="preview">`;
+                currentImageData = shopping.image;
+            }
+            
+            document.querySelector('.tab[data-tab="shopping"]').click();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            showToast('編輯模式 - 修改後點儲存');
         }
 
         function renderShopping() {
@@ -2574,7 +2546,6 @@
                 displayList = shoppingList.filter(s => s.location === currentShoppingFilter);
             }
             
-            // 統計
             const total = displayList.length;
             const purchased = displayList.filter(s => {
                 const targetQty = s.targetQty || 0;
@@ -2582,25 +2553,11 @@
                 return s.purchased || (targetQty > 0 && purchasedQty >= targetQty);
             }).length;
             
-            // 分別計算自己買和代購
-            const personalKRW = displayList.reduce((sum, s) => {
-                if (s.isProxy) return sum;
+            const totalKRW = displayList.reduce((sum, s) => {
                 const qty = s.targetQty || 1;
                 return sum + (s.krw * qty);
             }, 0);
-            const personalTWD = displayList.reduce((sum, s) => {
-                if (s.isProxy) return sum;
-                const qty = s.targetQty || 1;
-                return sum + (s.twd * qty);
-            }, 0);
-            
-            const proxyKRW = displayList.reduce((sum, s) => {
-                if (!s.isProxy) return sum;
-                const qty = s.targetQty || 1;
-                return sum + (s.krw * qty);
-            }, 0);
-            const proxyTWD = displayList.reduce((sum, s) => {
-                if (!s.isProxy) return sum;
+            const totalTWD = displayList.reduce((sum, s) => {
                 const qty = s.targetQty || 1;
                 return sum + (s.twd * qty);
             }, 0);
@@ -2617,18 +2574,12 @@
                         <div class="stat-value">${purchased} 項</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-label">自己買 💰</div>
-                        <div class="stat-value" style="font-size: 14px;">
-                            ₩${Math.round(personalKRW).toLocaleString()}<br>
-                            <span style="font-size: 12px;">NT$${Math.round(personalTWD).toLocaleString()}</span>
-                        </div>
+                        <div class="stat-label">預估韓元</div>
+                        <div class="stat-value">₩${Math.round(totalKRW).toLocaleString()}</div>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-label">代購 🎁</div>
-                        <div class="stat-value" style="font-size: 14px;">
-                            ₩${Math.round(proxyKRW).toLocaleString()}<br>
-                            <span style="font-size: 12px;">NT$${Math.round(proxyTWD).toLocaleString()}</span>
-                        </div>
+                        <div class="stat-label">預估台幣</div>
+                        <div class="stat-value">NT$${Math.round(totalTWD).toLocaleString()}</div>
                     </div>
                 `;
             } else {
@@ -2658,13 +2609,9 @@
                         ${shopping.image ? `<img src="${shopping.image}" class="shopping-image" alt="${shopping.item}">` : ''}
                         <div class="shopping-content">
                             <div class="shopping-header">
-                                <div>
-                                    <div class="shopping-title ${purchasedClass}">
-                                        ${shopping.item}
-                                        ${shopping.isProxy ? ' <span style="background: #FFE5B4; color: #D97706; padding: 2px 8px; border-radius: 8px; font-size: 11px; margin-left: 4px;">代購</span>' : ''}
-                                    </div>
+                                <div class="shopping-title ${purchasedClass}">
+                                    ${shopping.item}
                                 </div>
-                                <button class="btn-icon" onclick="deleteShopping(${actualIndex})" style="color: #EF4444;">🗑️</button>
                             </div>
                             
                             ${shopping.location ? `<div class="shopping-info">📍 ${shopping.location}</div>` : ''}
@@ -2679,7 +2626,6 @@
                                         <div class="qty-progress-bar" style="width: ${progress}%"></div>
                                     </div>
                                     
-                                    <!-- 已購買數量調整 -->
                                     <div style="margin-top: 12px;">
                                         <div style="font-size: 12px; color: var(--text-gray); margin-bottom: 4px;">已購買數量</div>
                                         <div class="qty-actions">
@@ -2689,7 +2635,6 @@
                                         </div>
                                     </div>
                                     
-                                    <!-- 目標數量調整 -->
                                     <div style="margin-top: 8px;">
                                         <div style="font-size: 12px; color: var(--text-gray); margin-bottom: 4px;">目標數量</div>
                                         <div class="qty-actions">
@@ -2714,6 +2659,8 @@
                                 <button class="btn-purchase ${shopping.purchased || isComplete ? 'purchased' : ''}" onclick="togglePurchase(${actualIndex})">
                                     ${shopping.purchased || isComplete ? '✓ 已購買' : '標記已購買'}
                                 </button>
+                                <button class="btn-icon edit" onclick="editShopping(${actualIndex})">✏️</button>
+                                <button class="btn-icon" onclick="deleteShopping(${actualIndex})">🗑️</button>
                             </div>
                         </div>
                     </div>
@@ -2721,16 +2668,45 @@
             }).join('');
         }
 
+        function updatePurchasedQty(index, change) {
+            const item = shoppingList[index];
+            const newQty = (item.purchasedQty || 0) + change;
+            
+            if (newQty < 0) return;
+            
+            shoppingList[index].purchasedQty = newQty;
+            
+            if (item.targetQty && newQty >= item.targetQty) {
+                shoppingList[index].purchased = true;
+            } else if (newQty < item.targetQty) {
+                shoppingList[index].purchased = false;
+            }
+            
+            saveShopping();
+            renderShopping();
+        }
+
+        function updateTargetQty(index, change) {
+            const item = shoppingList[index];
+            const newQty = (item.targetQty || 0) + change;
+            
+            if (newQty < 1) return;
+            
+            shoppingList[index].targetQty = newQty;
+            saveShopping();
+            renderShopping();
+        }
+
         function togglePurchase(index) {
             shoppingList[index].purchased = !shoppingList[index].purchased;
-            saveShoppingToStorage();
+            saveShopping();
             renderShopping();
         }
 
         function deleteShopping(index) {
             if (confirm('確定要刪除這個商品嗎?')) {
                 shoppingList.splice(index, 1);
-                saveShoppingToStorage();
+                saveShopping();
                 renderShopping();
                 updateLocationFilters();
                 showToast('已從購物清單移除');
@@ -2799,81 +2775,32 @@
             const peopleStats = {};
             
             splitExpenses.forEach(expense => {
-                const totalPeople = expense.splitPeople.length + 1;
-                const perPersonKRW = expense.krw / totalPeople;
-                const perPersonTWD = expense.twd / totalPeople;
-                
-                expense.splitPeople.forEach(person => {
-                    if (!peopleStats[person]) {
-                        peopleStats[person] = {
-                            name: person,
-                            totalKRW: 0,
-                            totalTWD: 0,
-                            count: 0,
-                            expenses: []
-                        };
-                    }
-                    
-                    peopleStats[person].totalKRW += perPersonKRW;
-                    peopleStats[person].totalTWD += perPersonTWD;
-                    peopleStats[person].count += 1;
-                    peopleStats[person].expenses.push({
-                        item: expense.itemName,
-                        krw: Math.round(perPersonKRW),
-                        twd: Math.round(perPersonTWD),
-                        datetime: expense.datetime
+                if (expense.splitMode === 'proxy') {
+                    // 代購模式:全額算對方的
+                    expense.splitPeople.forEach(person => {
+                        if (!peopleStats[person]) {
+                            peopleStats[person] = {
+                                name: person,
+                                totalKRW: 0,
+                                totalTWD: 0,
+                                count: 0,
+                                expenses: []
+                            };
+                        }
+                        
+                        peopleStats[person].totalKRW += expense.krw;
+                        peopleStats[person].totalTWD += expense.twd;
+                        peopleStats[person].count += 1;
+                        peopleStats[person].expenses.push({
+                            item: expense.itemName,
+                            krw: expense.krw,
+                            twd: expense.twd,
+                            datetime: expense.datetime,
+                            type: '代購'
+                        });
                     });
-                });
-            });
-            
-            const sortedPeople = Object.values(peopleStats).sort((a, b) => b.totalTWD - a.totalTWD);
-            
-            container.innerHTML = sortedPeople.map(person => {
-                return `
-                    <div class="split-card">
-                        <div class="split-person-name">👤 ${person.name}</div>
-                        <div class="split-stats">
-                            <div class="split-stat-row">
-                                <span class="split-stat-label">參與分帳次數</span>
-                                <span class="split-stat-value">${person.count} 次</span>
-                            </div>
-                            <div class="split-stat-row">
-                                <span class="split-stat-label">應付韓元</span>
-                                <span class="split-stat-value">₩${Math.round(person.totalKRW).toLocaleString()}</span>
-                            </div>
-                            <div class="split-stat-row">
-                                <span class="split-stat-label">應付台幣</span>
-                                <span class="split-stat-value">NT$${Math.round(person.totalTWD).toLocaleString()}</span>
-                            </div>
-                        </div>
-                        <div class="split-details">
-                            <div class="split-detail-title">分帳明細:</div>
-                            ${person.expenses.map(exp => {
-                                const date = new Date(exp.datetime);
-                                const dateStr = `${date.getMonth() + 1}/${date.getDate()}`;
-                                return `<div class="split-item">• ${dateStr} ${exp.item}: ₩${exp.krw.toLocaleString()} / NT$${exp.twd.toLocaleString()}</div>`;
-                            }).join('')}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-        
-        function showSplitReport() {
-            // 保留舊函數以防其他地方使用
-            const splitExpenses = expenses.filter(e => e.split && e.splitPeople.length > 0);
-            
-            if (splitExpenses.length === 0) {
-                document.getElementById('splitModalContent').innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">📊</div>
-                        <div class="empty-text">目前沒有分帳記錄</div>
-                    </div>
-                `;
-            } else {
-                const peopleStats = {};
-                
-                splitExpenses.forEach(expense => {
+                } else {
+                    // 平分模式
                     const totalPeople = expense.splitPeople.length + 1;
                     const perPersonKRW = expense.krw / totalPeople;
                     const perPersonTWD = expense.twd / totalPeople;
@@ -2896,51 +2823,44 @@
                             item: expense.itemName,
                             krw: Math.round(perPersonKRW),
                             twd: Math.round(perPersonTWD),
-                            datetime: expense.datetime
+                            datetime: expense.datetime,
+                            type: '平分'
                         });
                     });
-                });
-                
-                const sortedPeople = Object.values(peopleStats).sort((a, b) => b.totalTWD - a.totalTWD);
-                
-                document.getElementById('splitModalContent').innerHTML = sortedPeople.map(person => {
-                    return `
-                        <div class="split-card">
-                            <div class="split-person-name">👤 ${person.name}</div>
-                            <div class="split-stats">
-                                <div class="split-stat-row">
-                                    <span class="split-stat-label">參與分帳次數</span>
-                                    <span class="split-stat-value">${person.count} 次</span>
-                                </div>
-                                <div class="split-stat-row">
-                                    <span class="split-stat-label">應付韓元</span>
-                                    <span class="split-stat-value">₩${Math.round(person.totalKRW).toLocaleString()}</span>
-                                </div>
-                                <div class="split-stat-row">
-                                    <span class="split-stat-label">應付台幣</span>
-                                    <span class="split-stat-value">NT$${Math.round(person.totalTWD).toLocaleString()}</span>
-                                </div>
+                }
+            });
+            
+            const sortedPeople = Object.values(peopleStats).sort((a, b) => b.totalTWD - a.totalTWD);
+            
+            container.innerHTML = sortedPeople.map(person => {
+                return `
+                    <div class="split-card">
+                        <div class="split-person-name">👤 ${person.name}</div>
+                        <div class="split-stats">
+                            <div class="split-stat-row">
+                                <span class="split-stat-label">參與次數</span>
+                                <span class="split-stat-value">${person.count} 次</span>
                             </div>
-                            <div class="split-details">
-                                <div class="split-detail-title">分帳明細:</div>
-                                ${person.expenses.map(exp => {
-                                    const date = new Date(exp.datetime);
-                                    const dateStr = `${date.getMonth() + 1}/${date.getDate()}`;
-                                    return `<div class="split-item">• ${dateStr} ${exp.item}: ₩${exp.krw.toLocaleString()} / NT$${exp.twd.toLocaleString()}</div>`;
-                                }).join('')}
+                            <div class="split-stat-row">
+                                <span class="split-stat-label">應付韓元</span>
+                                <span class="split-stat-value">₩${Math.round(person.totalKRW).toLocaleString()}</span>
+                            </div>
+                            <div class="split-stat-row">
+                                <span class="split-stat-label">應付台幣</span>
+                                <span class="split-stat-value">NT$${Math.round(person.totalTWD).toLocaleString()}</span>
                             </div>
                         </div>
-                    `;
-                }).join('');
-            }
-            
-            document.getElementById('splitModalOverlay').classList.add('show');
-            document.getElementById('splitModal').classList.add('show');
-        }
-
-        function closeSplitModal() {
-            document.getElementById('splitModalOverlay').classList.remove('show');
-            document.getElementById('splitModal').classList.remove('show');
+                        <div class="split-details">
+                            <div class="split-detail-title">明細:</div>
+                            ${person.expenses.map(exp => {
+                                const date = new Date(exp.datetime);
+                                const dateStr = `${date.getMonth() + 1}/${date.getDate()}`;
+                                return `<div class="split-item">• ${dateStr} ${exp.item} [${exp.type}]: ₩${exp.krw.toLocaleString()} / NT$${exp.twd.toLocaleString()}</div>`;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
         // ========== 匯出 Excel ==========
@@ -2952,15 +2872,14 @@
             }
 
             let csvContent = '\uFEFF';
-            csvContent += '日期,時間,項目,分類,韓元,台幣,付款方式,是否分帳,分帳對象,每人韓元,每人台幣,備註,已結清\n';
+            csvContent += '日期,時間,項目,分類,韓元,台幣,付款方式,分帳模式,分帳對象,備註,已結清\n';
             
             expenses.forEach(expense => {
                 const date = new Date(expense.datetime);
                 const dateStr = `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`;
                 const timeStr = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
                 
-                const perPersonKRW = expense.split ? Math.round(expense.krw / (expense.splitPeople.length + 1)) : '';
-                const perPersonTWD = expense.split ? Math.round(expense.twd / (expense.splitPeople.length + 1)) : '';
+                const splitMode = expense.split ? (expense.splitMode === 'proxy' ? '代購' : '平分') : '否';
                 
                 csvContent += [
                     dateStr,
@@ -2970,10 +2889,8 @@
                     expense.krw,
                     expense.twd,
                     expense.payment,
-                    expense.split ? '是' : '否',
+                    splitMode,
                     expense.split ? `"${expense.splitPeople.join(', ')}"` : '',
-                    perPersonKRW,
-                    perPersonTWD,
                     `"${expense.note || ''}"`,
                     expense.settled ? '已結清' : '未結清'
                 ].join(',') + '\n';
@@ -2984,7 +2901,7 @@
             const url = URL.createObjectURL(blob);
             
             const now = new Date();
-            const filename = `韓國旅行記帳_${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}.csv`;
+            const filename = `韓國旅行記帳_${currentUser}_${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}.csv`;
             
             link.setAttribute('href', url);
             link.setAttribute('download', filename);
@@ -3031,8 +2948,7 @@
             document.body.appendChild(toast);
             
             setTimeout(() => {
-                toast.style.animation = 'slideUp 0.3s ease';
-                setTimeout(() => toast.remove(), 300);
+                toast.remove();
             }, 2500);
         }
 
@@ -3050,34 +2966,23 @@
             }
         }
 
+        function saveShopping() {
+            localStorage.setItem(`koreaShopping_${currentUser}`, JSON.stringify(shoppingList));
+        }
+
         function loadShopping() {
             const saved = localStorage.getItem(`koreaShopping_${currentUser}`);
             if (saved) {
                 shoppingList = JSON.parse(saved);
-                // 確保舊資料有數量欄位和代購欄位
                 shoppingList = shoppingList.map(item => ({
                     ...item,
                     targetQty: item.targetQty !== undefined ? item.targetQty : 0,
-                    purchasedQty: item.purchasedQty !== undefined ? item.purchasedQty : 0,
-                    isProxy: item.isProxy || false
+                    purchasedQty: item.purchasedQty !== undefined ? item.purchasedQty : 0
                 }));
             } else {
                 shoppingList = [];
             }
         }
-
-        // 點擊外部關閉選單
-        document.addEventListener('click', function(e) {
-            // 關閉購物選單
-            if (!e.target.closest('.shopping-menu')) {
-                closeAllShoppingMenus();
-            }
-            
-            // 關閉費用選單
-            if (!e.target.closest('.expense-menu')) {
-                document.querySelectorAll('.expense-dropdown').forEach(m => m.classList.remove('show'));
-            }
-        });
 
         // 初始化
         init();
