@@ -770,18 +770,17 @@
         .split-people {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 12px;
+            gap: 6px;
         }
 
         .person-tag {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            padding: 8px 12px;
+            gap: 4px;
+            padding: 6px 10px;
             background: var(--teal-light);
-            border-radius: 20px;
-            font-size: 14px;
+            border-radius: 16px;
+            font-size: 12px;
             color: var(--teal-dark);
             font-weight: 500;
             animation: bounceIn 0.4s ease;
@@ -792,10 +791,10 @@
             border: none;
             color: var(--teal-dark);
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
             padding: 0;
-            width: 20px;
-            height: 20px;
+            width: 16px;
+            height: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1545,55 +1544,34 @@
 
                     <div class="form-group">
                         <div class="split-toggle" onclick="toggleSplit()">
-                            <span style="font-weight: 600; color: var(--text-dark);">👥 需要分帳/代購</span>
+                            <span style="font-weight: 600; color: var(--text-dark);">👥 分帳/代購</span>
                             <div class="switch">
                                 <input type="checkbox" id="enableSplit">
                                 <span class="slider"></span>
                             </div>
                         </div>
-                        <div id="splitContent" style="display: none;">
-                            <!-- 第一層:分帳/代購選擇 -->
-                            <div class="split-mode">
-                                <div class="split-mode-option">
-                                    <input type="radio" name="mainMode" value="split" id="main-split" checked onchange="toggleSplitSubMode()">
-                                    <label for="main-split">💰 分帳</label>
-                                </div>
-                                <div class="split-mode-option">
-                                    <input type="radio" name="mainMode" value="proxy" id="main-proxy" onchange="toggleSplitSubMode()">
-                                    <label for="main-proxy">🎁 代購</label>
+                        <div id="splitContent" style="display: none; margin-top: 8px;">
+                            <!-- 模式選擇 + 人員輸入 合併在同一行 -->
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                                <select id="splitModeSelect" onchange="handleSplitModeChange()" style="width: 100%; padding: 10px; border: 2px solid #E8ECF0; border-radius: 10px; background: #F8F9FA; font-size: 13px; font-family: 'Noto Sans TC', sans-serif;">
+                                    <option value="split-equal">💰 平分</option>
+                                    <option value="split-custom">💰 自訂</option>
+                                    <option value="proxy">🎁 代購</option>
+                                </select>
+                                <div style="display: flex; gap: 6px;">
+                                    <input type="text" id="personName" placeholder="新增對象" style="flex: 1; padding: 10px; border: 2px solid #E8ECF0; border-radius: 10px; font-size: 13px;">
+                                    <button class="btn-secondary" onclick="addPerson()" style="width: auto; padding: 10px 16px; font-size: 13px;">+</button>
                                 </div>
                             </div>
+                            <div class="split-people" id="splitPeople" style="margin-top: 8px;"></div>
                             
-                            <!-- 第二層:分帳時的平分/自訂選擇 -->
-                            <div id="splitSubMode" style="margin-top: 12px;">
-                                <div class="split-mode" style="grid-template-columns: repeat(2, 1fr);">
-                                    <div class="split-mode-option">
-                                        <input type="radio" name="splitMethod" value="equal" id="method-equal" checked>
-                                        <label for="method-equal">平分</label>
-                                    </div>
-                                    <div class="split-mode-option">
-                                        <input type="radio" name="splitMethod" value="custom" id="method-custom">
-                                        <label for="method-custom">自訂金額</label>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div style="display: flex; gap: 8px; margin-top: 12px;">
-                                <input type="text" id="personName" placeholder="輸入姓名" style="flex: 1;">
-                                <button class="btn-secondary" onclick="addPerson()" style="width: auto; padding: 14px 24px;">新增</button>
-                            </div>
-                            <div class="split-people" id="splitPeople"></div>
                             <!-- 每人金額輸入區（自訂 / 代購用） -->
-                            <div id="splitAllocationsWrap" style="display:none; margin-top: 12px;">
-                                <div style="font-size: 12px; color: var(--text-gray); margin-bottom: 8px; line-height: 1.4;">
-                                💡 這裡填「對方各自應付」金額；系統會自動算你要負擔多少（= 總額 - 對方合計）
-                                </div>
+                            <div id="splitAllocationsWrap" style="display:none; margin-top: 8px;">
                                 <div id="splitAllocations"></div>
                             </div>
                             
                             <!-- 即時計算預覽 -->
-                            <div id="splitPreview" style="margin-top: 12px; font-size: 13px; color: var(--text-gray); line-height: 1.5;"></div>
-                            
+                            <div id="splitPreview" style="margin-top: 8px; padding: 8px; background: #F8F9FA; border-radius: 8px; font-size: 12px; color: var(--text-gray); line-height: 1.4;"></div>
                         </div>
                     </div>
 
@@ -2119,26 +2097,26 @@
                 renderSplitPeople();
                 renderSplitAllocations();
                 updateSplitPreview();
-
             }
         }
 
-        function toggleSplitSubMode() {
-            const mainMode = document.querySelector('input[name="mainMode"]:checked')?.value || 'split';
-            const subMode = document.getElementById('splitSubMode');
-
-            if (mainMode === 'proxy') {
-                // ✅ 代購：不需要平分，強制用 custom
-                subMode.style.display = 'none';
-                const customRadio = document.getElementById('method-custom');
-                if (customRadio) customRadio.checked = true;
-            } else {
-                // 分帳：可平分/自訂
-                subMode.style.display = 'block';
-            }
-
+        function handleSplitModeChange() {
             renderSplitAllocations();
             updateSplitPreview();
+        }
+        
+        function getSplitModeFromSelect() {
+            const selectValue = document.getElementById('splitModeSelect').value;
+            
+            if (selectValue === 'split-equal') {
+                return { mainMode: 'split', splitMethod: 'equal' };
+            } else if (selectValue === 'split-custom') {
+                return { mainMode: 'split', splitMethod: 'custom' };
+            } else if (selectValue === 'proxy') {
+                return { mainMode: 'proxy', splitMethod: 'custom' };
+            }
+            
+            return { mainMode: 'split', splitMethod: 'equal' };
         }
 
         function getMyShareFromCurrentInput() {
@@ -2150,8 +2128,7 @@
         return { myKRW: totalKRW, myTWD: totalTWD, otherKRW: 0, otherTWD: 0 };
     }
 
-    const mainMode = document.querySelector('input[name="mainMode"]:checked')?.value || 'split';
-    const splitMethod = document.querySelector('input[name="splitMethod"]:checked')?.value || 'equal';
+    const { mainMode, splitMethod } = getSplitModeFromSelect();
 
     if (mainMode === 'split' && splitMethod === 'equal') {
         const denom = splitPeople.length + 1;
@@ -2171,7 +2148,6 @@
         otherTWD += Number(a.twd) || 0;
     });
 
-    // ✅ 防呆：對方合計不能超過總額（超過就視覺提醒，但不硬改）
     const myKRW = totalKRW - otherKRW;
     const myTWD = totalTWD - otherTWD;
 
@@ -2186,35 +2162,50 @@
 
         if (!enabled) {
             preview.innerHTML = '';
+            preview.style.display = 'none';
             return;
         }
 
         if (splitPeople.length === 0) {
-            preview.innerHTML = '👥 請先新增分帳/代購對象';
+            preview.innerHTML = '<span style="color: var(--text-gray); font-size: 11px;">請先新增分帳對象</span>';
+            preview.style.display = 'block';
             return;
         }
 
-        const mainMode = document.querySelector('input[name="mainMode"]:checked')?.value || 'split';
-        const splitMethod = document.querySelector('input[name="splitMethod"]:checked')?.value || 'equal';
-
+        const { mainMode, splitMethod } = getSplitModeFromSelect();
         const totalKRW = Number(document.getElementById('krw').value) || 0;
         const totalTWD = Number(document.getElementById('twd').value) || 0;
-
-        const { myKRW, myTWD, otherKRW, otherTWD } = getMyShareFromCurrentInput();
+        const { myKRW, myTWD } = getMyShareFromCurrentInput();
 
         const overKRW = myKRW < 0;
         const overTWD = myTWD < 0;
 
-        const title = (mainMode === 'proxy') ? '🎁 代購' : (splitMethod === 'equal' ? '👥 分帳・平分' : '👥 分帳・自訂');
+        // 計算每個人的金額
+        let personDetailsHTML = '';
+        if (mainMode === 'split' && splitMethod === 'equal') {
+            // 平分模式：每個人金額相同
+            const denom = splitPeople.length + 1;
+            const perPersonKRW = denom > 0 ? totalKRW / denom : 0;
+            const perPersonTWD = denom > 0 ? totalTWD / denom : 0;
+            
+            splitPeople.forEach(person => {
+                personDetailsHTML += `<div style="font-size: 11px; color: var(--text-gray);">${person}: ₩${Math.round(perPersonKRW).toLocaleString()} / NT$${Math.round(perPersonTWD).toLocaleString()}</div>`;
+            });
+        } else {
+            // 自訂金額或代購模式：顯示各自的金額
+            splitPeople.forEach(person => {
+                const allocation = splitAllocations[person] || { krw: 0, twd: 0 };
+                personDetailsHTML += `<div style="font-size: 11px; color: var(--text-gray);">${person}: ₩${Math.round(allocation.krw).toLocaleString()} / NT$${Math.round(allocation.twd).toLocaleString()}</div>`;
+            });
+        }
 
+        preview.style.display = 'block';
         preview.innerHTML = `
-        ✅ ${title}<br>
-        總額：₩${Math.round(totalKRW).toLocaleString()} / NT$${Math.round(totalTWD).toLocaleString()}<br>
-        對方合計：₩${Math.round(otherKRW).toLocaleString()} / NT$${Math.round(otherTWD).toLocaleString()}<br>
-        <b style="color:${(overKRW || overTWD) ? '#E74C3C' : 'var(--text-dark)'}">
-            你負擔：₩${Math.round(myKRW).toLocaleString()} / NT$${Math.round(myTWD).toLocaleString()}
-        </b>
-        ${(overKRW || overTWD) ? `<div style="margin-top:6px; color:#E74C3C;">⚠️ 對方合計不能超過總額</div>` : ''}
+            ${personDetailsHTML}
+            <div style="margin-top: 4px; font-weight: 600; font-size: 12px; color:${(overKRW || overTWD) ? '#E74C3C' : 'var(--text-dark)'}">
+                你: ₩${Math.round(myKRW).toLocaleString()} / NT$${Math.round(myTWD).toLocaleString()}
+            </div>
+            ${(overKRW || overTWD) ? `<div style="margin-top:3px; color:#E74C3C; font-size: 11px;">⚠️ 對方金額超過總額</div>` : ''}
         `;
     }
 
@@ -2270,10 +2261,9 @@
                     return;
                 }
 
-                const mainMode = document.querySelector('input[name="mainMode"]:checked')?.value || 'split';
-                const splitMethod = document.querySelector('input[name="splitMethod"]:checked')?.value || 'equal';
+                const { mainMode, splitMethod } = getSplitModeFromSelect();
 
-                // ✅ 代購一定要能填「每人不同金額」；分帳只有 custom 才需要每人輸入
+                // 代購或自訂金額時需要輸入每人金額
                 const shouldShow = (mainMode === 'proxy') || (mainMode === 'split' && splitMethod === 'custom');
                 wrap.style.display = shouldShow ? 'block' : 'none';
 
@@ -2288,21 +2278,21 @@
                 container.innerHTML = splitPeople.map(name => {
                     const a = splitAllocations[name] || { krw: 0, twd: 0 };
                     return `
-                    <div class="currency-item" style="margin-bottom: 10px;">
-                        <div class="currency-label">👤 ${name} 應付</div>
-                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <div class="currency-input" style="background:#fff; border:2px solid #E8ECF0; border-radius:12px; padding:12px 14px;">
-                            <span class="currency-symbol">₩</span>
-                            <input type="number" value="${a.krw || 0}" min="0"
-                            style="border:none; background:transparent; width:100%; font-size:16px; font-weight:600;"
-                            oninput="setPersonAllocation('${name}', 'krw', this.value)">
-                        </div>
-                        <div class="currency-input" style="background:#fff; border:2px solid #E8ECF0; border-radius:12px; padding:12px 14px;">
-                            <span class="currency-symbol">NT$</span>
-                            <input type="number" value="${a.twd || 0}" min="0"
-                            style="border:none; background:transparent; width:100%; font-size:16px; font-weight:600;"
-                            oninput="setPersonAllocation('${name}', 'twd', this.value)">
-                        </div>
+                    <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+                        <span style="font-size: 12px; color: var(--text-gray); min-width: 50px;">${name}</span>
+                        <div style="flex: 1; display: flex; gap: 6px;">
+                            <div style="flex: 1; position: relative;">
+                                <span style="position: absolute; left: 8px; top: 50%; transform: translateY(-50%); font-size: 11px; color: var(--text-gray);">₩</span>
+                                <input type="number" value="${a.krw || 0}" min="0"
+                                style="width: 100%; padding: 8px 8px 8px 22px; border: 1px solid #E8ECF0; border-radius: 8px; font-size: 12px; background: #fff;"
+                                oninput="setPersonAllocation('${name}', 'krw', this.value)">
+                            </div>
+                            <div style="flex: 1; position: relative;">
+                                <span style="position: absolute; left: 8px; top: 50%; transform: translateY(-50%); font-size: 11px; color: var(--text-gray);">NT$</span>
+                                <input type="number" value="${a.twd || 0}" min="0"
+                                style="width: 100%; padding: 8px 8px 8px 32px; border: 1px solid #E8ECF0; border-radius: 8px; font-size: 12px; background: #fff;"
+                                oninput="setPersonAllocation('${name}', 'twd', this.value)">
+                            </div>
                         </div>
                     </div>
                     `;
@@ -2318,15 +2308,7 @@
 
 
         function saveExpense() {
-            const mainMode = document.querySelector('input[name="mainMode"]:checked').value;
-            let splitMethod = null;
-
-            if (mainMode === 'proxy') {
-                splitMethod = 'custom';
-            } else {
-                splitMethod = document.querySelector('input[name="splitMethod"]:checked').value;
-            }
-
+            const { mainMode, splitMethod } = getSplitModeFromSelect();
         
         const expense = {
             id: editingExpenseId || Date.now(),
@@ -2338,7 +2320,7 @@
             payment: document.querySelector('input[name="payment"]:checked').value,
             split: document.getElementById('enableSplit').checked,
             splitMode: mainMode,  // 'split' 或 'proxy'
-            splitMethod: splitMethod,  // 'equal' 或 'custom' (只在 split 模式有值)
+            splitMethod: splitMethod,  // 'equal' 或 'custom'
             splitPeople: [...splitPeople],
             splitAllocations: JSON.parse(JSON.stringify(splitAllocations)), // 深拷貝避免被後續改到
             note: document.getElementById('note').value.trim(),
@@ -2381,9 +2363,7 @@
             document.getElementById('note').value = '';
             document.querySelector('input[name="category"][value="食"]').checked = true;
             document.querySelector('input[name="payment"][value="現金"]').checked = true;
-            document.querySelector('input[name="mainMode"][value="split"]').checked = true;
-            document.querySelector('input[name="splitMethod"][value="equal"]').checked = true;
-            document.getElementById('splitSubMode').style.display = 'block';
+            document.getElementById('splitModeSelect').value = 'split-equal';
             document.getElementById('enableSplit').checked = false;
             document.getElementById('splitContent').style.display = 'none';
             document.getElementById('formModeTitle').textContent = '新增記帳';
@@ -2554,15 +2534,29 @@
             if (expense.split) {
                 document.getElementById('enableSplit').checked = true;
                 document.getElementById('splitContent').style.display = 'block';
-                document.querySelector(`input[name="mainMode"][value="${expense.splitMode || 'split'}"]`).checked = true;
-                if (expense.splitMode === 'split' && expense.splitMethod) {
-                    document.querySelector(`input[name="splitMethod"][value="${expense.splitMethod}"]`).checked = true;
-                    document.getElementById('splitSubMode').style.display = 'block';
+                
+                // 設定下拉選單的值
+                const splitMode = expense.splitMode || 'split';
+                const splitMethod = expense.splitMethod || 'equal';
+                
+                if (splitMode === 'proxy') {
+                    document.getElementById('splitModeSelect').value = 'proxy';
+                } else if (splitMethod === 'equal') {
+                    document.getElementById('splitModeSelect').value = 'split-equal';
                 } else {
-                    document.getElementById('splitSubMode').style.display = expense.splitMode === 'split' ? 'block' : 'none';
+                    document.getElementById('splitModeSelect').value = 'split-custom';
                 }
+                
                 splitPeople = [...expense.splitPeople];
                 renderSplitPeople();
+                
+                // 如果有自訂金額資料,也要載入
+                if (expense.splitAllocations) {
+                    splitAllocations = { ...expense.splitAllocations };
+                    renderSplitAllocations();
+                }
+                
+                updateSplitPreview();
             }
             
             document.querySelector('.tab[data-tab="expense"]').click();
