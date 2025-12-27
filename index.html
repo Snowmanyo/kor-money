@@ -1758,7 +1758,7 @@
                     <div class="sidebar-item-desc">CSV 匯入範本檔案</div>
                 </div>
             </button>
-            <button class="sidebar-menu-item" onclick="document.getElementById('importFile').click(); closeSidebar();">
+            <button class="sidebar-menu-item" onclick="showImportOptions(); closeSidebar();">
                 <span style="font-size: 24px;">📤</span>
                 <div>
                     <div class="sidebar-item-title">匯入 CSV</div>
@@ -3129,7 +3129,7 @@
             }
 
             let csvContent = '\uFEFF';
-            csvContent += '日期,時間,項目,分類,韓元,台幣,付款方式,分帳模式,分帳方式,分帳對象,自訂金額,備註\n';
+            csvContent += 'ID,日期,時間,項目,分類,韓元,台幣,付款方式,分帳模式,分帳方式,分帳對象,自訂金額,備註\n';
             
             expenses.forEach(expense => {
                 const date = new Date(expense.datetime);
@@ -3157,6 +3157,7 @@
                 }
                 
                 csvContent += [
+                    expense.id,
                     dateStr,
                     timeStr,
                     `"${expense.itemName}"`,
@@ -3193,22 +3194,27 @@
         
         function downloadTemplate() {
             let csvContent = '\uFEFF';
-            csvContent += '日期,時間,項目,分類,韓元,台幣,付款方式,分帳模式,分帳方式,分帳對象,自訂金額,備註\n';
+            csvContent += 'ID,日期,時間,項目,分類,韓元,台幣,付款方式,分帳模式,分帳方式,分帳對象,自訂金額,備註\n';
             
-            // 範例1: 普通消費
-            csvContent += '2024/12/25,18:30,明洞烤肉,食,50000,1200,現金,否,,,,好吃!\n';
+            // 範例1: 普通消費 (新增模式:ID留空)
+            csvContent += ',2024/12/25,18:30,明洞烤肉,食,50000,1200,現金,否,,,,好吃!\n';
             
-            // 範例2: 平分
-            csvContent += '2024/12/25,20:00,弘大咖啡廳,食,30000,720,信用卡,分帳,平分,Jhen,,,\n';
+            // 範例2: 平分 (新增模式:ID留空)
+            csvContent += ',2024/12/25,20:00,弘大咖啡廳,食,30000,720,信用卡,分帳,平分,Jhen,,,\n';
             
             // 範例3: 自訂金額分帳
-            csvContent += '2024/12/26,14:00,樂天超市,食,100000,2400,現金,分帳,自訂,Jhen,"Jhen:40000:960",買零食\n';
+            csvContent += ',2024/12/26,14:00,樂天超市,食,100000,2400,現金,分帳,自訂,Jhen,"Jhen:40000:960",買零食\n';
             
             // 範例4: 代購
-            csvContent += '2024/12/26,16:00,Olive Young面膜,衣,25000,600,信用卡,代購,,Jhen,"Jhen:25000:600",幫買面膜\n';
+            csvContent += ',2024/12/26,16:00,Olive Young面膜,衣,25000,600,信用卡,代購,,Jhen,"Jhen:25000:600",幫買面膜\n';
             
             // 範例5: 多人平分
-            csvContent += '2024/12/27,12:00,烤肉店,食,120000,2880,現金,分帳,平分,"Jhen,Amy",,,三人聚餐\n';
+            csvContent += ',2024/12/27,12:00,烤肉店,食,120000,2880,現金,分帳,平分,"Jhen,Amy",,,三人聚餐\n';
+            
+            // 說明
+            csvContent += '\n';
+            csvContent += '// 說明:新增模式時 ID 留空,更新模式時填入要更新的記帳 ID\n';
+            csvContent += '// 先匯出現有資料,就可以看到每筆記帳的 ID\n';
             
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
@@ -3224,6 +3230,73 @@
             showToast('範本已下載!請參考範例填寫');
         }
 
+        // ========== 顯示匯入選項 ==========
+        
+        function showImportOptions() {
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                animation: fadeIn 0.2s ease;
+            `;
+            
+            const dialog = document.createElement('div');
+            dialog.style.cssText = `
+                background: white;
+                border-radius: 20px;
+                padding: 32px;
+                max-width: 400px;
+                width: 90%;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            `;
+            
+            dialog.innerHTML = `
+                <div style="font-size: 24px; font-weight: 700; color: var(--text-dark); margin-bottom: 16px; text-align: center;">
+                    📤 選擇匯入模式
+                </div>
+                <div style="font-size: 14px; color: var(--text-gray); margin-bottom: 24px; line-height: 1.6;">
+                    <strong>新增模式</strong>: 將 CSV 中的記帳全部新增<br>
+                    <strong>覆蓋模式</strong>: 根據 ID 更新已存在的記帳,沒有 ID 的則新增
+                </div>
+                <div style="display: grid; gap: 12px;">
+                    <button onclick="selectImportMode('add')" style="padding: 16px; background: var(--teal); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer;">
+                        ➕ 新增模式
+                    </button>
+                    <button onclick="selectImportMode('update')" style="padding: 16px; background: #FF9500; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer;">
+                        🔄 覆蓋模式
+                    </button>
+                    <button onclick="closeImportDialog()" style="padding: 12px; background: #F8F9FA; color: var(--text-gray); border: none; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer;">
+                        取消
+                    </button>
+                </div>
+            `;
+            
+            overlay.appendChild(dialog);
+            overlay.id = 'importDialog';
+            document.body.appendChild(overlay);
+        }
+        
+        function closeImportDialog() {
+            const dialog = document.getElementById('importDialog');
+            if (dialog) dialog.remove();
+        }
+        
+        let importMode = 'add'; // 'add' 或 'update'
+        
+        function selectImportMode(mode) {
+            importMode = mode;
+            closeImportDialog();
+            document.getElementById('importFile').click();
+        }
+
         // ========== 匯入 CSV ==========
         
         function importFromCSV(event) {
@@ -3236,20 +3309,34 @@
                     const text = e.target.result;
                     const lines = text.split('\n');
                     
-                    // 跳過標題行
-                    let importCount = 0;
+                    // 跳過標題行和說明行
+                    let addCount = 0;
+                    let updateCount = 0;
                     let errorCount = 0;
                     const errors = [];
                     
                     for (let i = 1; i < lines.length; i++) {
                         const line = lines[i].trim();
-                        if (!line) continue;
+                        if (!line || line.startsWith('//')) continue; // 跳過空行和說明
                         
                         try {
                             const expense = parseCSVLine(line, i + 1);
                             if (expense) {
-                                expenses.push(expense);
-                                importCount++;
+                                if (importMode === 'update' && expense.id) {
+                                    // 覆蓋模式：根據 ID 更新
+                                    const existingIndex = expenses.findIndex(e => e.id == expense.id);
+                                    if (existingIndex !== -1) {
+                                        expenses[existingIndex] = expense;
+                                        updateCount++;
+                                    } else {
+                                        expenses.push(expense);
+                                        addCount++;
+                                    }
+                                } else {
+                                    // 新增模式：直接新增
+                                    expenses.push(expense);
+                                    addCount++;
+                                }
                             }
                         } catch (error) {
                             errorCount++;
@@ -3257,16 +3344,22 @@
                         }
                     }
                     
-                    if (importCount > 0) {
+                    if (addCount > 0 || updateCount > 0) {
                         expenses.sort((a, b) => new Date(b.datetime) - new Date(a.datetime));
                         saveToStorage();
                         renderExpenses();
                     }
                     
                     // 顯示結果
-                    let message = `成功匯入 ${importCount} 筆記帳`;
+                    let message = '';
+                    if (importMode === 'update') {
+                        message = `✅ 新增 ${addCount} 筆, 更新 ${updateCount} 筆`;
+                    } else {
+                        message = `✅ 成功匯入 ${addCount} 筆記帳`;
+                    }
+                    
                     if (errorCount > 0) {
-                        message += `\n失敗 ${errorCount} 筆`;
+                        message += `\n❌ 失敗 ${errorCount} 筆`;
                         console.log('匯入錯誤:', errors);
                     }
                     
@@ -3308,11 +3401,11 @@
             }
             values.push(current.trim());
             
-            if (values.length < 12) {
-                throw new Error(`欄位數量不足 (需要12欄,只有${values.length}欄)`);
+            if (values.length < 13) {
+                throw new Error(`欄位數量不足 (需要13欄,只有${values.length}欄)`);
             }
             
-            const [dateStr, timeStr, itemName, category, krw, twd, payment, 
+            const [idStr, dateStr, timeStr, itemName, category, krw, twd, payment, 
                    splitModeStr, splitMethodStr, splitPeopleStr, customAllocStr, note] = values;
             
             // 驗證必填欄位
@@ -3412,6 +3505,13 @@
                 note: note || '',
                 settled: false
             };
+            
+            // 如果有 ID,保留原有 ID (用於更新模式)
+            if (idStr && idStr.trim()) {
+                expense.id = parseFloat(idStr);
+            }
+            
+            return expense;
         }
 
         // ========== 工具函數 ==========
