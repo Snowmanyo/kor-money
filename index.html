@@ -406,7 +406,7 @@
 
         .category-grid-horizontal {
             display: grid;
-            grid-template-columns: repeat(7, 1fr);
+            grid-template-columns: repeat(6, 1fr);
             gap: 8px;
         }
 
@@ -770,18 +770,17 @@
         .split-people {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 12px;
+            gap: 6px;
         }
 
         .person-tag {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            padding: 8px 12px;
+            gap: 4px;
+            padding: 6px 10px;
             background: var(--teal-light);
-            border-radius: 20px;
-            font-size: 14px;
+            border-radius: 16px;
+            font-size: 12px;
             color: var(--teal-dark);
             font-weight: 500;
             animation: bounceIn 0.4s ease;
@@ -792,10 +791,10 @@
             border: none;
             color: var(--teal-dark);
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
             padding: 0;
-            width: 20px;
-            height: 20px;
+            width: 16px;
+            height: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1443,13 +1442,6 @@
                                 </label>
                             </div>
                             <div class="category-option">
-                                <input type="radio" name="category" value="儲值" id="cat-topup">
-                                <label for="cat-topup">
-                                    <div class="category-icon">💰</div>
-                                    <div class="category-name">儲值</div>
-                                </label>
-                            </div>
-                            <div class="category-option">
                                 <input type="radio" name="category" value="其他" id="cat-other">
                                 <label for="cat-other">
                                     <div class="category-icon">📦</div>
@@ -1552,55 +1544,34 @@
 
                     <div class="form-group">
                         <div class="split-toggle" onclick="toggleSplit()">
-                            <span style="font-weight: 600; color: var(--text-dark);">👥 需要分帳/代購</span>
+                            <span style="font-weight: 600; color: var(--text-dark);">👥 分帳/代購</span>
                             <div class="switch">
                                 <input type="checkbox" id="enableSplit">
                                 <span class="slider"></span>
                             </div>
                         </div>
-                        <div id="splitContent" style="display: none;">
-                            <!-- 第一層:分帳/代購選擇 -->
-                            <div class="split-mode">
-                                <div class="split-mode-option">
-                                    <input type="radio" name="mainMode" value="split" id="main-split" checked onchange="toggleSplitSubMode()">
-                                    <label for="main-split">💰 分帳</label>
-                                </div>
-                                <div class="split-mode-option">
-                                    <input type="radio" name="mainMode" value="proxy" id="main-proxy" onchange="toggleSplitSubMode()">
-                                    <label for="main-proxy">🎁 代購</label>
+                        <div id="splitContent" style="display: none; margin-top: 8px;">
+                            <!-- 模式選擇 + 人員輸入 合併在同一行 -->
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                                <select id="splitModeSelect" onchange="handleSplitModeChange()" style="width: 100%; padding: 10px; border: 2px solid #E8ECF0; border-radius: 10px; background: #F8F9FA; font-size: 13px; font-family: 'Noto Sans TC', sans-serif;">
+                                    <option value="split-equal">💰 平分</option>
+                                    <option value="split-custom">💰 自訂</option>
+                                    <option value="proxy">🎁 代購</option>
+                                </select>
+                                <div style="display: flex; gap: 6px;">
+                                    <input type="text" id="personName" placeholder="新增對象" style="flex: 1; padding: 10px; border: 2px solid #E8ECF0; border-radius: 10px; font-size: 13px;">
+                                    <button class="btn-secondary" onclick="addPerson()" style="width: auto; padding: 10px 16px; font-size: 13px;">+</button>
                                 </div>
                             </div>
+                            <div class="split-people" id="splitPeople" style="margin-top: 8px;"></div>
                             
-                            <!-- 第二層:分帳時的平分/自訂選擇 -->
-                            <div id="splitSubMode" style="margin-top: 12px;">
-                                <div class="split-mode" style="grid-template-columns: repeat(2, 1fr);">
-                                    <div class="split-mode-option">
-                                        <input type="radio" name="splitMethod" value="equal" id="method-equal" checked>
-                                        <label for="method-equal">平分</label>
-                                    </div>
-                                    <div class="split-mode-option">
-                                        <input type="radio" name="splitMethod" value="custom" id="method-custom">
-                                        <label for="method-custom">自訂金額</label>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div style="display: flex; gap: 8px; margin-top: 12px;">
-                                <input type="text" id="personName" placeholder="輸入姓名" style="flex: 1;">
-                                <button class="btn-secondary" onclick="addPerson()" style="width: auto; padding: 14px 24px;">新增</button>
-                            </div>
-                            <div class="split-people" id="splitPeople"></div>
                             <!-- 每人金額輸入區（自訂 / 代購用） -->
-                            <div id="splitAllocationsWrap" style="display:none; margin-top: 12px;">
-                                <div style="font-size: 12px; color: var(--text-gray); margin-bottom: 8px; line-height: 1.4;">
-                                💡 這裡填「對方各自應付」金額；系統會自動算你要負擔多少（= 總額 - 對方合計）
-                                </div>
+                            <div id="splitAllocationsWrap" style="display:none; margin-top: 8px;">
                                 <div id="splitAllocations"></div>
                             </div>
                             
                             <!-- 即時計算預覽 -->
-                            <div id="splitPreview" style="margin-top: 12px; font-size: 13px; color: var(--text-gray); line-height: 1.5;"></div>
-                            
+                            <div id="splitPreview" style="margin-top: 8px; padding: 8px; background: #F8F9FA; border-radius: 8px; font-size: 12px; color: var(--text-gray); line-height: 1.4;"></div>
                         </div>
                     </div>
 
@@ -1693,9 +1664,8 @@
 
             <!-- 總覽頁面 -->
             <div class="tab-content" id="overviewTab">
-                <!-- 1. 總支出統計 -->
                 <div class="stats-card">
-                    <div class="stats-title">📊 我的總支出 (不含儲值)</div>
+                    <div class="stats-title">📊 我的總支出</div>
                     <div class="stats-grid">
                         <div class="stat-item">
                             <div class="stat-label">韓元</div>
@@ -1708,26 +1678,7 @@
                     </div>
                 </div>
 
-                <!-- 2. 分類支出統計 -->
-                <div class="card" style="margin-top: 16px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                        <div style="font-weight: 600; color: var(--text-dark);">📊 分類支出統計</div>
-                        <button onclick="togglePieChart()" style="padding: 8px 16px; background: var(--teal-light); border: 2px solid var(--teal); border-radius: 20px; font-size: 13px; font-weight: 600; color: var(--teal-dark); cursor: pointer; transition: all 0.3s;">
-                            📈 圓餅圖
-                        </button>
-                    </div>
-                    
-                    <!-- 圓餅圖 (預設隱藏) -->
-                    <div id="pieChartContainer" style="display: none; margin-bottom: 20px; padding: 20px; background: #F8F9FA; border-radius: 12px;">
-                        <canvas id="categoryPieChart" width="280" height="280"></canvas>
-                    </div>
-                    
-                    <!-- 分類卡片 橫向 -->
-                    <div id="categoryStats"></div>
-                </div>
-
-                <!-- 3. 篩選記帳 -->
-                <div class="card" style="margin-top: 16px;">
+                <div class="card">
                     <div style="font-weight: 600; color: var(--text-dark); margin-bottom: 12px;">🔍 篩選記帳</div>
                     <div class="filter-tabs">
                         <button class="filter-tab active" onclick="switchFilter('all')">全部</button>
@@ -1743,7 +1694,6 @@
                     </button>
                 </div>
 
-                <!-- 4. 記帳列表 -->
                 <div id="expenseList" style="margin-top: 20px;"></div>
             </div>
 
@@ -2147,26 +2097,26 @@
                 renderSplitPeople();
                 renderSplitAllocations();
                 updateSplitPreview();
-
             }
         }
 
-        function toggleSplitSubMode() {
-            const mainMode = document.querySelector('input[name="mainMode"]:checked')?.value || 'split';
-            const subMode = document.getElementById('splitSubMode');
-
-            if (mainMode === 'proxy') {
-                // ✅ 代購：不需要平分，強制用 custom
-                subMode.style.display = 'none';
-                const customRadio = document.getElementById('method-custom');
-                if (customRadio) customRadio.checked = true;
-            } else {
-                // 分帳：可平分/自訂
-                subMode.style.display = 'block';
-            }
-
+        function handleSplitModeChange() {
             renderSplitAllocations();
             updateSplitPreview();
+        }
+        
+        function getSplitModeFromSelect() {
+            const selectValue = document.getElementById('splitModeSelect').value;
+            
+            if (selectValue === 'split-equal') {
+                return { mainMode: 'split', splitMethod: 'equal' };
+            } else if (selectValue === 'split-custom') {
+                return { mainMode: 'split', splitMethod: 'custom' };
+            } else if (selectValue === 'proxy') {
+                return { mainMode: 'proxy', splitMethod: 'custom' };
+            }
+            
+            return { mainMode: 'split', splitMethod: 'equal' };
         }
 
         function getMyShareFromCurrentInput() {
@@ -2178,8 +2128,7 @@
         return { myKRW: totalKRW, myTWD: totalTWD, otherKRW: 0, otherTWD: 0 };
     }
 
-    const mainMode = document.querySelector('input[name="mainMode"]:checked')?.value || 'split';
-    const splitMethod = document.querySelector('input[name="splitMethod"]:checked')?.value || 'equal';
+    const { mainMode, splitMethod } = getSplitModeFromSelect();
 
     if (mainMode === 'split' && splitMethod === 'equal') {
         const denom = splitPeople.length + 1;
@@ -2199,7 +2148,6 @@
         otherTWD += Number(a.twd) || 0;
     });
 
-    // ✅ 防呆：對方合計不能超過總額（超過就視覺提醒，但不硬改）
     const myKRW = totalKRW - otherKRW;
     const myTWD = totalTWD - otherTWD;
 
@@ -2214,35 +2162,50 @@
 
         if (!enabled) {
             preview.innerHTML = '';
+            preview.style.display = 'none';
             return;
         }
 
         if (splitPeople.length === 0) {
-            preview.innerHTML = '👥 請先新增分帳/代購對象';
+            preview.innerHTML = '<span style="color: var(--text-gray); font-size: 11px;">請先新增分帳對象</span>';
+            preview.style.display = 'block';
             return;
         }
 
-        const mainMode = document.querySelector('input[name="mainMode"]:checked')?.value || 'split';
-        const splitMethod = document.querySelector('input[name="splitMethod"]:checked')?.value || 'equal';
-
+        const { mainMode, splitMethod } = getSplitModeFromSelect();
         const totalKRW = Number(document.getElementById('krw').value) || 0;
         const totalTWD = Number(document.getElementById('twd').value) || 0;
-
-        const { myKRW, myTWD, otherKRW, otherTWD } = getMyShareFromCurrentInput();
+        const { myKRW, myTWD } = getMyShareFromCurrentInput();
 
         const overKRW = myKRW < 0;
         const overTWD = myTWD < 0;
 
-        const title = (mainMode === 'proxy') ? '🎁 代購' : (splitMethod === 'equal' ? '👥 分帳・平分' : '👥 分帳・自訂');
+        // 計算每個人的金額
+        let personDetailsHTML = '';
+        if (mainMode === 'split' && splitMethod === 'equal') {
+            // 平分模式：每個人金額相同
+            const denom = splitPeople.length + 1;
+            const perPersonKRW = denom > 0 ? totalKRW / denom : 0;
+            const perPersonTWD = denom > 0 ? totalTWD / denom : 0;
+            
+            splitPeople.forEach(person => {
+                personDetailsHTML += `<div style="font-size: 11px; color: var(--text-gray);">${person}: ₩${Math.round(perPersonKRW).toLocaleString()} / NT$${Math.round(perPersonTWD).toLocaleString()}</div>`;
+            });
+        } else {
+            // 自訂金額或代購模式：顯示各自的金額
+            splitPeople.forEach(person => {
+                const allocation = splitAllocations[person] || { krw: 0, twd: 0 };
+                personDetailsHTML += `<div style="font-size: 11px; color: var(--text-gray);">${person}: ₩${Math.round(allocation.krw).toLocaleString()} / NT$${Math.round(allocation.twd).toLocaleString()}</div>`;
+            });
+        }
 
+        preview.style.display = 'block';
         preview.innerHTML = `
-        ✅ ${title}<br>
-        總額：₩${Math.round(totalKRW).toLocaleString()} / NT$${Math.round(totalTWD).toLocaleString()}<br>
-        對方合計：₩${Math.round(otherKRW).toLocaleString()} / NT$${Math.round(otherTWD).toLocaleString()}<br>
-        <b style="color:${(overKRW || overTWD) ? '#E74C3C' : 'var(--text-dark)'}">
-            你負擔：₩${Math.round(myKRW).toLocaleString()} / NT$${Math.round(myTWD).toLocaleString()}
-        </b>
-        ${(overKRW || overTWD) ? `<div style="margin-top:6px; color:#E74C3C;">⚠️ 對方合計不能超過總額</div>` : ''}
+            ${personDetailsHTML}
+            <div style="margin-top: 4px; font-weight: 600; font-size: 12px; color:${(overKRW || overTWD) ? '#E74C3C' : 'var(--text-dark)'}">
+                你: ₩${Math.round(myKRW).toLocaleString()} / NT$${Math.round(myTWD).toLocaleString()}
+            </div>
+            ${(overKRW || overTWD) ? `<div style="margin-top:3px; color:#E74C3C; font-size: 11px;">⚠️ 對方金額超過總額</div>` : ''}
         `;
     }
 
@@ -2298,10 +2261,9 @@
                     return;
                 }
 
-                const mainMode = document.querySelector('input[name="mainMode"]:checked')?.value || 'split';
-                const splitMethod = document.querySelector('input[name="splitMethod"]:checked')?.value || 'equal';
+                const { mainMode, splitMethod } = getSplitModeFromSelect();
 
-                // ✅ 代購一定要能填「每人不同金額」；分帳只有 custom 才需要每人輸入
+                // 代購或自訂金額時需要輸入每人金額
                 const shouldShow = (mainMode === 'proxy') || (mainMode === 'split' && splitMethod === 'custom');
                 wrap.style.display = shouldShow ? 'block' : 'none';
 
@@ -2316,21 +2278,21 @@
                 container.innerHTML = splitPeople.map(name => {
                     const a = splitAllocations[name] || { krw: 0, twd: 0 };
                     return `
-                    <div class="currency-item" style="margin-bottom: 10px;">
-                        <div class="currency-label">👤 ${name} 應付</div>
-                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <div class="currency-input" style="background:#fff; border:2px solid #E8ECF0; border-radius:12px; padding:12px 14px;">
-                            <span class="currency-symbol">₩</span>
-                            <input type="number" value="${a.krw || 0}" min="0"
-                            style="border:none; background:transparent; width:100%; font-size:16px; font-weight:600;"
-                            oninput="setPersonAllocation('${name}', 'krw', this.value)">
-                        </div>
-                        <div class="currency-input" style="background:#fff; border:2px solid #E8ECF0; border-radius:12px; padding:12px 14px;">
-                            <span class="currency-symbol">NT$</span>
-                            <input type="number" value="${a.twd || 0}" min="0"
-                            style="border:none; background:transparent; width:100%; font-size:16px; font-weight:600;"
-                            oninput="setPersonAllocation('${name}', 'twd', this.value)">
-                        </div>
+                    <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+                        <span style="font-size: 12px; color: var(--text-gray); min-width: 50px;">${name}</span>
+                        <div style="flex: 1; display: flex; gap: 6px;">
+                            <div style="flex: 1; position: relative;">
+                                <span style="position: absolute; left: 8px; top: 50%; transform: translateY(-50%); font-size: 11px; color: var(--text-gray);">₩</span>
+                                <input type="number" value="${a.krw || 0}" min="0"
+                                style="width: 100%; padding: 8px 8px 8px 22px; border: 1px solid #E8ECF0; border-radius: 8px; font-size: 12px; background: #fff;"
+                                oninput="setPersonAllocation('${name}', 'krw', this.value)">
+                            </div>
+                            <div style="flex: 1; position: relative;">
+                                <span style="position: absolute; left: 8px; top: 50%; transform: translateY(-50%); font-size: 11px; color: var(--text-gray);">NT$</span>
+                                <input type="number" value="${a.twd || 0}" min="0"
+                                style="width: 100%; padding: 8px 8px 8px 32px; border: 1px solid #E8ECF0; border-radius: 8px; font-size: 12px; background: #fff;"
+                                oninput="setPersonAllocation('${name}', 'twd', this.value)">
+                            </div>
                         </div>
                     </div>
                     `;
@@ -2346,15 +2308,7 @@
 
 
         function saveExpense() {
-            const mainMode = document.querySelector('input[name="mainMode"]:checked').value;
-            let splitMethod = null;
-
-            if (mainMode === 'proxy') {
-                splitMethod = 'custom';
-            } else {
-                splitMethod = document.querySelector('input[name="splitMethod"]:checked').value;
-            }
-
+            const { mainMode, splitMethod } = getSplitModeFromSelect();
         
         const expense = {
             id: editingExpenseId || Date.now(),
@@ -2366,7 +2320,7 @@
             payment: document.querySelector('input[name="payment"]:checked').value,
             split: document.getElementById('enableSplit').checked,
             splitMode: mainMode,  // 'split' 或 'proxy'
-            splitMethod: splitMethod,  // 'equal' 或 'custom' (只在 split 模式有值)
+            splitMethod: splitMethod,  // 'equal' 或 'custom'
             splitPeople: [...splitPeople],
             splitAllocations: JSON.parse(JSON.stringify(splitAllocations)), // 深拷貝避免被後續改到
             note: document.getElementById('note').value.trim(),
@@ -2409,9 +2363,7 @@
             document.getElementById('note').value = '';
             document.querySelector('input[name="category"][value="食"]').checked = true;
             document.querySelector('input[name="payment"][value="現金"]').checked = true;
-            document.querySelector('input[name="mainMode"][value="split"]').checked = true;
-            document.querySelector('input[name="splitMethod"][value="equal"]').checked = true;
-            document.getElementById('splitSubMode').style.display = 'block';
+            document.getElementById('splitModeSelect').value = 'split-equal';
             document.getElementById('enableSplit').checked = false;
             document.getElementById('splitContent').style.display = 'none';
             document.getElementById('formModeTitle').textContent = '新增記帳';
@@ -2432,20 +2384,12 @@
                 displayList = filterExpenses(currentExpenseFilter);
             }
             
-            // ===== 1. 計算總支出統計 (使用全部記帳,不受篩選影響) =====
-            let totalKRW = 0;  // 實際支出 (不含儲值)
-            let totalTWD = 0;  // 實際支出 (不含儲值)
-            let topupKRW = 0;  // 儲值金額
+            let totalKRW = 0;
+            let totalTWD = 0;
             
-            expenses.forEach(e => {  // 注意這裡用 expenses 而非 displayList
+            displayList.forEach(e => {
                 const totalK = Number(e.krw) || 0;
                 const totalT = Number(e.twd) || 0;
-                
-                // 排除「儲值」分類 (這才是真正要排除的)
-                if (e.category === '儲值') {
-                    topupKRW += totalK;
-                    return;
-                }
 
                 if (!e.split || !e.splitPeople || e.splitPeople.length === 0) {
                     totalKRW += totalK;
@@ -2478,12 +2422,9 @@
                 totalTWD += (totalT - otherTWD);
             });
 
-            // 更新總支出統計顯示
+            
             document.getElementById('totalKRW').textContent = '₩' + Math.round(totalKRW).toLocaleString();
             document.getElementById('totalTWD').textContent = 'NT$' + Math.round(totalTWD).toLocaleString();
-
-            // ===== 2. 計算分類統計 (使用全部記帳,排除儲值) =====
-            renderCategoryStats(expenses);  // 改用 expenses 而非 displayList
 
             if (displayList.length === 0) {
                 container.innerHTML = `
@@ -2557,143 +2498,6 @@
             }).join('');
         }
 
-        function renderCategoryStats(dataList) {
-            const container = document.getElementById('categoryStats');
-            if (!container) return;
-
-            // 計算每個分類的支出 (排除儲值)
-            const categoryTotals = {
-                '食': { krw: 0, twd: 0, count: 0, icon: '🍽️', color: '#FF6B6B' },
-                '衣': { krw: 0, twd: 0, count: 0, icon: '👕', color: '#4ECDC4' },
-                '住': { krw: 0, twd: 0, count: 0, icon: '🏨', color: '#45B7D1' },
-                '行': { krw: 0, twd: 0, count: 0, icon: '🚇', color: '#FFA07A' },
-                '樂': { krw: 0, twd: 0, count: 0, icon: '🎪', color: '#98D8C8' },
-                '其他': { krw: 0, twd: 0, count: 0, icon: '📦', color: '#95A5A6' }
-            };
-
-            dataList.forEach(e => {
-                const category = e.category;
-                
-                // ⭐ 排除儲值分類
-                if (category === '儲值') return;
-                
-                if (!categoryTotals[category]) return;
-
-                categoryTotals[category].count++;
-
-                const totalK = Number(e.krw) || 0;
-                const totalT = Number(e.twd) || 0;
-
-                if (!e.split || !e.splitPeople || e.splitPeople.length === 0) {
-                    categoryTotals[category].krw += totalK;
-                    categoryTotals[category].twd += totalT;
-                    return;
-                }
-
-                const mode = e.splitMode || 'split';
-                const method = e.splitMethod || 'equal';
-
-                if (mode === 'split' && method === 'equal') {
-                    const denom = e.splitPeople.length + 1;
-                    categoryTotals[category].krw += denom > 0 ? totalK / denom : 0;
-                    categoryTotals[category].twd += denom > 0 ? totalT / denom : 0;
-                    return;
-                }
-
-                // proxy 或 split+custom
-                const alloc = e.splitAllocations || {};
-                let otherKRW = 0;
-                let otherTWD = 0;
-
-                e.splitPeople.forEach(p => {
-                    const a = alloc[p] || { krw: 0, twd: 0 };
-                    otherKRW += Number(a.krw) || 0;
-                    otherTWD += Number(a.twd) || 0;
-                });
-
-                categoryTotals[category].krw += (totalK - otherKRW);
-                categoryTotals[category].twd += (totalT - otherTWD);
-            });
-
-            // 只顯示有支出的分類,並按金額排序
-            const sortedCategories = Object.entries(categoryTotals)
-                .filter(([_, data]) => data.count > 0)
-                .sort((a, b) => b[1].krw - a[1].krw);
-
-            if (sortedCategories.length === 0) {
-                container.innerHTML = '<div style="text-align: center; color: var(--text-gray); padding: 20px;">暫無分類統計</div>';
-                return;
-            }
-
-            // 保存數據供圓餅圖使用
-            window.categoryChartData = sortedCategories;
-
-            // 橫向6格佈局
-            container.innerHTML = sortedCategories.map(([category, data]) => `
-                <div style="display: flex; flex-direction: column; align-items: center; padding: 12px; background: #F8F9FA; border-radius: 12px; border-top: 3px solid ${data.color}; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)';" onmouseout="this.style.transform=''; this.style.boxShadow='';">
-                    <div style="font-size: 32px; margin-bottom: 8px;">${data.icon}</div>
-                    <div style="font-weight: 600; color: var(--text-dark); margin-bottom: 4px;">${category}</div>
-                    <div style="font-size: 16px; font-weight: 700; color: ${data.color};">₩${Math.round(data.krw).toLocaleString()}</div>
-                    ${data.twd > 0 ? `<div style="font-size: 11px; color: var(--text-gray); margin-top: 2px;">NT$${Math.round(data.twd).toLocaleString()}</div>` : ''}
-                    <div style="font-size: 11px; color: var(--text-gray); margin-top: 4px;">${data.count} 筆</div>
-                </div>
-            `).join('');
-            
-            // 設定容器樣式為 6 欄 grid
-            container.style.display = 'grid';
-            container.style.gridTemplateColumns = 'repeat(3, 1fr)';
-            container.style.gap = '10px';
-        }
-
-        function toggleExpenseMenu(index) {
-            const radius = 80;
-            
-            // 清除畫布
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            if (sortedCategories.length === 0) {
-                // 顯示空狀態
-                ctx.fillStyle = '#E8ECF0';
-                ctx.beginPath();
-                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-                ctx.fill();
-                ctx.fillStyle = '#95A5A6';
-                ctx.font = '14px "Noto Sans TC"';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText('暫無數據', centerX, centerY);
-                return;
-            }
-            
-            const total = sortedCategories.reduce((sum, [_, data]) => sum + data.krw, 0);
-            let currentAngle = -Math.PI / 2;  // 從頂部開始
-            
-            sortedCategories.forEach(([category, data]) => {
-                const sliceAngle = (data.krw / total) * 2 * Math.PI;
-                
-                // 繪製扇形
-                ctx.fillStyle = data.color;
-                ctx.beginPath();
-                ctx.moveTo(centerX, centerY);
-                ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + sliceAngle);
-                ctx.closePath();
-                ctx.fill();
-                
-                // 繪製白色邊框
-                ctx.strokeStyle = '#fff';
-                ctx.lineWidth = 2;
-                ctx.stroke();
-                
-                currentAngle += sliceAngle;
-            });
-            
-            // 中心白色圓圈 (甜甜圈效果)
-            ctx.fillStyle = '#fff';
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, radius * 0.5, 0, 2 * Math.PI);
-            ctx.fill();
-        }
-
         function toggleExpenseMenu(index) {
             const menu = document.getElementById(`menu-${index}`);
             const allMenus = document.querySelectorAll('.expense-dropdown');
@@ -2731,34 +2535,28 @@
                 document.getElementById('enableSplit').checked = true;
                 document.getElementById('splitContent').style.display = 'block';
                 
-                // 設定分帳模式 radio button
+                // 設定下拉選單的值
                 const splitMode = expense.splitMode || 'split';
                 const splitMethod = expense.splitMethod || 'equal';
                 
-                document.querySelector(`input[name="mainMode"][value="${splitMode}"]`).checked = true;
-                
-                if (splitMode === 'split') {
-                    document.getElementById('splitSubMode').style.display = 'block';
-                    document.querySelector(`input[name="splitMethod"][value="${splitMethod}"]`).checked = true;
+                if (splitMode === 'proxy') {
+                    document.getElementById('splitModeSelect').value = 'proxy';
+                } else if (splitMethod === 'equal') {
+                    document.getElementById('splitModeSelect').value = 'split-equal';
                 } else {
-                    document.getElementById('splitSubMode').style.display = 'none';
+                    document.getElementById('splitModeSelect').value = 'split-custom';
                 }
                 
                 splitPeople = [...expense.splitPeople];
                 renderSplitPeople();
                 
-                // ⭐ 重要: 載入自訂金額資料
+                // 如果有自訂金額資料,也要載入
                 if (expense.splitAllocations) {
-                    splitAllocations = JSON.parse(JSON.stringify(expense.splitAllocations));
-                } else {
-                    splitAllocations = {};
+                    splitAllocations = { ...expense.splitAllocations };
+                    renderSplitAllocations();
                 }
                 
-                renderSplitAllocations();
                 updateSplitPreview();
-            } else {
-                splitPeople = [];
-                splitAllocations = {};
             }
             
             document.querySelector('.tab[data-tab="expense"]').click();
@@ -2802,7 +2600,6 @@
                         <button class="filter-option-btn" onclick="filterByCategory('住')">🏨 住</button>
                         <button class="filter-option-btn" onclick="filterByCategory('行')">🚇 行</button>
                         <button class="filter-option-btn" onclick="filterByCategory('樂')">🎪 樂</button>
-                        <button class="filter-option-btn" onclick="filterByCategory('儲值')">💰 儲值</button>
                         <button class="filter-option-btn" onclick="filterByCategory('其他')">📦 其他</button>
                     </div>
                 `;
@@ -3360,87 +3157,9 @@
                 '住': '🏨',
                 '行': '🚇',
                 '樂': '🎪',
-                '儲值': '💰',
                 '其他': '📦'
             };
             return icons[category] || '📦';
-        }
-
-        // 圓餅圖切換功能
-        function togglePieChart() {
-            const container = document.getElementById('pieChartContainer');
-            const isVisible = container.style.display !== 'none';
-            
-            if (isVisible) {
-                container.style.display = 'none';
-            } else {
-                container.style.display = 'block';
-                renderPieChart();
-            }
-        }
-
-        function renderPieChart() {
-            const canvas = document.getElementById('categoryPieChart');
-            if (!canvas || !window.categoryChartData) return;
-            
-            const ctx = canvas.getContext('2d');
-            const data = window.categoryChartData;
-            const total = data.reduce((sum, [_, d]) => sum + d.krw, 0);
-            
-            // 清除畫布
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            const radius = Math.min(centerX, centerY) - 10;
-            
-            let currentAngle = -Math.PI / 2;
-            
-            data.forEach(([category, info]) => {
-                const sliceAngle = (info.krw / total) * 2 * Math.PI;
-                
-                // 繪製扇形
-                ctx.beginPath();
-                ctx.moveTo(centerX, centerY);
-                ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + sliceAngle);
-                ctx.closePath();
-                ctx.fillStyle = info.color;
-                ctx.fill();
-                ctx.strokeStyle = '#fff';
-                ctx.lineWidth = 2;
-                ctx.stroke();
-                
-                // 繪製百分比文字
-                const percentage = ((info.krw / total) * 100).toFixed(1);
-                if (percentage > 5) {  // 只顯示大於 5% 的標籤
-                    const textAngle = currentAngle + sliceAngle / 2;
-                    const textX = centerX + (radius * 0.7) * Math.cos(textAngle);
-                    const textY = centerY + (radius * 0.7) * Math.sin(textAngle);
-                    
-                    ctx.fillStyle = '#fff';
-                    ctx.font = 'bold 14px "Noto Sans TC"';
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    ctx.fillText(`${percentage}%`, textX, textY);
-                }
-                
-                currentAngle += sliceAngle;
-            });
-            
-            // 繪製圖例
-            const legendY = canvas.height + 20;
-            ctx.font = '12px "Noto Sans TC"';
-            ctx.textAlign = 'left';
-            
-            data.forEach(([category, info], index) => {
-                const x = (index % 3) * 90 + 10;
-                const y = Math.floor(index / 3) * 20;
-                
-                ctx.fillStyle = info.color;
-                ctx.fillRect(x, y, 12, 12);
-                ctx.fillStyle = '#2C3E50';
-                ctx.fillText(`${info.icon} ${category}`, x + 16, y + 10);
-            });
         }
 
         function showToast(message) {
