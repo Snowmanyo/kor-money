@@ -2164,25 +2164,24 @@
         }
 
         function getMyShareFromCurrentInput() {
-    const totalKRW = Number(document.getElementById('krw').value) || 0;
-    const totalTWD = Number(document.getElementById('twd').value) || 0;
+            const totalKRW = Number(document.getElementById('krw').value) || 0;
+            const totalTWD = Number(document.getElementById('twd').value) || 0;
 
-    const enabled = document.getElementById('enableSplit').checked;
-    if (!enabled || splitPeople.length === 0) {
-        return { myKRW: totalKRW, myTWD: totalTWD, otherKRW: 0, otherTWD: 0 };
-    }
+            const enabled = document.getElementById('enableSplit').checked;
+            if (!enabled || splitPeople.length === 0) {
+                return { myKRW: totalKRW, myTWD: totalTWD, otherKRW: 0, otherTWD: 0 };
+            }
 
-    const mainMode = document.querySelector('input[name="mainMode"]:checked')?.value || 'split';
-    const splitMethod = document.querySelector('input[name="splitMethod"]:checked')?.value || 'equal';
+            const { mainMode, splitMethod } = getSplitModeFromSelect();
 
-    if (mainMode === 'split' && splitMethod === 'equal') {
-        const denom = splitPeople.length + 1;
-        const myKRW = denom > 0 ? totalKRW / denom : 0;
-        const myTWD = denom > 0 ? totalTWD / denom : 0;
-        const otherKRW = totalKRW - myKRW;
-        const otherTWD = totalTWD - myTWD;
-        return { myKRW, myTWD, otherKRW, otherTWD };
-    }
+            if (mainMode === 'split' && splitMethod === 'equal') {
+                const denom = splitPeople.length + 1;
+                const myKRW = denom > 0 ? totalKRW / denom : 0;
+                const myTWD = denom > 0 ? totalTWD / denom : 0;
+                const otherKRW = totalKRW - myKRW;
+                const otherTWD = totalTWD - myTWD;
+                return { myKRW, myTWD, otherKRW, otherTWD };
+            }
 
     // proxy 或 split+custom：用每人輸入金額加總
     let otherKRW = 0;
@@ -2216,8 +2215,7 @@
             return;
         }
 
-        const mainMode = document.querySelector('input[name="mainMode"]:checked')?.value || 'split';
-        const splitMethod = document.querySelector('input[name="splitMethod"]:checked')?.value || 'equal';
+        const { mainMode, splitMethod } = getSplitModeFromSelect();
 
         const totalKRW = Number(document.getElementById('krw').value) || 0;
         const totalTWD = Number(document.getElementById('twd').value) || 0;
