@@ -2731,16 +2731,17 @@
                 document.getElementById('enableSplit').checked = true;
                 document.getElementById('splitContent').style.display = 'block';
                 
-                // 設定下拉選單的值
+                // 設定分帳模式 radio button
                 const splitMode = expense.splitMode || 'split';
                 const splitMethod = expense.splitMethod || 'equal';
                 
-                if (splitMode === 'proxy') {
-                    document.getElementById('splitModeSelect').value = 'proxy';
-                } else if (splitMethod === 'equal') {
-                    document.getElementById('splitModeSelect').value = 'split-equal';
+                document.querySelector(`input[name="mainMode"][value="${splitMode}"]`).checked = true;
+                
+                if (splitMode === 'split') {
+                    document.getElementById('splitSubMode').style.display = 'block';
+                    document.querySelector(`input[name="splitMethod"][value="${splitMethod}"]`).checked = true;
                 } else {
-                    document.getElementById('splitModeSelect').value = 'split-custom';
+                    document.getElementById('splitSubMode').style.display = 'none';
                 }
                 
                 splitPeople = [...expense.splitPeople];
