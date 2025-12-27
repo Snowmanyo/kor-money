@@ -1443,6 +1443,13 @@
                                 </label>
                             </div>
                             <div class="category-option">
+                                <input type="radio" name="category" value="儲值" id="cat-topup">
+                                <label for="cat-topup">
+                                    <div class="category-icon">💰</div>
+                                    <div class="category-name">儲值</div>
+                                </label>
+                            </div>
+                            <div class="category-option">
                                 <input type="radio" name="category" value="其他" id="cat-other">
                                 <label for="cat-other">
                                     <div class="category-icon">📦</div>
@@ -1665,6 +1672,7 @@
 
             <!-- 總覽頁面 -->
             <div class="tab-content" id="overviewTab">
+                <!-- 總支出 -->
                 <div class="stats-card">
                     <div class="stats-title">📊 我的總支出</div>
                     <div class="stats-grid">
@@ -1679,13 +1687,21 @@
                     </div>
                 </div>
 
-                <div class="card">
+                <!-- 分類支出統計 -->
+                <div class="card" style="margin-top: 16px;">
+                    <div style="font-weight: 600; color: var(--text-dark); margin-bottom: 16px;">📊 分類支出統計</div>
+                    <div id="categoryStats" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;"></div>
+                </div>
+
+                <!-- 篩選記帳 -->
+                <div class="card" style="margin-top: 16px;">
                     <div style="font-weight: 600; color: var(--text-dark); margin-bottom: 12px;">🔍 篩選記帳</div>
                     <div class="filter-tabs">
                         <button class="filter-tab active" onclick="switchFilter('all')">全部</button>
                         <button class="filter-tab" onclick="switchFilter('category')">分類</button>
                         <button class="filter-tab" onclick="switchFilter('date')">日期</button>
                         <button class="filter-tab" onclick="switchFilter('payment')">付款</button>
+                        <button class="filter-tab" onclick="switchFilter('keyword')">關鍵字</button>
                     </div>
                     
                     <div id="filterContent" style="margin-top: 16px;"></div>
@@ -1758,11 +1774,11 @@
                     <div class="sidebar-item-desc">CSV 匯入範本檔案</div>
                 </div>
             </button>
-            <button class="sidebar-menu-item" onclick="showImportOptions(); closeSidebar();">
+            <button class="sidebar-menu-item" onclick="document.getElementById('importFile').click(); closeSidebar();">
                 <span style="font-size: 24px;">📤</span>
                 <div>
                     <div class="sidebar-item-title">匯入 CSV</div>
-                    <div class="sidebar-item-desc">從檔案批次匯入</div>
+                    <div class="sidebar-item-desc">有ID更新,無ID新增</div>
                 </div>
             </button>
             <button class="sidebar-menu-item" onclick="exportToExcel(); closeSidebar();">
@@ -2391,10 +2407,11 @@
                 displayList = filterExpenses(currentExpenseFilter);
             }
             
+            // ===== 總支出永遠用全部 expenses 計算,不受篩選影響 =====
             let totalKRW = 0;
             let totalTWD = 0;
             
-            displayList.forEach(e => {
+            expenses.forEach(e => {  // 注意這裡用 expenses,不是 displayList
                 const totalK = Number(e.krw) || 0;
                 const totalT = Number(e.twd) || 0;
 
@@ -2429,9 +2446,12 @@
                 totalTWD += (totalT - otherTWD);
             });
 
-            
+            // 更新總支出顯示
             document.getElementById('totalKRW').textContent = '₩' + Math.round(totalKRW).toLocaleString();
             document.getElementById('totalTWD').textContent = 'NT$' + Math.round(totalTWD).toLocaleString();
+
+            // ===== 渲染分類統計 (永遠用全部 expenses) =====
+            renderCategoryStats();
 
             if (displayList.length === 0) {
                 container.innerHTML = `
@@ -2622,6 +2642,7 @@
                         <button class="filter-option-btn" onclick="filterByCategory('住')">🏨 住</button>
                         <button class="filter-option-btn" onclick="filterByCategory('行')">🚇 行</button>
                         <button class="filter-option-btn" onclick="filterByCategory('樂')">🎪 樂</button>
+                        <button class="filter-option-btn" onclick="filterByCategory('儲值')">💰 儲值</button>
                         <button class="filter-option-btn" onclick="filterByCategory('其他')">📦 其他</button>
                     </div>
                 `;
@@ -2644,6 +2665,13 @@
                         <button class="filter-option-btn" onclick="filterByPayment('信用卡')">信用卡</button>
                         <button class="filter-option-btn" onclick="filterByPayment('電子支付')">電子支付</button>
                         <button class="filter-option-btn" onclick="filterByPayment('TM/WP')">TM/WP</button>
+                    </div>
+                `;
+            } else if (type === 'keyword') {
+                content.innerHTML = `
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="searchKeyword" placeholder="搜尋項目名稱或備註..." style="flex: 1; padding: 12px; border: 2px solid #E8ECF0; border-radius: 10px; font-size: 14px;" onkeypress="if(event.key==='Enter') searchExpenses()">
+                        <button onclick="searchExpenses()" style="padding: 12px 20px; background: var(--teal); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;">搜尋</button>
                     </div>
                 `;
             }
@@ -2685,6 +2713,13 @@
                 });
             } else if (filter.type === 'payment') {
                 return expenses.filter(e => e.payment === filter.value);
+            } else if (filter.type === 'keyword') {
+                return expenses.filter(e => {
+                    const keyword = filter.value.toLowerCase();
+                    const itemName = (e.itemName || '').toLowerCase();
+                    const note = (e.note || '').toLowerCase();
+                    return itemName.includes(keyword) || note.includes(keyword);
+                });
             }
             return expenses;
         }
@@ -2695,6 +2730,96 @@
             document.getElementById('filterContent').innerHTML = '';
             renderExpenses();
         }
+
+        // ========== 分類統計 ==========
+        
+        function renderCategoryStats() {
+            const container = document.getElementById('categoryStats');
+            if (!container) return;
+
+            const categoryTotals = {
+                '食': { krw: 0, twd: 0, count: 0, icon: '🍽️', color: '#FF6B6B' },
+                '衣': { krw: 0, twd: 0, count: 0, icon: '👕', color: '#4ECDC4' },
+                '住': { krw: 0, twd: 0, count: 0, icon: '🏨', color: '#45B7D1' },
+                '行': { krw: 0, twd: 0, count: 0, icon: '🚇', color: '#FFA07A' },
+                '樂': { krw: 0, twd: 0, count: 0, icon: '🎪', color: '#98D8C8' },
+                '儲值': { krw: 0, twd: 0, count: 0, icon: '💰', color: '#F39C12' },
+                '其他': { krw: 0, twd: 0, count: 0, icon: '📦', color: '#95A5A6' }
+            };
+
+            expenses.forEach(e => {
+                const category = e.category;
+                if (!categoryTotals[category]) return;
+
+                categoryTotals[category].count++;
+                const totalK = Number(e.krw) || 0;
+                const totalT = Number(e.twd) || 0;
+
+                if (!e.split || !e.splitPeople || e.splitPeople.length === 0) {
+                    categoryTotals[category].krw += totalK;
+                    categoryTotals[category].twd += totalT;
+                    return;
+                }
+
+                const mode = e.splitMode || 'split';
+                const method = e.splitMethod || 'equal';
+
+                if (mode === 'split' && method === 'equal') {
+                    const denom = e.splitPeople.length + 1;
+                    categoryTotals[category].krw += denom > 0 ? totalK / denom : 0;
+                    categoryTotals[category].twd += denom > 0 ? totalT / denom : 0;
+                    return;
+                }
+
+                const alloc = e.splitAllocations || {};
+                let otherKRW = 0;
+                let otherTWD = 0;
+
+                e.splitPeople.forEach(p => {
+                    const a = alloc[p] || { krw: 0, twd: 0 };
+                    otherKRW += Number(a.krw) || 0;
+                    otherTWD += Number(a.twd) || 0;
+                });
+
+                categoryTotals[category].krw += (totalK - otherKRW);
+                categoryTotals[category].twd += (totalT - otherTWD);
+            });
+
+            const sortedCategories = Object.entries(categoryTotals)
+                .filter(([_, data]) => data.count > 0)
+                .sort((a, b) => b[1].krw - a[1].krw);
+
+            if (sortedCategories.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: var(--text-gray); padding: 20px; grid-column: 1 / -1;">暫無分類統計</div>';
+                return;
+            }
+
+            container.innerHTML = sortedCategories.map(([category, data]) => `
+                <div style="display: flex; flex-direction: column; align-items: center; padding: 12px; background: #F8F9FA; border-radius: 12px; border-top: 3px solid ${data.color}; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)';" onmouseout="this.style.transform=''; this.style.boxShadow='';">
+                    <div style="font-size: 32px; margin-bottom: 8px;">${data.icon}</div>
+                    <div style="font-weight: 600; color: var(--text-dark); margin-bottom: 4px;">${category}</div>
+                    <div style="font-size: 16px; font-weight: 700; color: ${data.color};">₩${Math.round(data.krw).toLocaleString()}</div>
+                    ${data.twd > 0 ? `<div style="font-size: 11px; color: var(--text-gray); margin-top: 2px;">NT$${Math.round(data.twd).toLocaleString()}</div>` : ''}
+                    <div style="font-size: 11px; color: var(--text-gray); margin-top: 4px;">${data.count} 筆</div>
+                </div>
+            `).join('');
+        }
+
+        // ========== 關鍵字搜尋 ==========
+        
+        function searchExpenses() {
+            const keyword = document.getElementById('searchKeyword').value.trim().toLowerCase();
+            
+            if (!keyword) {
+                showToast('請輸入搜尋關鍵字');
+                return;
+            }
+            
+            currentExpenseFilter = { type: 'keyword', value: keyword };
+            document.getElementById('clearExpenseBtn').style.display = 'block';
+            renderExpenses();
+        }
+        
         // ========== 購物清單功能 ==========
         
         function previewShoppingImage() {
@@ -3230,73 +3355,6 @@
             showToast('範本已下載!請參考範例填寫');
         }
 
-        // ========== 顯示匯入選項 ==========
-        
-        function showImportOptions() {
-            const overlay = document.createElement('div');
-            overlay.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0, 0, 0, 0.5);
-                z-index: 10000;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                animation: fadeIn 0.2s ease;
-            `;
-            
-            const dialog = document.createElement('div');
-            dialog.style.cssText = `
-                background: white;
-                border-radius: 20px;
-                padding: 32px;
-                max-width: 400px;
-                width: 90%;
-                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            `;
-            
-            dialog.innerHTML = `
-                <div style="font-size: 24px; font-weight: 700; color: var(--text-dark); margin-bottom: 16px; text-align: center;">
-                    📤 選擇匯入模式
-                </div>
-                <div style="font-size: 14px; color: var(--text-gray); margin-bottom: 24px; line-height: 1.6;">
-                    <strong>新增模式</strong>: 將 CSV 中的記帳全部新增<br>
-                    <strong>覆蓋模式</strong>: 根據 ID 更新已存在的記帳,沒有 ID 的則新增
-                </div>
-                <div style="display: grid; gap: 12px;">
-                    <button onclick="selectImportMode('add')" style="padding: 16px; background: var(--teal); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer;">
-                        ➕ 新增模式
-                    </button>
-                    <button onclick="selectImportMode('update')" style="padding: 16px; background: #FF9500; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer;">
-                        🔄 覆蓋模式
-                    </button>
-                    <button onclick="closeImportDialog()" style="padding: 12px; background: #F8F9FA; color: var(--text-gray); border: none; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer;">
-                        取消
-                    </button>
-                </div>
-            `;
-            
-            overlay.appendChild(dialog);
-            overlay.id = 'importDialog';
-            document.body.appendChild(overlay);
-        }
-        
-        function closeImportDialog() {
-            const dialog = document.getElementById('importDialog');
-            if (dialog) dialog.remove();
-        }
-        
-        let importMode = 'add'; // 'add' 或 'update'
-        
-        function selectImportMode(mode) {
-            importMode = mode;
-            closeImportDialog();
-            document.getElementById('importFile').click();
-        }
-
         // ========== 匯入 CSV ==========
         
         function importFromCSV(event) {
@@ -3322,18 +3380,20 @@
                         try {
                             const expense = parseCSVLine(line, i + 1);
                             if (expense) {
-                                if (importMode === 'update' && expense.id) {
-                                    // 覆蓋模式：根據 ID 更新
+                                // 自動判斷: 有 ID 就更新,沒 ID 就新增
+                                if (expense.id) {
                                     const existingIndex = expenses.findIndex(e => e.id == expense.id);
                                     if (existingIndex !== -1) {
+                                        // 找到相同ID,覆蓋更新
                                         expenses[existingIndex] = expense;
                                         updateCount++;
                                     } else {
+                                        // ID不存在,當新增
                                         expenses.push(expense);
                                         addCount++;
                                     }
                                 } else {
-                                    // 新增模式：直接新增
+                                    // 沒有 ID,直接新增
                                     expenses.push(expense);
                                     addCount++;
                                 }
@@ -3352,7 +3412,7 @@
                     
                     // 顯示結果
                     let message = '';
-                    if (importMode === 'update') {
+                    if (updateCount > 0) {
                         message = `✅ 新增 ${addCount} 筆, 更新 ${updateCount} 筆`;
                     } else {
                         message = `✅ 成功匯入 ${addCount} 筆記帳`;
@@ -3523,6 +3583,7 @@
                 '住': '🏨',
                 '行': '🚇',
                 '樂': '🎪',
+                '儲值': '💰',
                 '其他': '📦'
             };
             return icons[category] || '📦';
