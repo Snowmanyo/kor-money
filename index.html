@@ -1753,6 +1753,13 @@
 
         <div class="sidebar-section">
             <div class="sidebar-section-title">資料管理</div>
+            <button class="sidebar-menu-item" onclick="showSettingsDialog(); closeSidebar();">
+                <span style="font-size: 24px;">⚙️</span>
+                <div>
+                    <div class="sidebar-item-title">設定</div>
+                    <div class="sidebar-item-desc" id="currentRateDisplay">匯率: NT$1 = ₩41.67</div>
+                </div>
+            </button>
             <button class="sidebar-menu-item" onclick="uploadToCloud(); closeSidebar();">
                 <span style="font-size: 24px;">☁️</span>
                 <div>
@@ -1778,7 +1785,7 @@
                 <span style="font-size: 24px;">📤</span>
                 <div>
                     <div class="sidebar-item-title">匯入 CSV</div>
-                    <div class="sidebar-item-desc">有ID更新,無ID新增</div>
+                    <div class="sidebar-item-desc">有UniqueKey更新,無則新增</div>
                 </div>
             </button>
             <button class="sidebar-menu-item" onclick="exportToExcel(); closeSidebar();">
@@ -1808,6 +1815,7 @@
         
         let currentUser = localStorage.getItem('currentUser') || 'Chi';
         let expenses = [];
+        let exchangeRate = 0.024; // 預設匯率: 1 KRW = 0.024 TWD
         let splitPeople = [];
         let splitAllocations = {}; // { [name]: { krw: number, twd: number } }
         let shoppingList = [];
@@ -2107,6 +2115,7 @@
             
             loadExpenses();
             loadShopping();
+            loadExchangeRate();
             setCurrentDateTime();
         }
 
@@ -2283,8 +2292,7 @@
                     return;
                 }
 
-                const mainMode = document.querySelector('input[name="mainMode"]:checked')?.value || 'split';
-                const splitMethod = document.querySelector('input[name="splitMethod"]:checked')?.value || 'equal';
+                const { mainMode, splitMethod } = getSplitModeFromSelect();
 
                 // ✅ 代購一定要能填「每人不同金額」；分帳只有 custom 才需要每人輸入
                 const shouldShow = (mainMode === 'proxy') || (mainMode === 'split' && splitMethod === 'custom');
@@ -2335,6 +2343,7 @@
         
         const expense = {
             id: editingExpenseId || Date.now(),
+            uniqueKey: editingExpenseId ? expenses.find(e => e.id === editingExpenseId)?.uniqueKey : `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
             datetime: document.getElementById('datetime').value,
             itemName: document.getElementById('itemName').value.trim(),
             category: document.querySelector('input[name="category"]:checked').value,
@@ -3215,6 +3224,11 @@
             const sortedPeople = Object.values(peopleStats).sort((a, b) => b.totalTWD - a.totalTWD);
             
             container.innerHTML = sortedPeople.map(person => {
+                // 計算韓元換算成的台幣
+                const krwToTWD = Math.round(person.totalKRW * exchangeRate);
+                // 應付總額 = 韓元換算台幣 + 原本的台幣
+                const totalPayable = krwToTWD + Math.round(person.totalTWD);
+                
                 return `
                     <div class="split-card">
                         <div class="split-person-name">👤 ${person.name}</div>
@@ -3225,11 +3239,15 @@
                             </div>
                             <div class="split-stat-row">
                                 <span class="split-stat-label">應付韓元</span>
-                                <span class="split-stat-value">₩${Math.round(person.totalKRW).toLocaleString()}</span>
+                                <span class="split-stat-value">₩${Math.round(person.totalKRW).toLocaleString()} (NT$${krwToTWD.toLocaleString()})</span>
                             </div>
                             <div class="split-stat-row">
                                 <span class="split-stat-label">應付台幣</span>
                                 <span class="split-stat-value">NT$${Math.round(person.totalTWD).toLocaleString()}</span>
+                            </div>
+                            <div class="split-stat-row" style="border-top: 2px dashed #E8ECF0; padding-top: 8px; margin-top: 8px;">
+                                <span class="split-stat-label" style="font-weight: 700; color: var(--text-dark);">應付總額</span>
+                                <span class="split-stat-value" style="font-size: 18px; font-weight: 700; color: var(--teal);">NT$${totalPayable.toLocaleString()}</span>
                             </div>
                         </div>
                         <div class="split-details">
@@ -3254,7 +3272,7 @@
             }
 
             let csvContent = '\uFEFF';
-            csvContent += 'ID,日期,時間,項目,分類,韓元,台幣,付款方式,分帳模式,分帳方式,分帳對象,自訂金額,備註\n';
+            csvContent += 'UniqueKey,日期,時間,項目,分類,韓元,台幣,付款方式,分帳模式,分帳方式,分帳對象,自訂金額,備註\n';
             
             expenses.forEach(expense => {
                 const date = new Date(expense.datetime);
@@ -3282,7 +3300,7 @@
                 }
                 
                 csvContent += [
-                    expense.id,
+                    expense.uniqueKey || expense.id,  // 優先用 uniqueKey
                     dateStr,
                     timeStr,
                     `"${expense.itemName}"`,
@@ -3319,12 +3337,12 @@
         
         function downloadTemplate() {
             let csvContent = '\uFEFF';
-            csvContent += 'ID,日期,時間,項目,分類,韓元,台幣,付款方式,分帳模式,分帳方式,分帳對象,自訂金額,備註\n';
+            csvContent += 'UniqueKey,日期,時間,項目,分類,韓元,台幣,付款方式,分帳模式,分帳方式,分帳對象,自訂金額,備註\n';
             
-            // 範例1: 普通消費 (新增模式:ID留空)
+            // 範例1: 普通消費 (新增模式:UniqueKey留空)
             csvContent += ',2024/12/25,18:30,明洞烤肉,食,50000,1200,現金,否,,,,好吃!\n';
             
-            // 範例2: 平分 (新增模式:ID留空)
+            // 範例2: 平分 (新增模式:UniqueKey留空)
             csvContent += ',2024/12/25,20:00,弘大咖啡廳,食,30000,720,信用卡,分帳,平分,Jhen,,,\n';
             
             // 範例3: 自訂金額分帳
@@ -3338,8 +3356,8 @@
             
             // 說明
             csvContent += '\n';
-            csvContent += '// 說明:新增模式時 ID 留空,更新模式時填入要更新的記帳 ID\n';
-            csvContent += '// 先匯出現有資料,就可以看到每筆記帳的 ID\n';
+            csvContent += '// 說明:新增時 UniqueKey 留空,更新時填入 UniqueKey\n';
+            csvContent += '// 匯出的資料會包含 UniqueKey,複製回來即可批次更新\n';
             
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
@@ -3380,15 +3398,17 @@
                         try {
                             const expense = parseCSVLine(line, i + 1);
                             if (expense) {
-                                // 自動判斷: 有 ID 就更新,沒 ID 就新增
-                                if (expense.id) {
-                                    const existingIndex = expenses.findIndex(e => e.id == expense.id);
+                                // 自動判斷: 有 uniqueKey 就更新,沒有就新增
+                                if (expense.uniqueKey) {
+                                    const existingIndex = expenses.findIndex(e => e.uniqueKey === expense.uniqueKey);
                                     if (existingIndex !== -1) {
-                                        // 找到相同ID,覆蓋更新
+                                        // 找到相同 uniqueKey,覆蓋更新(保留原 ID)
+                                        expense.id = expenses[existingIndex].id;
                                         expenses[existingIndex] = expense;
                                         updateCount++;
                                     } else {
-                                        // ID不存在,當新增
+                                        // uniqueKey 不存在,當新增
+                                        expense.id = Date.now() + Math.random();
                                         expenses.push(expense);
                                         addCount++;
                                     }
@@ -3465,7 +3485,7 @@
                 throw new Error(`欄位數量不足 (需要13欄,只有${values.length}欄)`);
             }
             
-            const [idStr, dateStr, timeStr, itemName, category, krw, twd, payment, 
+            const [uniqueKeyStr, dateStr, timeStr, itemName, category, krw, twd, payment, 
                    splitModeStr, splitMethodStr, splitPeopleStr, customAllocStr, note] = values;
             
             // 驗證必填欄位
@@ -3473,7 +3493,7 @@
             if (!category) throw new Error('分類不能為空');
             
             // 驗證分類
-            const validCategories = ['食', '衣', '住', '行', '樂', '其他'];
+            const validCategories = ['食', '衣', '住', '行', '樂', '儲值', '其他'];
             if (!validCategories.includes(category)) {
                 throw new Error(`分類必須是: ${validCategories.join(', ')}`);
             }
@@ -3566,9 +3586,9 @@
                 settled: false
             };
             
-            // 如果有 ID,保留原有 ID (用於更新模式)
-            if (idStr && idStr.trim()) {
-                expense.id = parseFloat(idStr);
+            // 如果有 uniqueKey,保留 (用於更新模式)
+            if (uniqueKeyStr && uniqueKeyStr.trim()) {
+                expense.uniqueKey = uniqueKeyStr.trim();
             }
             
             return expense;
@@ -3588,6 +3608,133 @@
             };
             return icons[category] || '📦';
         }
+
+        // ========== 匯率設定與換算 ==========
+        
+        function showSettingsDialog() {
+            const twdToKrw = exchangeRate > 0 ? (1 / exchangeRate).toFixed(2) : 41.67;
+            
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                animation: fadeIn 0.2s ease;
+            `;
+            
+            const dialog = document.createElement('div');
+            dialog.style.cssText = `
+                background: white;
+                border-radius: 20px;
+                padding: 32px;
+                max-width: 450px;
+                width: 90%;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            `;
+            
+            dialog.innerHTML = `
+                <div style="font-size: 24px; font-weight: 700; color: var(--text-dark); margin-bottom: 16px;">
+                    ⚙️ 設定
+                </div>
+                <div style="font-size: 14px; color: var(--text-gray); margin-bottom: 24px; line-height: 1.6;">
+                    設定匯率後,分帳統計會自動計算台幣總額
+                </div>
+                
+                <!-- 設定匯率 -->
+                <div style="margin-bottom: 24px;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px; color: var(--text-dark);">
+                        💱 匯率設定 (NT$1 = ₩?)
+                    </label>
+                    <input type="number" id="exchangeRateInput" value="${twdToKrw}" step="0.01" min="0" 
+                           style="width: 100%; padding: 14px; border: 2px solid #E8ECF0; border-radius: 12px; font-size: 16px; font-weight: 600;">
+                    <div style="font-size: 12px; color: var(--text-gray); margin-top: 6px;">
+                        範例: 41.67 表示 NT$1 = ₩41.67
+                    </div>
+                </div>
+                
+                <!-- 分帳換算 -->
+                <div style="margin-bottom: 24px; padding: 16px; background: #F8F9FA; border-radius: 12px;">
+                    <div style="font-weight: 600; margin-bottom: 12px; color: var(--text-dark);">
+                        💰 分帳金額換算
+                    </div>
+                    <div style="font-size: 13px; color: var(--text-gray); margin-bottom: 12px;">
+                        輸入韓元金額,自動換算台幣總額
+                    </div>
+                    <input type="number" id="krwAmountCalc" placeholder="輸入韓元金額" 
+                           style="width: 100%; padding: 12px; border: 2px solid #E8ECF0; border-radius: 10px; margin-bottom: 12px;"
+                           oninput="calculateTWDInSettings()">
+                    <div id="twdResult" style="font-size: 16px; font-weight: 600; color: var(--teal); min-height: 24px;"></div>
+                </div>
+                
+                <div style="display: grid; gap: 12px;">
+                    <button onclick="saveExchangeRate()" style="padding: 14px; background: var(--teal); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer;">
+                        儲存匯率
+                    </button>
+                    <button onclick="closeExchangeDialog()" style="padding: 12px; background: #F8F9FA; color: var(--text-gray); border: none; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer;">
+                        取消
+                    </button>
+                </div>
+            `;
+            
+            overlay.appendChild(dialog);
+            overlay.id = 'exchangeRateDialog';
+            document.body.appendChild(overlay);
+        }
+        
+        function calculateTWDInSettings() {
+            const krw = Number(document.getElementById('krwAmountCalc').value) || 0;
+            const twdToKrw = Number(document.getElementById('exchangeRateInput').value) || 41.67;
+            const twd = Math.round(krw / twdToKrw);
+            
+            const resultDiv = document.getElementById('twdResult');
+            if (krw > 0) {
+                resultDiv.textContent = `= NT$ ${twd.toLocaleString()}`;
+            } else {
+                resultDiv.textContent = '';
+            }
+        }
+        
+        function saveExchangeRate() {
+            const twdToKrw = Number(document.getElementById('exchangeRateInput').value);
+            
+            if (!twdToKrw || twdToKrw <= 0) {
+                showToast('❌ 請輸入有效的匯率');
+                return;
+            }
+            
+            // 轉換成 1₩ = ?NT$ 儲存
+            exchangeRate = 1 / twdToKrw;
+            localStorage.setItem(`exchangeRate_${currentUser}`, exchangeRate);
+            
+            // 更新側邊欄顯示
+            document.getElementById('currentRateDisplay').textContent = `匯率: NT$1 = ₩${twdToKrw}`;
+            
+            closeExchangeDialog();
+            showToast(`✅ 匯率已設定: NT$1 = ₩${twdToKrw}`);
+        }
+        
+        function closeExchangeDialog() {
+            const dialog = document.getElementById('exchangeRateDialog');
+            if (dialog) dialog.remove();
+        }
+        
+        function loadExchangeRate() {
+            const saved = localStorage.getItem(`exchangeRate_${currentUser}`);
+            if (saved) {
+                exchangeRate = Number(saved);
+                const twdToKrw = (1 / exchangeRate).toFixed(2);
+                document.getElementById('currentRateDisplay').textContent = `匯率: NT$1 = ₩${twdToKrw}`;
+            }
+        }
+        
+        // ========== 工具函數 ==========
 
         function showToast(message) {
             const toast = document.createElement('div');
