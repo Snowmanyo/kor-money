@@ -1355,6 +1355,98 @@
             margin-bottom: 6px;
             padding-left: 8px;
         }
+
+        /* 編輯彈窗 */
+        .edit-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 9998;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .edit-modal-overlay.show {
+            display: flex;
+        }
+
+        .edit-modal {
+            background: white;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .edit-modal-header {
+            padding: 24px;
+            background: linear-gradient(135deg, var(--navy) 0%, #2C4A6F 100%);
+            color: white;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .edit-modal-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .edit-modal-close {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .edit-modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .edit-modal-body {
+            padding: 24px;
+        }
+
+        .edit-modal-footer {
+            padding: 20px 24px;
+            background: #F7F9FC;
+            border-radius: 0 0 20px 20px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .edit-modal-footer .btn {
+            flex: 1;
+        }
     </style>
 </head>
 <body>
@@ -2573,7 +2665,11 @@
 
         function editExpense(index) {
             const expense = expenses[index];
-            editingExpenseId = expense.id;
+            
+            // 建立彈窗
+            const overlay = document.createElement('div');
+            overlay.className = 'edit-modal-overlay';
+            overlay.id = 'editExpenseModal';
             
             // 修正日期格式
             let datetimeValue = expense.datetime;
@@ -2585,55 +2681,366 @@
                 }
             }
             
-            document.getElementById('datetime').value = datetimeValue || '';
-            document.getElementById('itemName').value = expense.itemName;
-            document.querySelector(`input[name="category"][value="${expense.category}"]`).checked = true;
-            document.getElementById('krw').value = expense.krw || '';
-            document.getElementById('twd').value = expense.twd || '';
-            document.querySelector(`input[name="payment"][value="${expense.payment}"]`).checked = true;
-            document.getElementById('note').value = expense.note || '';
-            document.getElementById('formModeTitle').textContent = '編輯記帳';
-            
-            if (expense.split) {
-                document.getElementById('enableSplit').checked = true;
-                document.getElementById('splitContent').style.display = 'block';
-                
-                // 設定下拉選單的值
-                const splitMode = expense.splitMode || 'split';
-                const splitMethod = expense.splitMethod || 'equal';
-                
-                if (splitMode === 'proxy') {
-                    document.getElementById('splitModeSelect').value = 'proxy';
-                } else if (splitMethod === 'equal') {
-                    document.getElementById('splitModeSelect').value = 'split-equal';
-                } else {
-                    document.getElementById('splitModeSelect').value = 'split-custom';
-                }
-                
-                splitPeople = [...expense.splitPeople];
-                renderSplitPeople();
-                
-                // ⭐ 重要: 載入自訂金額資料
-                if (expense.splitAllocations) {
-                    splitAllocations = JSON.parse(JSON.stringify(expense.splitAllocations));
-                } else {
-                    splitAllocations = {};
-                }
-                
-                renderSplitAllocations();
-                updateSplitPreview();
-            } else {
-                splitPeople = [];
-                splitAllocations = {};
+            // 分帳模式選項值
+            let splitModeValue = 'split-equal';
+            if (expense.splitMode === 'proxy') {
+                splitModeValue = 'proxy';
+            } else if (expense.splitMethod === 'custom') {
+                splitModeValue = 'split-custom';
             }
             
-            document.querySelector('.tab[data-tab="expense"]').click();
+            overlay.innerHTML = `
+                <div class="edit-modal">
+                    <div class="edit-modal-header">
+                        <div class="edit-modal-title">✏️ 編輯記帳</div>
+                        <button class="edit-modal-close" onclick="closeEditModal()">✕</button>
+                    </div>
+                    
+                    <div class="edit-modal-body">
+                        <div class="form-group">
+                            <label class="form-label">日期時間</label>
+                            <input type="datetime-local" id="edit-datetime" value="${datetimeValue || ''}">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">項目名稱</label>
+                            <input type="text" id="edit-itemName" value="${expense.itemName}" placeholder="例如:明洞美妝店">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">分類</label>
+                            <div class="category-grid-horizontal">
+                                ${['食', '衣', '住', '行', '樂', '儲值', '其他'].map(cat => {
+                                    const icons = {'食': '🍽️', '衣': '👕', '住': '🏨', '行': '🚇', '樂': '🎪', '儲值': '💰', '其他': '📦'};
+                                    return `
+                                        <div class="category-option">
+                                            <input type="radio" name="edit-category" value="${cat}" id="edit-cat-${cat}" ${expense.category === cat ? 'checked' : ''}>
+                                            <label for="edit-cat-${cat}">
+                                                <div class="category-icon">${icons[cat]}</div>
+                                                <div class="category-name">${cat}</div>
+                                            </label>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">金額</label>
+                            <div class="currency-grid">
+                                <div class="currency-item">
+                                    <div class="currency-label">韓元 KRW</div>
+                                    <div class="currency-input">
+                                        <span class="currency-symbol">₩</span>
+                                        <input type="number" id="edit-krw" value="${expense.krw || ''}" placeholder="0">
+                                    </div>
+                                </div>
+                                <div class="currency-item">
+                                    <div class="currency-label">台幣 TWD</div>
+                                    <div class="currency-input">
+                                        <span class="currency-symbol">NT$</span>
+                                        <input type="number" id="edit-twd" value="${expense.twd || ''}" placeholder="0">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">付款方式</label>
+                            <div class="payment-grid">
+                                ${['現金', '信用卡', '電子支付', 'TM/WP'].map(pay => `
+                                    <div class="payment-option">
+                                        <input type="radio" name="edit-payment" value="${pay}" id="edit-pay-${pay}" ${expense.payment === pay ? 'checked' : ''}>
+                                        <label for="edit-pay-${pay}">${pay}</label>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="split-toggle" onclick="toggleEditSplit()">
+                                <span style="font-weight: 600; color: var(--text-dark);">👥 分帳/代購</span>
+                                <div class="switch">
+                                    <input type="checkbox" id="edit-enableSplit" ${expense.split ? 'checked' : ''}>
+                                    <span class="slider"></span>
+                                </div>
+                            </div>
+                            <div id="edit-splitContent" style="display: ${expense.split ? 'block' : 'none'}; margin-top: 8px;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                                    <select id="edit-splitModeSelect" onchange="handleEditSplitModeChange()" style="width: 100%; padding: 10px; border: 2px solid #E8ECF0; border-radius: 10px; background: #F8F9FA; font-size: 13px; font-family: 'Noto Sans TC', sans-serif;">
+                                        <option value="split-equal" ${splitModeValue === 'split-equal' ? 'selected' : ''}>💰 平分</option>
+                                        <option value="split-custom" ${splitModeValue === 'split-custom' ? 'selected' : ''}>💰 自訂</option>
+                                        <option value="proxy" ${splitModeValue === 'proxy' ? 'selected' : ''}>🎁 代購</option>
+                                    </select>
+                                    <div style="display: flex; gap: 6px;">
+                                        <input type="text" id="edit-personName" placeholder="新增對象" style="flex: 1; padding: 10px; border: 2px solid #E8ECF0; border-radius: 10px; font-size: 13px;">
+                                        <button class="btn-secondary" onclick="addEditPerson()" style="width: auto; padding: 10px 16px; font-size: 13px;">+</button>
+                                    </div>
+                                </div>
+                                <div class="split-people" id="edit-splitPeople" style="margin-top: 8px;"></div>
+                                <div id="edit-splitAllocationsWrap" style="display:none; margin-top: 8px;">
+                                    <div id="edit-splitAllocations"></div>
+                                </div>
+                                <div id="edit-splitPreview" style="margin-top: 8px; padding: 8px; background: #F8F9FA; border-radius: 8px; font-size: 12px; color: var(--text-gray); line-height: 1.4;"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">備註 (選填)</label>
+                            <textarea id="edit-note" rows="3" placeholder="記錄心情或其他資訊...">${expense.note || ''}</textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="edit-modal-footer">
+                        <button class="btn btn-secondary" onclick="closeEditModal()">取消</button>
+                        <button class="btn btn-primary" onclick="saveEditedExpense(${index})">💾 儲存</button>
+                    </div>
+                </div>
+            `;
             
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.body.appendChild(overlay);
             
+            // 設定分帳資料
+            window.editSplitPeople = expense.split ? [...expense.splitPeople] : [];
+            window.editSplitAllocations = expense.split && expense.splitAllocations ? JSON.parse(JSON.stringify(expense.splitAllocations)) : {};
+            
+            renderEditSplitPeople();
+            renderEditSplitAllocations();
+            updateEditSplitPreview();
+            
+            // 顯示彈窗
+            setTimeout(() => overlay.classList.add('show'), 10);
+            
+            // 關閉下拉選單
             document.querySelectorAll('.expense-dropdown').forEach(m => m.classList.remove('show'));
+        }
+
+        function closeEditModal() {
+            const modal = document.getElementById('editExpenseModal');
+            if (modal) {
+                modal.classList.remove('show');
+                setTimeout(() => modal.remove(), 300);
+            }
+            window.editSplitPeople = [];
+            window.editSplitAllocations = {};
+        }
+
+        function toggleEditSplit() {
+            const checkbox = document.getElementById('edit-enableSplit');
+            checkbox.checked = !checkbox.checked;
+            document.getElementById('edit-splitContent').style.display = checkbox.checked ? 'block' : 'none';
             
-            showToast('編輯模式 - 修改後點儲存');
+            if (checkbox.checked && (!window.editSplitPeople || window.editSplitPeople.length === 0)) {
+                const otherPerson = currentUser === 'Chi' ? 'Jhen' : 'Chi';
+                window.editSplitPeople = [otherPerson];
+                ensureEditAllocation(otherPerson);
+                renderEditSplitPeople();
+                renderEditSplitAllocations();
+                updateEditSplitPreview();
+            }
+        }
+
+        function handleEditSplitModeChange() {
+            renderEditSplitAllocations();
+            updateEditSplitPreview();
+        }
+
+        function addEditPerson() {
+            const input = document.getElementById('edit-personName');
+            const name = input.value.trim();
+            
+            if (name && !window.editSplitPeople.includes(name)) {
+                window.editSplitPeople.push(name);
+                ensureEditAllocation(name);
+                renderEditSplitAllocations();
+                updateEditSplitPreview();
+                renderEditSplitPeople();
+                input.value = '';
+            }
+        }
+
+        function removeEditPerson(name) {
+            window.editSplitPeople = window.editSplitPeople.filter(p => p !== name);
+            delete window.editSplitAllocations[name];
+            renderEditSplitAllocations();
+            updateEditSplitPreview();
+            renderEditSplitPeople();
+        }
+
+        function renderEditSplitPeople() {
+            const container = document.getElementById('edit-splitPeople');
+            if (!container) return;
+            
+            container.innerHTML = (window.editSplitPeople || []).map(name => `
+                <div class="person-tag">
+                    ${name}
+                    <button onclick="removeEditPerson('${name}')">×</button>
+                </div>
+            `).join('');
+        }
+
+        function ensureEditAllocation(name) {
+            if (!window.editSplitAllocations) window.editSplitAllocations = {};
+            if (!window.editSplitAllocations[name]) {
+                window.editSplitAllocations[name] = { krw: 0, twd: 0 };
+            }
+        }
+
+        function renderEditSplitAllocations() {
+            const wrap = document.getElementById('edit-splitAllocationsWrap');
+            const container = document.getElementById('edit-splitAllocations');
+            if (!wrap || !container) return;
+
+            const enabled = document.getElementById('edit-enableSplit').checked;
+            if (!enabled || !window.editSplitPeople || window.editSplitPeople.length === 0) {
+                wrap.style.display = 'none';
+                container.innerHTML = '';
+                return;
+            }
+
+            const selectValue = document.getElementById('edit-splitModeSelect').value;
+            const shouldShow = (selectValue === 'proxy') || (selectValue === 'split-custom');
+            wrap.style.display = shouldShow ? 'block' : 'none';
+
+            if (!shouldShow) {
+                container.innerHTML = '';
+                return;
+            }
+
+            window.editSplitPeople.forEach(ensureEditAllocation);
+
+            container.innerHTML = window.editSplitPeople.map(name => {
+                const a = window.editSplitAllocations[name] || { krw: 0, twd: 0 };
+                return `
+                    <div class="currency-item" style="margin-bottom: 10px;">
+                        <div class="currency-label">👤 ${name} 應付</div>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <div class="currency-input" style="background:#fff; border:2px solid #E8ECF0; border-radius:12px; padding:12px 14px;">
+                                <span class="currency-symbol">₩</span>
+                                <input type="number" value="${a.krw || 0}" min="0"
+                                style="border:none; background:transparent; width:100%; font-size:16px; font-weight:600;"
+                                oninput="setEditPersonAllocation('${name}', 'krw', this.value)">
+                            </div>
+                            <div class="currency-input" style="background:#fff; border:2px solid #E8ECF0; border-radius:12px; padding:12px 14px;">
+                                <span class="currency-symbol">NT$</span>
+                                <input type="number" value="${a.twd || 0}" min="0"
+                                style="border:none; background:transparent; width:100%; font-size:16px; font-weight:600;"
+                                oninput="setEditPersonAllocation('${name}', 'twd', this.value)">
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function setEditPersonAllocation(name, currency, value) {
+            ensureEditAllocation(name);
+            const v = Math.max(0, Number(value) || 0);
+            window.editSplitAllocations[name][currency] = v;
+            updateEditSplitPreview();
+        }
+
+        function updateEditSplitPreview() {
+            const preview = document.getElementById('edit-splitPreview');
+            if (!preview) return;
+
+            const enabled = document.getElementById('edit-enableSplit').checked;
+            if (!enabled) {
+                preview.innerHTML = '';
+                return;
+            }
+
+            if (!window.editSplitPeople || window.editSplitPeople.length === 0) {
+                preview.innerHTML = '👥 請先新增分帳/代購對象';
+                return;
+            }
+
+            const selectValue = document.getElementById('edit-splitModeSelect').value;
+            const totalKRW = Number(document.getElementById('edit-krw').value) || 0;
+            const totalTWD = Number(document.getElementById('edit-twd').value) || 0;
+
+            let myKRW = 0;
+            let myTWD = 0;
+            let otherKRW = 0;
+            let otherTWD = 0;
+
+            if (selectValue === 'split-equal') {
+                const denom = window.editSplitPeople.length + 1;
+                myKRW = denom > 0 ? totalKRW / denom : 0;
+                myTWD = denom > 0 ? totalTWD / denom : 0;
+                otherKRW = totalKRW - myKRW;
+                otherTWD = totalTWD - myTWD;
+            } else {
+                window.editSplitPeople.forEach(p => {
+                    const a = window.editSplitAllocations[p] || { krw: 0, twd: 0 };
+                    otherKRW += Number(a.krw) || 0;
+                    otherTWD += Number(a.twd) || 0;
+                });
+                myKRW = totalKRW - otherKRW;
+                myTWD = totalTWD - otherTWD;
+            }
+
+            const overKRW = myKRW < 0;
+            const overTWD = myTWD < 0;
+
+            const title = (selectValue === 'proxy') ? '🎁 代購' : 
+                        (selectValue === 'split-equal' ? '👥 分帳・平分' : '👥 分帳・自訂');
+
+            preview.innerHTML = `
+                ✅ ${title}<br>
+                總額：₩${Math.round(totalKRW).toLocaleString()} / NT$${Math.round(totalTWD).toLocaleString()}<br>
+                對方合計：₩${Math.round(otherKRW).toLocaleString()} / NT$${Math.round(otherTWD).toLocaleString()}<br>
+                <b style="color:${(overKRW || overTWD) ? '#E74C3C' : 'var(--text-dark)'}">
+                    你負擔：₩${Math.round(myKRW).toLocaleString()} / NT$${Math.round(myTWD).toLocaleString()}
+                </b>
+                ${(overKRW || overTWD) ? `<div style="margin-top:6px; color:#E74C3C;">⚠️ 對方合計不能超過總額</div>` : ''}
+            `;
+        }
+
+        function saveEditedExpense(index) {
+            const selectValue = document.getElementById('edit-splitModeSelect').value;
+            let splitMode = 'split';
+            let splitMethod = 'equal';
+            
+            if (selectValue === 'proxy') {
+                splitMode = 'proxy';
+                splitMethod = 'custom';
+            } else if (selectValue === 'split-custom') {
+                splitMode = 'split';
+                splitMethod = 'custom';
+            }
+            
+            const updatedExpense = {
+                ...expenses[index],
+                datetime: document.getElementById('edit-datetime').value,
+                itemName: document.getElementById('edit-itemName').value.trim(),
+                category: document.querySelector('input[name="edit-category"]:checked').value,
+                krw: parseFloat(document.getElementById('edit-krw').value) || 0,
+                twd: parseFloat(document.getElementById('edit-twd').value) || 0,
+                payment: document.querySelector('input[name="edit-payment"]:checked').value,
+                split: document.getElementById('edit-enableSplit').checked,
+                splitMode: splitMode,
+                splitMethod: splitMethod,
+                splitPeople: window.editSplitPeople ? [...window.editSplitPeople] : [],
+                splitAllocations: window.editSplitAllocations ? JSON.parse(JSON.stringify(window.editSplitAllocations)) : {},
+                note: document.getElementById('edit-note').value.trim()
+            };
+
+            if (!updatedExpense.itemName) {
+                showToast('請填寫項目名稱!');
+                return;
+            }
+
+            if (updatedExpense.krw === 0 && updatedExpense.twd === 0) {
+                showToast('請至少填寫一種金額!');
+                return;
+            }
+
+            expenses[index] = updatedExpense;
+            saveToStorage();
+            renderExpenses();
+            closeEditModal();
+            showToast('✅ 記帳已更新!');
         }
 
         function deleteExpense(index) {
