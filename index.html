@@ -406,8 +406,8 @@
 
         .category-grid-horizontal {
             display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 8px;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
         }
 
         .category-option {
@@ -1487,10 +1487,9 @@
 
         /* 分類統計樣式 */
         #categoryStats {
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            padding-bottom: 8px;
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
         }
 
         #categoryStats::-webkit-scrollbar {
@@ -1845,7 +1844,7 @@
                 <!-- 分類支出統計 -->
                 <div class="card" style="margin-top: 16px;">
                     <div style="font-weight: 600; color: var(--text-dark); margin-bottom: 16px;">📊 分類支出統計</div>
-                    <div id="categoryStats" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;"></div>
+                    <div id="categoryStats"></div>
                 </div>
 
                 <!-- 篩選記帳 -->
@@ -3297,12 +3296,12 @@
             }
 
             container.innerHTML = sortedCategories.map(([category, data]) => `
-                <div style="display: flex; flex-direction: column; align-items: center; padding: 16px 12px; background: #F8F9FA; border-radius: 12px; border-top: 3px solid ${data.color}; cursor: pointer; transition: all 0.3s; min-width: 140px;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)';" onmouseout="this.style.transform=''; this.style.boxShadow='';">
-                    <div style="font-size: 32px; margin-bottom: 8px;">${data.icon}</div>
-                    <div style="font-weight: 600; color: var(--text-dark); margin-bottom: 8px;">${category}</div>
-                    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 4px;">
-                        <div style="font-size: 16px; font-weight: 700; color: ${data.color};">₩${Math.round(data.krw).toLocaleString()}</div>
-                        ${data.twd > 0 ? `<div style="font-size: 16px; font-weight: 700; color: ${data.color};">NT$${Math.round(data.twd).toLocaleString()}</div>` : ''}
+                <div style="display: flex; flex-direction: column; align-items: center; padding: 12px 8px; background: #F8F9FA; border-radius: 12px; border-top: 3px solid ${data.color}; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)';" onmouseout="this.style.transform=''; this.style.boxShadow='';">
+                    <div style="font-size: 24px; margin-bottom: 6px;">${data.icon}</div>
+                    <div style="font-weight: 600; color: var(--text-dark); margin-bottom: 6px; font-size: 14px;">${category}</div>
+                    <div style="display: flex; flex-direction: column; gap: 2px; align-items: center;">
+                        <div style="font-size: 14px; font-weight: 700; color: ${data.color};">₩${Math.round(data.krw).toLocaleString()}</div>
+                        ${data.twd > 0 ? `<div style="font-size: 14px; font-weight: 700; color: ${data.color};">NT$${Math.round(data.twd).toLocaleString()}</div>` : ''}
                     </div>
                     <div style="font-size: 11px; color: var(--text-gray); margin-top: 4px;">${data.count} 筆</div>
                 </div>
