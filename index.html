@@ -1488,8 +1488,15 @@
         /* 分類統計樣式 */
         #categoryStats {
             display: grid;
-            grid-template-columns: repeat(7, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 8px;
+            max-width: 100%;
+        }
+
+        #categoryStats > div:nth-child(5),
+        #categoryStats > div:nth-child(6),
+        #categoryStats > div:nth-child(7) {
+            grid-column: span 1;
         }
 
         #categoryStats::-webkit-scrollbar {
@@ -2655,25 +2662,42 @@
                 const dateStr = `${date.getMonth() + 1}/${date.getDate()} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
                 const icon = getCategoryIcon(expense.category);
                 
+                // 計算分帳資訊
                 let splitInfo = '';
+                
                 if (expense.split && expense.splitPeople.length > 0) {
                     if (expense.splitMode === 'proxy') {
-                        splitInfo = `<span>🎁 代購給 ${expense.splitPeople.join(', ')}</span>`;
+                        splitInfo = `🎁 代購給 ${expense.splitPeople.join(', ')}`;
+                    } else if (expense.splitMethod === 'equal') {
+                        const totalPeople = expense.splitPeople.length + 1;
+                        const perPersonKRW = Math.round(expense.krw / totalPeople);
+                        const perPersonTWD = Math.round(expense.twd / totalPeople);
+                        splitInfo = `👥 與 ${expense.splitPeople.join(', ')} 平分 (每人 ₩${perPersonKRW.toLocaleString()}/NT$${perPersonTWD.toLocaleString()})`;
                     } else {
-                        const perPersonKRW = Math.round(expense.krw / (expense.splitPeople.length + 1));
-                        const perPersonTWD = Math.round(expense.twd / (expense.splitPeople.length + 1));
-                        splitInfo = `<span>👥 與 ${expense.splitPeople.join(', ')} 平分 (每人 ₩${perPersonKRW.toLocaleString()} / NT$${perPersonTWD.toLocaleString()})</span>`;
+                        splitInfo = `👥 與 ${expense.splitPeople.join(', ')} 自訂分帳`;
                     }
                 }
                 
                 return `
-                    <div class="expense-card">
-                        <div class="expense-header">
-                            <div class="expense-title">
-                                <span>${icon}</span>
-                                <span>${expense.itemName}</span>
-                                ${expense.settled ? '<span class="settled-badge">已結清</span>' : ''}
-                                ${expense.splitMode === 'proxy' ? '<span class="proxy-badge">代購</span>' : ''}
+                    <div class="expense-card" style="padding: 12px; margin-bottom: 10px;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                            <div style="flex: 1;">
+                                <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                                    <span style="font-size: 18px;">${icon}</span>
+                                    <span style="font-size: 15px; font-weight: 600; color: var(--text-dark);">${expense.itemName}</span>
+                                    ${expense.settled ? '<span class="settled-badge" style="padding: 2px 8px; font-size: 11px;">已結清</span>' : ''}
+                                    ${expense.splitMode === 'proxy' ? '<span class="proxy-badge" style="padding: 2px 8px; font-size: 11px;">代購</span>' : ''}
+                                </div>
+                                <!-- ✅ 日期 + 付款 + 分帳資訊在同一行 -->
+                                <div style="font-size: 12px; color: var(--text-gray); display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                                    <span>${dateStr}</span>
+                                    <span>•</span>
+                                    <span>💳 ${expense.payment}</span>
+                                    ${splitInfo ? `
+                                        <span>•</span>
+                                        <span style="color: var(--teal); font-weight: 500;">${splitInfo}</span>
+                                    ` : ''}
+                                </div>
                             </div>
                             <div class="expense-menu">
                                 <button class="expense-menu-btn" onclick="toggleExpenseMenu(${actualIndex})">⋯</button>
@@ -2687,25 +2711,23 @@
                             </div>
                         </div>
                         
-                        <div class="expense-date">${dateStr}</div>
-                        
-                        ${expense.note ? `<div style="font-size: 13px; color: var(--text-gray); margin: 8px 0;">📌 ${expense.note}</div>` : ''}
-                        
-                        <div class="expense-amounts">
-                            <div class="amount-item">
-                                <div class="amount-label">韓元</div>
-                                <div class="amount-value">₩${expense.krw.toLocaleString()}</div>
+                        <!-- ✅ 金額區塊：固定寬度 -->
+                        <div style="display: flex; gap: 12px; padding: 8px 0; border-top: 1px solid #F0F0F0; ${expense.note ? '' : 'border-bottom: 1px solid #F0F0F0;'}">
+                            <div style="min-width: 100px;">
+                                <div style="font-size: 10px; color: var(--text-gray); margin-bottom: 2px;">韓元</div>
+                                <div style="font-size: 15px; font-weight: 700; color: var(--text-dark);">₩${expense.krw.toLocaleString()}</div>
                             </div>
-                            <div class="amount-item">
-                                <div class="amount-label">台幣</div>
-                                <div class="amount-value">NT$${expense.twd.toLocaleString()}</div>
+                            <div style="min-width: 100px;">
+                                <div style="font-size: 10px; color: var(--text-gray); margin-bottom: 2px;">台幣</div>
+                                <div style="font-size: 15px; font-weight: 700; color: var(--text-dark);">NT$${expense.twd.toLocaleString()}</div>
                             </div>
                         </div>
                         
-                        <div style="display: flex; gap: 8px; margin-top: 12px; font-size: 13px; color: var(--text-gray); flex-wrap: wrap;">
-                            <span>💳 ${expense.payment}</span>
-                            ${splitInfo}
-                        </div>
+                        ${expense.note ? `
+                            <div style="padding: 8px 0; border-top: 1px solid #F0F0F0; font-size: 12px; color: var(--text-gray);">
+                                📌 ${expense.note}
+                            </div>
+                        ` : ''}
                     </div>
                 `;
             }).join('');
@@ -3286,9 +3308,11 @@
                 categoryTotals[category].twd += (totalT - otherTWD);
             });
 
-            const sortedCategories = Object.entries(categoryTotals)
-                .filter(([_, data]) => data.count > 0)
-                .sort((a, b) => b[1].krw - a[1].krw);
+            // ✅ 改成固定順序
+            const fixedOrder = ['食', '衣', '住', '行', '樂', '儲值', '其他'];
+            const sortedCategories = fixedOrder
+                .map(cat => [cat, categoryTotals[cat]])
+                .filter(([_, data]) => data && data.count > 0);
 
             if (sortedCategories.length === 0) {
                 container.innerHTML = '<div style="text-align: center; color: var(--text-gray); padding: 20px; grid-column: 1 / -1;">暫無分類統計</div>';
@@ -3297,11 +3321,11 @@
 
             container.innerHTML = sortedCategories.map(([category, data]) => `
                 <div style="display: flex; flex-direction: column; align-items: center; padding: 12px 8px; background: #F8F9FA; border-radius: 12px; border-top: 3px solid ${data.color}; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)';" onmouseout="this.style.transform=''; this.style.boxShadow='';">
-                    <div style="font-size: 24px; margin-bottom: 6px;">${data.icon}</div>
+                    <div style="font-size: 28px; margin-bottom: 6px;">${data.icon}</div>
                     <div style="font-weight: 600; color: var(--text-dark); margin-bottom: 6px; font-size: 14px;">${category}</div>
                     <div style="display: flex; flex-direction: column; gap: 2px; align-items: center;">
                         <div style="font-size: 14px; font-weight: 700; color: ${data.color};">₩${Math.round(data.krw).toLocaleString()}</div>
-                        ${data.twd > 0 ? `<div style="font-size: 14px; font-weight: 700; color: ${data.color};">NT$${Math.round(data.twd).toLocaleString()}</div>` : ''}
+                        <div style="font-size: 14px; font-weight: 700; color: ${data.color};">NT$${Math.round(data.twd).toLocaleString()}</div>
                     </div>
                     <div style="font-size: 11px; color: var(--text-gray); margin-top: 4px;">${data.count} 筆</div>
                 </div>
