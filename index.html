@@ -4518,16 +4518,16 @@
             
             // 總支出摘要
             csvContent += '=== 總支出摘要 ===\n';
-            csvContent += `我的韓元支出:,₩${Math.round(totalKRW).toLocaleString()}\n`;
-            csvContent += `我的台幣支出:,NT$${Math.round(totalTWD).toLocaleString()}\n`;
+            csvContent += `我的韓元支出(₩):,${Math.round(totalKRW)}\n`;
+            csvContent += `我的台幣支出(NT$):,${Math.round(totalTWD)}\n`;
             csvContent += '\n';
             
             // 分類統計
             csvContent += '=== 分類統計 ===\n';
-            csvContent += '分類,筆數,韓元,台幣\n';
+            csvContent += '分類,筆數,韓元(₩),台幣(NT$)\n';
             
             Object.entries(categoryStats).forEach(([category, stats]) => {
-                csvContent += `${category},${stats.count},₩${Math.round(stats.krw).toLocaleString()},NT$${Math.round(stats.twd).toLocaleString()}\n`;
+                csvContent += `${category},${stats.count},${Math.round(stats.krw)},${Math.round(stats.twd)}\n`;
             });
             
             csvContent += '\n';
