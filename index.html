@@ -3574,131 +3574,166 @@
         // ========== 分帳統計 ==========
         
         function renderSplitReport() {
-            const container = document.getElementById('splitReportContent');
-            const splitExpenses = expenses.filter(e => e.split && e.splitPeople.length > 0);
-            
-            if (splitExpenses.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">📊</div>
-                        <div class="empty-text">目前沒有分帳記錄</div>
-                    </div>
-                `;
-                return;
-            }
-            
-            const peopleStats = {};
-            
-            splitExpenses.forEach(expense => {
-                if (expense.splitMode === 'proxy') {
-                    // 代購模式:全額算對方的
-                    expense.splitPeople.forEach(person => {
-                        if (!peopleStats[person]) {
-                            peopleStats[person] = {
-                                name: person,
-                                totalKRW: 0,
-                                totalTWD: 0,
-                                count: 0,
-                                expenses: []
-                            };
-                        }
-                        
-                        peopleStats[person].totalKRW += expense.krw;
-                        peopleStats[person].totalTWD += expense.twd;
-                        peopleStats[person].count += 1;
-                        peopleStats[person].expenses.push({
-                            item: expense.itemName,
-                            krw: expense.krw,
-                            twd: expense.twd,
-                            datetime: expense.datetime,
-                            type: '代購',
-                            category: expense.category,
-                            payment: expense.payment,
-                            note: expense.note
-                        });
-                    });
-                } else {
-                    // 平分模式
-                    const totalPeople = expense.splitPeople.length + 1;
-                    const perPersonKRW = expense.krw / totalPeople;
-                    const perPersonTWD = expense.twd / totalPeople;
-                    
-                    expense.splitPeople.forEach(person => {
-                        if (!peopleStats[person]) {
-                            peopleStats[person] = {
-                                name: person,
-                                totalKRW: 0,
-                                totalTWD: 0,
-                                count: 0,
-                                expenses: []
-                            };
-                        }
-                        
-                        peopleStats[person].totalKRW += perPersonKRW;
-                        peopleStats[person].totalTWD += perPersonTWD;
-                        peopleStats[person].count += 1;
-                        peopleStats[person].expenses.push({
-                            item: expense.itemName,
-                            krw: Math.round(perPersonKRW),
-                            twd: Math.round(perPersonTWD),
-                            datetime: expense.datetime,
-                            type: '平分',
-                            category: expense.category,
-                            payment: expense.payment,
-                            note: expense.note,
-                            totalPeople: totalPeople
-                        });
-                    });
+    const container = document.getElementById('splitReportContent');
+    const splitExpenses = expenses.filter(e => e.split && e.splitPeople.length > 0);
+    
+    if (splitExpenses.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">📊</div>
+                <div class="empty-text">目前沒有分帳記錄</div>
+            </div>
+        `;
+        return;
+    }
+    
+    const peopleStats = {};
+    
+    splitExpenses.forEach(expense => {
+        const mode = expense.splitMode || 'split';
+        const method = expense.splitMethod || 'equal';
+        
+        if (mode === 'proxy') {
+            // ✅ 代購模式：全額算對方的
+            expense.splitPeople.forEach(person => {
+                if (!peopleStats[person]) {
+                    peopleStats[person] = {
+                        name: person,
+                        totalKRW: 0,
+                        totalTWD: 0,
+                        count: 0,
+                        expenses: []
+                    };
                 }
-            });
-            
-            const sortedPeople = Object.values(peopleStats).sort((a, b) => b.totalTWD - a.totalTWD);
-            
-            container.innerHTML = sortedPeople.map(person => {
-                // 計算韓元換算成的台幣
-                const krwToTWD = Math.round(person.totalKRW * exchangeRate);
-                // 應付總額 = 韓元換算台幣 + 原本的台幣
-                const totalPayable = krwToTWD + Math.round(person.totalTWD);
                 
-                return `
-                    <div class="split-card">
-                        <div class="split-person-name">👤 ${person.name}</div>
-                        <div class="split-stats">
-                            <div class="split-stat-row">
-                                <span class="split-stat-label">參與次數</span>
-                                <span class="split-stat-value">${person.count} 次</span>
-                            </div>
-                            <div class="split-stat-row">
-                                <span class="split-stat-label">應付韓元</span>
-                                <span class="split-stat-value">₩${Math.round(person.totalKRW).toLocaleString()} (NT$${krwToTWD.toLocaleString()})</span>
-                            </div>
-                            <div class="split-stat-row">
-                                <span class="split-stat-label">應付台幣</span>
-                                <span class="split-stat-value">NT$${Math.round(person.totalTWD).toLocaleString()}</span>
-                            </div>
-                            <div class="split-stat-row" style="border-top: 2px dashed #E8ECF0; padding-top: 8px; margin-top: 8px;">
-                                <span class="split-stat-label" style="font-weight: 700; color: var(--text-dark);">應付總額</span>
-                                <span class="split-stat-value" style="font-size: 18px; font-weight: 700; color: var(--teal);">NT$${totalPayable.toLocaleString()}</span>
-                            </div>
-                        </div>
-                        
-                        <!-- ✅ 新增下載按鈕 -->
-                        <button class="btn btn-primary" onclick="downloadSplitStatement('${person.name}')" style="margin-top: 16px;">
-                            📥 下載 ${person.name} 的對帳單
-                        </button>
-                        
-                        <div class="split-details">
-                            <div class="split-detail-title">明細:</div>
-                            ${person.expenses.map(exp => {
-                                const date = new Date(exp.datetime);
-                                const dateStr = `${date.getMonth() + 1}/${date.getDate()}`;
-                                return `<div class="split-item">• ${dateStr} ${exp.item} [${exp.type}]: ₩${exp.krw.toLocaleString()} / NT$${exp.twd.toLocaleString()}</div>`;
-                            }).join('')}
-                        </div>
-                    </div>
-                `;
-            }).join('');
+                peopleStats[person].totalKRW += expense.krw;
+                peopleStats[person].totalTWD += expense.twd;
+                peopleStats[person].count += 1;
+                peopleStats[person].expenses.push({
+                    item: expense.itemName,
+                    krw: expense.krw,
+                    twd: expense.twd,
+                    datetime: expense.datetime,
+                    type: '代購',
+                    category: expense.category,
+                    payment: expense.payment,
+                    note: expense.note
+                });
+            });
+        } else if (method === 'equal') {
+            // ✅ 分帳 + 平分
+            const totalPeople = expense.splitPeople.length + 1;
+            const perPersonKRW = expense.krw / totalPeople;
+            const perPersonTWD = expense.twd / totalPeople;
+            
+            expense.splitPeople.forEach(person => {
+                if (!peopleStats[person]) {
+                    peopleStats[person] = {
+                        name: person,
+                        totalKRW: 0,
+                        totalTWD: 0,
+                        count: 0,
+                        expenses: []
+                    };
+                }
+                
+                peopleStats[person].totalKRW += perPersonKRW;
+                peopleStats[person].totalTWD += perPersonTWD;
+                peopleStats[person].count += 1;
+                peopleStats[person].expenses.push({
+                    item: expense.itemName,
+                    krw: Math.round(perPersonKRW),
+                    twd: Math.round(perPersonTWD),
+                    datetime: expense.datetime,
+                    type: '平分',
+                    category: expense.category,
+                    payment: expense.payment,
+                    note: expense.note,
+                    totalPeople: totalPeople
+                });
+            });
+        } else {
+            // ✅ 分帳 + 自訂金額（這是新加的！）
+            const alloc = expense.splitAllocations || {};
+            
+            expense.splitPeople.forEach(person => {
+                if (!peopleStats[person]) {
+                    peopleStats[person] = {
+                        name: person,
+                        totalKRW: 0,
+                        totalTWD: 0,
+                        count: 0,
+                        expenses: []
+                    };
+                }
+                
+                const personAlloc = alloc[person] || { krw: 0, twd: 0 };
+                const personKRW = Number(personAlloc.krw) || 0;
+                const personTWD = Number(personAlloc.twd) || 0;
+                
+                peopleStats[person].totalKRW += personKRW;
+                peopleStats[person].totalTWD += personTWD;
+                peopleStats[person].count += 1;
+                peopleStats[person].expenses.push({
+                    item: expense.itemName,
+                    krw: personKRW,
+                    twd: personTWD,
+                    datetime: expense.datetime,
+                    type: '自訂',
+                    category: expense.category,
+                    payment: expense.payment,
+                    note: expense.note
+                });
+            });
         }
+    });
+    
+    const sortedPeople = Object.values(peopleStats).sort((a, b) => b.totalTWD - a.totalTWD);
+    
+    container.innerHTML = sortedPeople.map(person => {
+        // 計算韓元換算成的台幣
+        const krwToTWD = Math.round(person.totalKRW * exchangeRate);
+        // 應付總額 = 韓元換算台幣 + 原本的台幣
+        const totalPayable = krwToTWD + Math.round(person.totalTWD);
+        
+        return `
+            <div class="split-card">
+                <div class="split-person-name">👤 ${person.name}</div>
+                <div class="split-stats">
+                    <div class="split-stat-row">
+                        <span class="split-stat-label">參與次數</span>
+                        <span class="split-stat-value">${person.count} 次</span>
+                    </div>
+                    <div class="split-stat-row">
+                        <span class="split-stat-label">應付韓元</span>
+                        <span class="split-stat-value">₩${Math.round(person.totalKRW).toLocaleString()} (NT$${krwToTWD.toLocaleString()})</span>
+                    </div>
+                    <div class="split-stat-row">
+                        <span class="split-stat-label">應付台幣</span>
+                        <span class="split-stat-value">NT$${Math.round(person.totalTWD).toLocaleString()}</span>
+                    </div>
+                    <div class="split-stat-row" style="border-top: 2px dashed #E8ECF0; padding-top: 8px; margin-top: 8px;">
+                        <span class="split-stat-label" style="font-weight: 700; color: var(--text-dark);">應付總額</span>
+                        <span class="split-stat-value" style="font-size: 18px; font-weight: 700; color: var(--teal);">NT$${totalPayable.toLocaleString()}</span>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" onclick="downloadSplitStatement('${person.name}')" style="margin-top: 16px;">
+                    📥 下載 ${person.name} 的對帳單
+                </button>
+                
+                <div class="split-details">
+                    <div class="split-detail-title">明細:</div>
+                    ${person.expenses.map(exp => {
+                        const date = new Date(exp.datetime);
+                        const dateStr = `${date.getMonth() + 1}/${date.getDate()}`;
+                        return `<div class="split-item">• ${dateStr} ${exp.item} [${exp.type}]: ₩${exp.krw.toLocaleString()} / NT$${exp.twd.toLocaleString()}</div>`;
+                    }).join('')}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
 
         // ========== 匯出 Excel ==========
         
