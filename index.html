@@ -1777,6 +1777,10 @@
                             <div class="stat-value" id="totalTWD">NT$0</div>
                         </div>
                     </div>
+                    <!-- ✅ 新增下載按鈕 -->
+                    <button class="btn btn-primary" id="downloadMyExpensesBtn" onclick="downloadMyExpenses()" style="margin-top: 20px; background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.5); backdrop-filter: blur(10px);">
+                        📥 下載我的消費清單
+                    </button>
                 </div>
 
                 <!-- 分類支出統計 -->
@@ -2567,6 +2571,12 @@
             // 更新總支出顯示
             document.getElementById('totalKRW').textContent = '₩' + Math.round(totalKRW).toLocaleString();
             document.getElementById('totalTWD').textContent = 'NT$' + Math.round(totalTWD).toLocaleString();
+
+            // ✅ 更新下載按鈕的數量顯示
+            const downloadBtn = document.getElementById('downloadMyExpensesBtn');
+            if (downloadBtn) {
+                downloadBtn.textContent = `📥 下載我的消費清單 (${expenses.length}筆)`;
+            }
 
             // ===== 渲染分類統計 (永遠用全部 expenses) =====
             renderCategoryStats();
@@ -4403,6 +4413,214 @@
             document.body.removeChild(link);
             
             showToast(`✅ ${personName} 的對帳單已下載！`);
+        }
+
+        // ========== 下載個人消費清單 ==========
+
+        function downloadMyExpenses() {
+            if (expenses.length === 0) {
+                showToast('目前沒有消費記錄');
+                return;
+            }
+            
+            // 計算總額
+            let totalKRW = 0;
+            let totalTWD = 0;
+            
+            expenses.forEach(e => {
+                const totalK = Number(e.krw) || 0;
+                const totalT = Number(e.twd) || 0;
+
+                if (!e.split || !e.splitPeople || e.splitPeople.length === 0) {
+                    totalKRW += totalK;
+                    totalTWD += totalT;
+                    return;
+                }
+
+                const mode = e.splitMode || 'split';
+                const method = e.splitMethod || 'equal';
+
+                if (mode === 'split' && method === 'equal') {
+                    const denom = (e.splitPeople.length + 1);
+                    totalKRW += denom > 0 ? totalK / denom : 0;
+                    totalTWD += denom > 0 ? totalT / denom : 0;
+                    return;
+                }
+
+                const alloc = e.splitAllocations || {};
+                let otherKRW = 0;
+                let otherTWD = 0;
+
+                e.splitPeople.forEach(p => {
+                    const a = alloc[p] || { krw: 0, twd: 0 };
+                    otherKRW += Number(a.krw) || 0;
+                    otherTWD += Number(a.twd) || 0;
+                });
+
+                totalKRW += (totalK - otherKRW);
+                totalTWD += (totalT - otherTWD);
+            });
+            
+            // 按分類統計
+            const categoryStats = {};
+            
+            expenses.forEach(e => {
+                if (!categoryStats[e.category]) {
+                    categoryStats[e.category] = { count: 0, krw: 0, twd: 0 };
+                }
+                
+                categoryStats[e.category].count++;
+                
+                const totalK = Number(e.krw) || 0;
+                const totalT = Number(e.twd) || 0;
+
+                if (!e.split || !e.splitPeople || e.splitPeople.length === 0) {
+                    categoryStats[e.category].krw += totalK;
+                    categoryStats[e.category].twd += totalT;
+                    return;
+                }
+
+                const mode = e.splitMode || 'split';
+                const method = e.splitMethod || 'equal';
+
+                if (mode === 'split' && method === 'equal') {
+                    const denom = (e.splitPeople.length + 1);
+                    categoryStats[e.category].krw += denom > 0 ? totalK / denom : 0;
+                    categoryStats[e.category].twd += denom > 0 ? totalT / denom : 0;
+                    return;
+                }
+
+                const alloc = e.splitAllocations || {};
+                let otherKRW = 0;
+                let otherTWD = 0;
+
+                e.splitPeople.forEach(p => {
+                    const a = alloc[p] || { krw: 0, twd: 0 };
+                    otherKRW += Number(a.krw) || 0;
+                    otherTWD += Number(a.twd) || 0;
+                });
+
+                categoryStats[e.category].krw += (totalK - otherKRW);
+                categoryStats[e.category].twd += (totalT - otherTWD);
+            });
+            
+            // 生成 CSV
+            let csvContent = '\uFEFF'; // BOM for UTF-8
+            
+            const now = new Date();
+            const dateStr = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日`;
+            
+            // 標題區
+            csvContent += `${currentUser} 的韓國旅行消費清單\n`;
+            csvContent += `製單日期:,${dateStr}\n`;
+            csvContent += `總筆數:,${expenses.length} 筆\n`;
+            csvContent += '\n';
+            
+            // 總支出摘要
+            csvContent += '=== 總支出摘要 ===\n';
+            csvContent += `我的韓元支出:,₩${Math.round(totalKRW).toLocaleString()}\n`;
+            csvContent += `我的台幣支出:,NT$${Math.round(totalTWD).toLocaleString()}\n`;
+            csvContent += '\n';
+            
+            // 分類統計
+            csvContent += '=== 分類統計 ===\n';
+            csvContent += '分類,筆數,韓元,台幣\n';
+            
+            Object.entries(categoryStats).forEach(([category, stats]) => {
+                csvContent += `${category},${stats.count},₩${Math.round(stats.krw).toLocaleString()},NT$${Math.round(stats.twd).toLocaleString()}\n`;
+            });
+            
+            csvContent += '\n';
+            
+            // 詳細明細
+            csvContent += '=== 消費明細 ===\n';
+            csvContent += '日期,時間,項目,分類,總金額(韓元),總金額(台幣),我的負擔(韓元),我的負擔(台幣),付款方式,分帳說明,備註\n';
+            
+            // 按日期排序
+            const sortedExpenses = [...expenses].sort((a, b) => new Date(a.datetime) - new Date(b.datetime));
+            
+            sortedExpenses.forEach(e => {
+                const date = new Date(e.datetime);
+                const dateStr = `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`;
+                const timeStr = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+                
+                // 計算我的負擔
+                let myKRW = e.krw;
+                let myTWD = e.twd;
+                let splitInfo = '無';
+                
+                if (e.split && e.splitPeople && e.splitPeople.length > 0) {
+                    const mode = e.splitMode || 'split';
+                    const method = e.splitMethod || 'equal';
+                    
+                    if (mode === 'proxy') {
+                        // 代購：我付全額，但不是我的消費
+                        const alloc = e.splitAllocations || {};
+                        let otherKRW = 0;
+                        let otherTWD = 0;
+                        e.splitPeople.forEach(p => {
+                            const a = alloc[p] || { krw: 0, twd: 0 };
+                            otherKRW += Number(a.krw) || 0;
+                            otherTWD += Number(a.twd) || 0;
+                        });
+                        myKRW = e.krw - otherKRW;
+                        myTWD = e.twd - otherTWD;
+                        splitInfo = `代購給${e.splitPeople.join(',')}`;
+                    } else if (method === 'equal') {
+                        // 平分
+                        const totalPeople = e.splitPeople.length + 1;
+                        myKRW = e.krw / totalPeople;
+                        myTWD = e.twd / totalPeople;
+                        splitInfo = `與${e.splitPeople.join(',')}平分(共${totalPeople}人)`;
+                    } else {
+                        // 自訂
+                        const alloc = e.splitAllocations || {};
+                        let otherKRW = 0;
+                        let otherTWD = 0;
+                        e.splitPeople.forEach(p => {
+                            const a = alloc[p] || { krw: 0, twd: 0 };
+                            otherKRW += Number(a.krw) || 0;
+                            otherTWD += Number(a.twd) || 0;
+                        });
+                        myKRW = e.krw - otherKRW;
+                        myTWD = e.twd - otherTWD;
+                        splitInfo = `與${e.splitPeople.join(',')}自訂分帳`;
+                    }
+                }
+                
+                csvContent += [
+                    dateStr,
+                    timeStr,
+                    `"${e.itemName}"`,
+                    e.category,
+                    Math.round(e.krw),
+                    Math.round(e.twd),
+                    Math.round(myKRW),
+                    Math.round(myTWD),
+                    e.payment,
+                    `"${splitInfo}"`,
+                    `"${e.note || ''}"`
+                ].join(',') + '\n';
+            });
+            
+            csvContent += '\n';
+            csvContent += '備註:此清單為個人消費記錄,分帳金額已自動計算\n';
+            
+            // 下載檔案
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            const filename = `${currentUser}_韓國旅行消費清單_${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}.csv`;
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showToast(`✅ 已下載 ${expenses.length} 筆消費記錄！`);
         }
 
     </script>
