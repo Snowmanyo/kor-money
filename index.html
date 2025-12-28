@@ -1961,6 +1961,16 @@
                     image: item.image ? '有圖片' : null
                 }));
                 
+                // ✅ 確保 expenses 包含完整的分帳資料
+                const expensesForCloud = expenses.map(exp => ({
+                    ...exp,
+                    // 確保這些欄位都有被序列化
+                    splitAllocations: exp.splitAllocations || {},
+                    splitMode: exp.splitMode || 'split',
+                    splitMethod: exp.splitMethod || 'equal',
+                    splitPeople: exp.splitPeople || []
+                }));
+                
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -1970,7 +1980,7 @@
                     body: JSON.stringify({
                         action: 'syncAll',
                         userId: currentUser,
-                        expenses: expenses,
+                        expenses: expensesForCloud,  // ✅ 使用處理過的資料
                         shopping: shoppingForCloud
                     })
                 });
@@ -1984,7 +1994,7 @@
                 isSyncing = false;
             }
         }
-        
+
         async function downloadFromCloud() {
             if (isSyncing) return;
             
@@ -2006,7 +2016,16 @@
                         }
                     });
                     
-                    expenses = data.expenses || [];
+                    // ✅ 還原 expenses 時確保分帳資料完整
+                    expenses = (data.expenses || []).map(exp => ({
+                        ...exp,
+                        splitAllocations: exp.splitAllocations || {},
+                        splitMode: exp.splitMode || 'split',
+                        splitMethod: exp.splitMethod || 'equal',
+                        splitPeople: exp.splitPeople || [],
+                        split: exp.split || false
+                    }));
+                    
                     shoppingList = (data.shopping || []).map(item => ({
                         ...item,
                         image: localImages[item.id] || null
