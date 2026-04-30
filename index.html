@@ -3,31 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>여행 기록 | 韓國旅行記帳本</title>
+    <title>旅遊手帳 | Travel Expense Tracker</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         :root {
-            --navy: #1E3A5F;
-            --teal: #4DB8AC;
-            --teal-dark: #3A9B91;
-            --teal-light: #E0F5F3;
-            --white: #FFFFFF;
-            --text-dark: #2C3E50;
-            --text-gray: #7F8C8D;
-            --text-light: #BDC3C7;
-            --shadow: 0 8px 24px rgba(30, 58, 95, 0.15);
-            --shadow-lg: 0 12px 32px rgba(30, 58, 95, 0.2);
+            /* ── Washi Meridian Palette ── */
+            --coral: #D46050;
+            --coral-dark: #B84038;
+            --coral-lt: #E8A090;
+            --sage: #7A9E7E;
+            --sage-dark: #5A7E5E;
+            --warm-gold: #C8913A;
+            /* Legacy aliases — keep JS from breaking */
+            --amber: #D46050;
+            --amber-dark: #B84038;
+            --amber-subtle: rgba(212,96,80,0.08);
+            --amber-glow: rgba(212,96,80,0.14);
+            --rose: #B86070;
+            --teal: #D46050;
+            --teal-dark: #B84038;
+            --teal-light: rgba(212,96,80,0.08);
+            --navy: #F3EDE3;
+            --white: #F3EDE3;
+            /* Surfaces */
+            --bg: #FBF7F0;
+            --surface: #FFFFFF;
+            --surface-2: #F3EDE3;
+            --border: #E2D8CC;
+            --border-light: #D5C9BC;
+            /* Text */
+            --text-dark: #2C2420;
+            --text-gray: #8C7B72;
+            --text-light: #B5A898;
+            /* Shadows (warm, soft) */
+            --shadow: 0 2px 12px rgba(44,36,32,0.08), 0 1px 4px rgba(44,36,32,0.04);
+            --shadow-lg: 0 12px 48px rgba(44,36,32,0.14), 0 4px 16px rgba(44,36,32,0.06);
+            --card-shadow: 0 1px 6px rgba(44,36,32,0.07), 0 4px 18px rgba(212,96,80,0.05);
         }
 
         body {
             font-family: 'Noto Sans TC', sans-serif;
-            background: linear-gradient(180deg, var(--navy) 0%, #2C4A6F 100%);
+            background: var(--bg);
             min-height: 100vh;
             padding-bottom: 80px;
         }
@@ -38,12 +61,15 @@
             position: relative;
         }
 
-        /* 頂部區域 */
+        /* ===== HEADER ===== */
         .header {
-            background: var(--navy);
-            padding: 20px 20px 40px;
+            background: linear-gradient(155deg, #F5EFE4 0%, #EDE5D6 55%, #E8DECE 100%);
+            padding: 22px 20px 56px;
             position: relative;
             overflow: hidden;
+            border-radius: 0 0 36px 36px;
+            box-shadow: 0 4px 24px rgba(44,36,32,0.10), 0 1px 0 rgba(212,96,80,0.18);
+            border-bottom: 3px solid var(--coral);
         }
 
         .landmarks {
@@ -51,12 +77,34 @@
             bottom: 0;
             left: 0;
             right: 0;
-            height: 120px;
-            opacity: 0.1;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120"><path fill="%23ffffff" d="M0,60 L100,40 L150,50 L200,30 L250,50 L300,20 L350,40 L400,10 L450,30 L500,50 L550,40 L600,60 L650,50 L700,40 L750,50 L800,30 L850,40 L900,50 L950,60 L1000,50 L1050,40 L1100,50 L1150,60 L1200,50 L1200,120 L0,120 Z"/></svg>');
+            height: 90px;
+            opacity: 0.12;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120"><path fill="%23D46050" d="M0,60 L100,40 L150,50 L200,30 L250,50 L300,20 L350,40 L400,10 L450,30 L500,50 L550,40 L600,60 L650,50 L700,40 L750,50 L800,30 L850,40 L900,50 L950,60 L1000,50 L1050,40 L1100,50 L1150,60 L1200,50 L1200,120 L0,120 Z"/></svg>');
             background-size: cover;
             background-repeat: no-repeat;
             background-position: bottom;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 220px;
+            height: 220px;
+            background: radial-gradient(circle, rgba(212,96,80,0.10) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            bottom: -40px;
+            left: -40px;
+            width: 160px;
+            height: 160px;
+            background: radial-gradient(circle, rgba(122,158,126,0.10) 0%, transparent 70%);
+            pointer-events: none;
         }
 
         .header-content {
@@ -65,30 +113,47 @@
         }
 
         .header-title {
-            color: var(--white);
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 4px;
+            color: var(--text-dark);
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
+        .header-project-name {
+            display: inline-flex;
+            align-items: center;
+            margin-top: 7px;
+            background: rgba(212,96,80,0.10);
+            border: 1px solid rgba(212,96,80,0.22);
+            color: var(--coral);
+            font-size: 13px;
+            font-weight: 600;
+            padding: 5px 13px;
+            border-radius: 20px;
+            letter-spacing: 0.2px;
+        }
+
         .header-subtitle {
-            color: var(--teal-light);
-            font-size: 14px;
-            font-weight: 300;
+            color: var(--text-light);
+            font-size: 11px;
+            font-weight: 400;
+            margin-top: 3px;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
         }
 
         .hamburger-btn {
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 12px;
+            width: 42px;
+            height: 42px;
+            background: rgba(212,96,80,0.10);
+            border: 1.5px solid rgba(212,96,80,0.22);
+            border-radius: 14px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
+            transition: all 0.25s ease;
+            backdrop-filter: blur(4px);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -98,29 +163,22 @@
         }
 
         .hamburger-btn span {
-            width: 20px;
+            width: 18px;
             height: 2px;
-            background: var(--white);
+            background: var(--coral);
             border-radius: 2px;
-            transition: all 0.3s ease;
+            transition: all 0.25s ease;
         }
 
-        .hamburger-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.05);
-        }
+        .hamburger-btn:hover { background: rgba(212,96,80,0.18); }
+        .hamburger-btn:active { transform: scale(0.92); }
 
-        .hamburger-btn:active {
-            transform: scale(0.95);
-        }
-
+        /* ===== SIDEBAR ===== */
         .sidebar-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
+            inset: 0;
+            background: rgba(44,36,32,0.45);
+            backdrop-filter: blur(4px);
             z-index: 998;
             opacity: 0;
             pointer-events: none;
@@ -139,207 +197,308 @@
             width: 85%;
             max-width: 320px;
             height: 100vh;
-            background: var(--white);
+            background: #FDFAF5;
             z-index: 999;
             transform: translateX(100%);
-            transition: all 0.3s ease;
+            transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
             overflow-y: auto;
-            box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
+            box-shadow: -8px 0 48px rgba(44,36,32,0.15);
+            border-radius: 24px 0 0 24px;
+            border-left: 1px solid var(--border);
         }
 
-        .sidebar.show {
-            transform: translateX(0);
-        }
+        .sidebar.show { transform: translateX(0); }
 
         .sidebar-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 24px 20px;
-            background: linear-gradient(135deg, var(--navy) 0%, #2C4A6F 100%);
-            color: var(--white);
+            background: linear-gradient(145deg, #EDE5D6 0%, #E6DDD0 100%);
+            color: var(--text-dark);
+            border-radius: 24px 0 0 0;
+            border-bottom: 1px solid var(--border);
         }
 
         .sidebar-close {
             width: 36px;
             height: 36px;
             border: none;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(212,96,80,0.10);
             border-radius: 50%;
-            color: var(--white);
-            font-size: 20px;
+            color: var(--coral);
+            font-size: 18px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s ease;
+            transition: all 0.25s ease;
         }
 
-        .sidebar-close:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: rotate(90deg);
-        }
+        .sidebar-close:hover { background: rgba(212,96,80,0.20); transform: rotate(90deg); }
 
         .sidebar-section {
-            padding: 20px;
-            border-bottom: 1px solid #F0F0F0;
+            padding: 18px 16px;
+            border-bottom: 1px solid var(--border);
         }
 
         .sidebar-section-title {
-            font-size: 13px;
+            font-size: 11px;
             font-weight: 700;
-            color: var(--text-gray);
+            color: var(--text-light);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
             margin-bottom: 12px;
         }
 
         .user-switch-sidebar {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
+            gap: 10px;
         }
 
         .user-btn-sidebar {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
-            padding: 16px 12px;
-            border: 2px solid #E8ECF0;
-            background: #F8F9FA;
+            gap: 6px;
+            padding: 14px 10px;
+            border: 1.5px solid var(--border);
+            background: var(--surface);
             border-radius: 16px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 15px;
-            font-weight: 600;
+            transition: all 0.25s ease;
+            font-size: 14px;
+            font-weight: 700;
             color: var(--text-dark);
         }
 
         .user-btn-sidebar:hover {
-            background: var(--teal-light);
-            border-color: var(--teal);
+            background: var(--surface-2);
+            border-color: var(--amber);
         }
 
         .user-btn-sidebar.active {
-            background: var(--teal);
-            border-color: var(--teal);
-            color: var(--white);
-            box-shadow: 0 4px 12px rgba(77, 184, 172, 0.3);
+            background: linear-gradient(135deg, var(--coral) 0%, var(--coral-dark) 100%);
+            border-color: transparent;
+            color: #FFFFFF;
+            box-shadow: 0 4px 16px rgba(212,96,80,0.30);
         }
 
         .sidebar-menu-item {
             width: 100%;
             display: flex;
             align-items: center;
-            gap: 16px;
-            padding: 16px;
-            border: none;
-            background: #F8F9FA;
-            border-radius: 16px;
+            gap: 13px;
+            padding: 13px 12px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            border-radius: 14px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 12px;
+            transition: all 0.25s ease;
+            margin-bottom: 8px;
             text-align: left;
         }
 
         .sidebar-menu-item:hover {
-            background: var(--teal-light);
-            transform: translateX(4px);
+            background: var(--surface-2);
+            border-color: rgba(212,96,80,0.28);
+            transform: translateX(3px);
         }
 
         .sidebar-item-title {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
             color: var(--text-dark);
             margin-bottom: 2px;
         }
 
         .sidebar-item-desc {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-gray);
         }
 
-        .sidebar-footer {
-            padding: 20px;
-            margin-top: auto;
+        .sidebar-footer { padding: 20px; margin-top: auto; }
+
+        /* ===== 行程列表 ===== */
+        .project-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
+        .project-item {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border: 1.5px solid var(--border);
+            background: var(--surface);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: left;
+            border-left: 4px solid transparent;
+            position: relative;
+        }
+
+        .project-item:hover {
+            background: var(--surface-2);
+            border-color: rgba(212,96,80,0.28);
+            transform: translateX(2px);
+        }
+
+        .project-item.active {
+            background: rgba(212,96,80,0.07);
+            border-color: rgba(212,96,80,0.32);
+            font-weight: 700;
+        }
+
+        .project-emoji { font-size: 22px; flex-shrink: 0; }
+
+        .project-info { flex: 1; min-width: 0; }
+
+        .project-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .project-date { font-size: 11px; color: var(--text-gray); margin-top: 2px; }
+
+        .project-edit-btn {
+            flex-shrink: 0;
+            width: 26px;
+            height: 26px;
+            background: rgba(212,96,80,0.07);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--text-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .project-edit-btn:hover {
+            background: var(--coral);
+            color: #FFFFFF;
+            border-color: transparent;
+        }
+
+        .add-project-btn {
+            width: 100%;
+            padding: 10px;
+            border: 1.5px dashed var(--border-light);
+            background: transparent;
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-gray);
+            transition: all 0.25s;
+            margin-top: 4px;
+        }
+
+        .add-project-btn:hover {
+            border-color: var(--amber);
+            color: var(--amber);
+            background: var(--amber-subtle);
+        }
+
+        /* ===== TABS ===== */
         .tabs {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            padding: 0 20px;
-            margin-top: -20px;
+            gap: 5px;
+            padding: 5px;
+            margin: -30px 16px 0;
             position: relative;
             z-index: 2;
+            background: #FFFFFF;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(44,36,32,0.10), 0 1px 4px rgba(44,36,32,0.06), 0 0 0 1px rgba(212,96,80,0.08);
         }
 
         .tab {
-            padding: 14px 8px;
-            background: rgba(255, 255, 255, 0.2);
+            padding: 12px 6px;
+            background: transparent;
             border: none;
-            border-radius: 16px 16px 0 0;
-            color: var(--white);
-            font-size: 14px;
-            font-weight: 500;
+            border-radius: 15px;
+            color: var(--text-gray);
+            font-size: 13px;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
+            transition: all 0.22s ease;
+            font-family: 'Noto Sans TC', sans-serif;
+            letter-spacing: 0.2px;
+        }
+
+        .tab:hover:not(.active) {
+            background: rgba(212,96,80,0.07);
+            color: var(--coral);
         }
 
         .tab.active {
-            background: var(--white);
-            color: var(--navy);
-            box-shadow: var(--shadow);
+            background: linear-gradient(135deg, var(--coral) 0%, var(--coral-dark) 100%);
+            color: #FFFFFF;
+            box-shadow: 0 3px 12px rgba(212,96,80,0.35);
+            font-weight: 800;
         }
 
+        /* ===== CONTENT ===== */
         .content {
-            background: #F7F9FC;
+            background: var(--bg);
             min-height: calc(100vh - 200px);
-            padding: 20px;
+            padding: 18px 16px;
+            margin-top: 12px;
         }
 
-        .tab-content {
-            display: none;
-        }
+        .tab-content { display: none; }
 
         .tab-content.active {
             display: block;
-            animation: fadeIn 0.3s ease;
+            animation: fadeInUp 0.26s ease;
         }
 
+        /* ===== CARDS ===== */
         .card {
-            background: var(--white);
-            border-radius: 20px;
-            padding: 24px;
-            box-shadow: var(--shadow);
-            margin-bottom: 16px;
-            animation: fadeIn 0.3s ease;
+            background: var(--surface);
+            border-radius: 24px;
+            padding: 22px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 14px;
+            animation: fadeInUp 0.26s ease;
+            border: 1px solid var(--border);
         }
 
         .card-title {
-            font-size: 18px;
-            font-weight: 700;
+            font-size: 17px;
+            font-weight: 800;
             color: var(--text-dark);
-            margin-bottom: 20px;
+            margin-bottom: 18px;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+        /* ===== FORMS ===== */
+        .form-group { margin-bottom: 16px; }
 
         .form-label {
             display: block;
-            font-size: 13px;
-            font-weight: 600;
+            font-size: 11px;
+            font-weight: 700;
             color: var(--text-gray);
-            margin-bottom: 8px;
+            margin-bottom: 7px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.7px;
         }
 
         input[type="text"],
@@ -350,218 +509,210 @@
         textarea,
         select {
             width: 100%;
-            padding: 14px 16px;
-            border: 2px solid #E8ECF0;
-            border-radius: 12px;
+            padding: 13px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 14px;
             font-size: 15px;
             font-family: 'Noto Sans TC', sans-serif;
-            transition: all 0.3s ease;
-            background: var(--white);
+            transition: all 0.22s ease;
+            background: var(--surface-2);
+            color: var(--text-dark);
         }
 
-        input:focus,
-        textarea:focus,
-        select:focus {
+        input::placeholder, textarea::placeholder { color: var(--text-light); }
+
+        input:focus, textarea:focus, select:focus {
             outline: none;
-            border-color: var(--teal);
-            box-shadow: 0 0 0 3px var(--teal-light);
+            border-color: var(--coral);
+            background: #FFF8F6;
+            box-shadow: 0 0 0 3px rgba(212,96,80,0.10);
         }
 
+        select option { background: var(--surface-2); color: var(--text-dark); }
+
+        /* ===== BUTTONS ===== */
         .btn {
             width: 100%;
             padding: 16px;
             border: none;
             border-radius: 16px;
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.22s ease;
             font-family: 'Noto Sans TC', sans-serif;
+            letter-spacing: 0.3px;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--teal) 0%, var(--teal-dark) 100%);
-            color: var(--white);
-            box-shadow: 0 4px 12px rgba(77, 184, 172, 0.3);
+            background: linear-gradient(135deg, var(--coral) 0%, var(--coral-dark) 100%);
+            color: #FFFFFF;
+            box-shadow: 0 4px 18px rgba(212,96,80,0.32);
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(77, 184, 172, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 26px rgba(212,96,80,0.42);
         }
 
         .btn-primary:active {
-            transform: translateY(0);
+            transform: translateY(1px);
+            box-shadow: 0 2px 8px rgba(212,96,80,0.22);
         }
 
         .btn-secondary {
-            background: var(--white);
-            color: var(--teal);
-            border: 2px solid var(--teal);
+            background: var(--surface-2);
+            color: var(--coral);
+            border: 1.5px solid rgba(212,96,80,0.30);
         }
 
         .btn-secondary:hover {
-            background: var(--teal-light);
+            background: var(--amber-subtle);
+            border-color: var(--coral);
         }
 
+        /* ===== CATEGORY BUTTONS ===== */
         .category-grid-horizontal {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 6px;
+            gap: 5px;
         }
 
-        .category-option {
-            position: relative;
-        }
-
-        .category-option input {
-            display: none;
-        }
+        .category-option { position: relative; }
+        .category-option input { display: none; }
 
         .category-option label {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 12px 6px;
-            background: #F8F9FA;
-            border: 2px solid #E8ECF0;
-            border-radius: 16px;
+            padding: 10px 4px;
+            background: var(--surface-2);
+            border: 1.5px solid var(--border);
+            border-radius: 14px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
+            min-height: 62px;
+        }
+
+        .category-option label:hover {
+            border-color: var(--amber);
+            background: var(--amber-subtle);
         }
 
         .category-option input:checked + label {
-            background: var(--teal-light);
-            border-color: var(--teal);
-            transform: scale(1.05);
+            background: linear-gradient(135deg, var(--coral) 0%, var(--coral-dark) 100%);
+            border-color: transparent;
+            box-shadow: 0 3px 12px rgba(212,96,80,0.35);
+            transform: scale(1.06);
         }
 
-        .category-icon {
-            font-size: 24px;
-            margin-bottom: 4px;
-        }
+        .category-option input:checked + label .category-name { color: #FFFFFF; }
+
+        .category-icon { font-size: 22px; margin-bottom: 3px; line-height: 1; }
 
         .category-name {
-            font-size: 12px;
-            font-weight: 600;
+            font-size: 11px;
+            font-weight: 700;
             color: var(--text-dark);
+            transition: color 0.2s;
         }
 
-        .currency-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
+        /* ===== CURRENCY / AMOUNT ===== */
+        .currency-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 
         .currency-item {
-            background: #F8F9FA;
-            border-radius: 12px;
-            padding: 12px;
+            background: var(--surface-2);
+            border: 1.5px solid var(--border);
+            border-radius: 16px;
+            padding: 14px;
             position: relative;
+            transition: all 0.2s;
+        }
+
+        .currency-item:focus-within {
+            border-color: var(--coral);
+            background: #FFF8F6;
+            box-shadow: 0 0 0 3px rgba(212,96,80,0.08);
         }
 
         .currency-label {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-gray);
             margin-bottom: 6px;
-            font-weight: 600;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
 
-        .currency-input {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        .currency-input { display: flex; align-items: center; gap: 6px; }
 
-        .currency-symbol {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--text-dark);
-        }
+        .currency-symbol { font-size: 18px; font-weight: 800; color: var(--amber-dark); }
 
         .currency-input input {
             border: none;
             background: transparent;
-            font-size: 18px;
-            font-weight: 600;
+            font-size: 22px;
+            font-weight: 800;
             padding: 0;
+            color: var(--text-dark);
+            letter-spacing: -0.5px;
         }
 
-        /* 計算機 */
+        /* ===== CALCULATOR ===== */
         .calculator {
             position: absolute;
             top: 100%;
             right: 0;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-            padding: 12px;
+            background: #FFFFFF;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: 0 8px 40px rgba(44,36,32,0.14);
+            padding: 14px;
             z-index: 100;
-            width: 200px;
+            width: 210px;
             display: none;
             margin-top: 8px;
         }
 
-        .calculator.show {
-            display: block;
-            animation: slideDown 0.2s ease;
-        }
+        .calculator.show { display: block; animation: slideDown 0.2s ease; }
 
         .calc-display {
-            background: #F8F9FA;
+            background: var(--surface-2);
             padding: 12px;
-            border-radius: 8px;
+            border-radius: 12px;
             text-align: right;
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            min-height: 40px;
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            min-height: 44px;
             word-break: break-all;
+            color: var(--coral);
+            border: 1px solid var(--border);
         }
 
-        .calc-buttons {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 6px;
-        }
+        .calc-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
 
         .calc-btn {
             padding: 12px;
             border: none;
-            background: #F8F9FA;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
+            background: var(--surface-2);
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.15s;
+            color: var(--text-dark);
         }
 
-        .calc-btn:hover {
-            background: var(--teal-light);
-        }
-
-        .calc-btn:active {
-            transform: scale(0.95);
-        }
-
-        .calc-btn.operator {
-            background: var(--teal);
-            color: white;
-        }
-
-        .calc-btn.equals {
-            background: #4CAF50;
-            color: white;
-        }
-
-        .calc-btn.clear {
-            background: #EF4444;
-            color: white;
-        }
+        .calc-btn:hover { background: rgba(212,96,80,0.10); color: var(--coral); }
+        .calc-btn:active { transform: scale(0.92); }
+        .calc-btn.operator { background: rgba(212,96,80,0.08); color: var(--coral); }
+        .calc-btn.equals { background: linear-gradient(135deg, var(--coral) 0%, var(--coral-dark) 100%); color: #FFFFFF; }
+        .calc-btn.clear { background: rgba(180,80,100,0.12); color: var(--rose); }
 
         .calc-icon-btn {
             background: none;
@@ -570,62 +721,79 @@
             font-size: 16px;
             padding: 4px;
             transition: all 0.2s;
+            color: var(--text-light);
         }
 
-        .calc-icon-btn:hover {
-            transform: scale(1.2);
-        }
+        .calc-icon-btn:hover { transform: scale(1.2); color: var(--amber); }
 
+        /* ===== STATS CARD ===== */
         .stats-card {
-            background: linear-gradient(135deg, var(--navy) 0%, #2C4A6F 100%);
-            border-radius: 20px;
-            padding: 24px;
-            color: var(--white);
-            box-shadow: var(--shadow-lg);
-            margin-bottom: 20px;
+            background: linear-gradient(150deg, #EDE5D6 0%, #E8DECE 55%, #E2D8C8 100%);
+            border-radius: 24px;
+            padding: 22px;
+            color: var(--text-dark);
+            box-shadow: 0 4px 20px rgba(44,36,32,0.10), 0 0 0 1px rgba(212,96,80,0.12);
+            margin-bottom: 16px;
             position: relative;
             overflow: hidden;
+            border: 1px solid rgba(212,96,80,0.14);
         }
 
         .stats-card::before {
             content: '₩';
             position: absolute;
-            right: -20px;
-            top: -20px;
-            font-size: 120px;
-            opacity: 0.05;
-            font-weight: 700;
+            right: -16px;
+            top: -24px;
+            font-size: 110px;
+            opacity: 0.06;
+            font-weight: 800;
+            color: var(--coral);
+        }
+
+        .stats-card::after {
+            content: '';
+            position: absolute;
+            bottom: -30px;
+            left: -30px;
+            width: 140px;
+            height: 140px;
+            background: radial-gradient(circle, rgba(122,158,126,0.15) 0%, transparent 70%);
+            pointer-events: none;
         }
 
         .stats-title {
-            font-size: 14px;
-            opacity: 0.9;
-            margin-bottom: 16px;
-            font-weight: 500;
+            font-size: 12px;
+            color: var(--text-gray);
+            margin-bottom: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
         }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-        }
+        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 
         .stat-item {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 16px;
-            border-radius: 12px;
-            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.55);
+            padding: 14px;
+            border-radius: 14px;
+            border: 1px solid rgba(212,96,80,0.12);
         }
 
         .stat-label {
-            font-size: 12px;
-            opacity: 0.8;
-            margin-bottom: 6px;
+            font-size: 11px;
+            opacity: 0.65;
+            margin-bottom: 5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
         }
 
-        .stat-value {
-            font-size: 24px;
-            font-weight: 700;
+        .stat-value { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes fadeIn {
@@ -634,14 +802,8 @@
         }
 
         @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes spin {
@@ -649,68 +811,59 @@
             to { transform: rotate(360deg); }
         }
 
-        .payment-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-        }
+        /* ===== PAYMENT ===== */
+        .payment-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
 
-        .payment-option {
-            position: relative;
-        }
-
-        .payment-option input {
-            display: none;
-        }
+        .payment-option { position: relative; }
+        .payment-option input { display: none; }
 
         .payment-option label {
             display: block;
-            padding: 12px 8px;
-            background: #F8F9FA;
-            border: 2px solid #E8ECF0;
+            padding: 11px 6px;
+            background: var(--surface-2);
+            border: 1.5px solid var(--border);
             border-radius: 12px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 13px;
-            font-weight: 600;
+            transition: all 0.2s;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-dark);
         }
+
+        .payment-option label:hover { border-color: var(--amber); background: var(--amber-subtle); }
 
         .payment-option input:checked + label {
-            background: var(--teal-light);
-            border-color: var(--teal);
-            color: var(--teal-dark);
+            background: var(--amber-subtle);
+            border-color: var(--coral);
+            color: var(--coral);
+            box-shadow: 0 2px 8px rgba(212,96,80,0.16);
         }
 
+        /* ===== SPLIT TOGGLE ===== */
         .split-toggle {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 16px;
-            background: #F8F9FA;
-            border-radius: 12px;
+            padding: 14px 16px;
+            background: var(--surface-2);
+            border: 1.5px solid var(--border);
+            border-radius: 14px;
             cursor: pointer;
+            transition: all 0.2s;
         }
 
-        .switch {
-            position: relative;
-            width: 52px;
-            height: 28px;
-        }
+        .split-toggle:hover { border-color: var(--amber); background: var(--amber-subtle); }
 
-        .switch input {
-            display: none;
-        }
+        .switch { position: relative; width: 52px; height: 28px; flex-shrink: 0; }
+        .switch input { display: none; }
 
         .slider {
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: #CED4DA;
+            inset: 0;
+            background: #D5C9BC;
             border-radius: 28px;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
         }
 
         .slider:before {
@@ -720,772 +873,420 @@
             width: 22px;
             left: 3px;
             bottom: 3px;
-            background: white;
+            background: #FFFFFF;
             border-radius: 50%;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
+            box-shadow: 0 1px 4px rgba(44,36,32,0.20);
         }
 
-        .switch input:checked + .slider {
-            background: var(--teal);
-        }
+        .switch input:checked + .slider { background: linear-gradient(135deg, var(--coral) 0%, var(--coral-dark) 100%); }
+        .switch input:checked + .slider:before { transform: translateX(24px); background: #FFFFFF; }
 
-        .switch input:checked + .slider:before {
-            transform: translateX(24px);
-        }
-
-        .split-mode {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-top: 12px;
-        }
-
-        .split-mode-option {
-            position: relative;
-        }
-
-        .split-mode-option input {
-            display: none;
-        }
+        .split-mode { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 12px; }
+        .split-mode-option { position: relative; }
+        .split-mode-option input { display: none; }
 
         .split-mode-option label {
             display: block;
             padding: 12px;
-            background: #F8F9FA;
-            border: 2px solid #E8ECF0;
+            background: var(--surface-2);
+            border: 1.5px solid var(--border);
             border-radius: 12px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 14px;
-            font-weight: 600;
+            transition: all 0.2s;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-dark);
         }
 
-        .split-mode-option input:checked + label {
-            background: var(--teal-light);
-            border-color: var(--teal);
-            color: var(--teal-dark);
-        }
+        .split-mode-option label:hover { border-color: var(--amber); background: var(--amber-subtle); }
+        .split-mode-option input:checked + label { background: var(--amber-subtle); border-color: var(--coral); color: var(--coral); }
 
-        .split-people {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 12px;
-        }
+        .split-people { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
 
         .person-tag {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            padding: 8px 12px;
-            background: var(--teal-light);
+            gap: 5px;
+            padding: 7px 12px;
+            background: rgba(212,96,80,0.10);
+            border: 1px solid rgba(212,96,80,0.20);
             border-radius: 20px;
-            font-size: 14px;
-            color: var(--teal-dark);
-            font-weight: 500;
-            animation: bounceIn 0.4s ease;
+            font-size: 13px;
+            color: var(--coral);
+            font-weight: 700;
+            animation: bounceIn 0.3s ease;
         }
 
         .person-tag button {
-            background: none;
-            border: none;
-            color: var(--teal-dark);
-            cursor: pointer;
-            font-size: 16px;
-            padding: 0;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: all 0.2s ease;
+            background: none; border: none;
+            color: var(--coral); cursor: pointer;
+            font-size: 14px; padding: 0;
+            width: 18px; height: 18px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; transition: all 0.2s;
         }
 
-        .person-tag button:hover {
-            background: var(--teal);
-            color: white;
-        }
+        .person-tag button:hover { background: var(--coral); color: #FFFFFF; }
 
         @keyframes bounceIn {
-            0% {
-                opacity: 0;
-                transform: scale(0.3);
-            }
-            50% {
-                opacity: 1;
-                transform: scale(1.05);
-            }
-            100% {
-                transform: scale(1);
-            }
+            0% { opacity: 0; transform: scale(0.5); }
+            65% { opacity: 1; transform: scale(1.06); }
+            100% { transform: scale(1); }
         }
 
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text-gray);
-        }
+        /* ===== EMPTY STATE ===== */
+        .empty-state { text-align: center; padding: 56px 20px; }
+        .empty-icon { font-size: 58px; margin-bottom: 12px; opacity: 0.35; }
+        .empty-text { font-size: 15px; font-weight: 600; color: var(--text-gray); }
 
-        .empty-icon {
-            font-size: 64px;
-            margin-bottom: 16px;
-            opacity: 0.5;
-        }
-
-        .empty-text {
-            font-size: 16px;
-            font-weight: 500;
-        }
-
+        /* ===== EXPENSE CARDS ===== */
         .expense-card {
-            background: var(--white);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            border-left: 4px solid var(--teal);
-            transition: all 0.3s ease;
-            animation: fadeIn 0.3s ease;
+            background: var(--surface);
+            border-radius: 18px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--coral);
+            transition: all 0.22s ease;
+            animation: fadeInUp 0.22s ease;
         }
 
         .expense-card:hover {
-            transform: translateX(4px);
-            box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+            transform: translateX(3px);
+            box-shadow: 0 2px 8px rgba(44,36,32,0.08), 0 6px 20px rgba(212,96,80,0.08);
+            border-color: rgba(212,96,80,0.28);
+            border-left-color: var(--coral);
         }
 
-        .expense-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 12px;
-        }
-
-        .expense-title {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
-        .expense-date {
-            font-size: 12px;
-            color: var(--text-gray);
-        }
+        .expense-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .expense-title { display: flex; align-items: center; gap: 7px; font-size: 15px; font-weight: 700; color: var(--text-dark); }
+        .expense-date { font-size: 11px; color: var(--text-light); font-weight: 500; }
 
         .expense-amounts {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            padding: 12px 0;
-            border-top: 1px solid #F0F0F0;
-            border-bottom: 1px solid #F0F0F0;
+            gap: 8px;
+            padding: 10px 0;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
         }
 
-        .amount-item {
-            font-size: 14px;
-        }
+        .amount-item { font-size: 14px; }
 
         .amount-label {
-            color: var(--text-gray);
-            font-size: 12px;
-            margin-bottom: 4px;
-        }
-
-        .amount-value {
-            font-size: 18px;
+            color: var(--text-light);
+            font-size: 10px;
+            margin-bottom: 3px;
             font-weight: 700;
-            color: var(--text-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .expense-menu {
-            position: relative;
-        }
+        .amount-value { font-size: 18px; font-weight: 800; color: var(--text-dark); letter-spacing: -0.3px; }
+
+        .expense-menu { position: relative; }
 
         .expense-menu-btn {
-            width: 32px;
-            height: 32px;
-            border: none;
-            background: #F8F9FA;
-            border-radius: 8px;
-            font-size: 18px;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            width: 30px; height: 30px;
+            border: 1px solid var(--border);
+            background: var(--surface-2);
+            border-radius: 8px; font-size: 16px;
+            cursor: pointer; transition: all 0.2s;
+            color: var(--text-gray);
         }
 
-        .expense-menu-btn:hover {
-            background: var(--teal-light);
-        }
+        .expense-menu-btn:hover { background: var(--amber-subtle); color: var(--coral); border-color: rgba(212,96,80,0.28); }
 
         .expense-dropdown {
-            position: absolute;
-            right: 0;
-            top: 100%;
-            margin-top: 8px;
-            background: var(--white);
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            min-width: 140px;
-            overflow: hidden;
-            opacity: 0;
-            pointer-events: none;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
-            z-index: 10;
+            position: absolute; right: 0; top: 100%; margin-top: 6px;
+            background: #FFFFFF; border-radius: 14px;
+            box-shadow: 0 8px 40px rgba(44,36,32,0.14);
+            border: 1px solid var(--border);
+            min-width: 130px; overflow: hidden;
+            opacity: 0; pointer-events: none;
+            transform: translateY(-8px) scale(0.96);
+            transition: all 0.2s ease; z-index: 10;
         }
 
-        .expense-dropdown.show {
-            opacity: 1;
-            pointer-events: all;
-            transform: translateY(0);
-        }
+        .expense-dropdown.show { opacity: 1; pointer-events: all; transform: translateY(0) scale(1); }
 
         .expense-dropdown button {
-            width: 100%;
-            padding: 12px 16px;
-            border: none;
-            background: none;
-            text-align: left;
-            cursor: pointer;
-            font-size: 14px;
-            color: var(--text-dark);
-            transition: all 0.2s ease;
+            width: 100%; padding: 11px 15px; border: none;
+            background: none; text-align: left; cursor: pointer;
+            font-size: 13px; font-weight: 500; color: var(--text-dark);
+            transition: all 0.15s; font-family: 'Noto Sans TC', sans-serif;
         }
 
-        .expense-dropdown button:hover {
-            background: var(--teal-light);
-        }
+        .expense-dropdown button:hover { background: var(--amber-subtle); color: var(--coral); }
+        .expense-dropdown button:not(:last-child) { border-bottom: 1px solid var(--border); }
 
-        .expense-dropdown button:not(:last-child) {
-            border-bottom: 1px solid #F0F0F0;
-        }
-
+        /* ===== BADGES ===== */
         .settled-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            background: var(--teal);
-            color: var(--white);
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-left: 8px;
+            display: inline-block; padding: 3px 9px;
+            background: linear-gradient(135deg, var(--coral) 0%, var(--coral-dark) 100%);
+            color: #FFFFFF; border-radius: 10px; font-size: 11px; font-weight: 700; margin-left: 6px;
         }
 
         .proxy-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            background: #FFE5B4;
-            color: #D97706;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-left: 8px;
+            display: inline-block; padding: 3px 9px;
+            background: rgba(212,115,107,0.15); color: var(--rose);
+            border-radius: 10px; font-size: 11px; font-weight: 700; margin-left: 6px;
+            border: 1px solid rgba(212,115,107,0.25);
         }
 
-        .image-upload-area {
-            cursor: pointer;
-        }
+        /* ===== IMAGE UPLOAD ===== */
+        .image-upload-area { cursor: pointer; }
 
         .image-preview {
-            width: 100%;
-            height: 200px;
-            border: 2px dashed #E8ECF0;
-            border-radius: 16px;
-            overflow: hidden;
-            background: #F8F9FA;
-            transition: all 0.3s ease;
+            width: 100%; height: 180px;
+            border: 1.5px dashed var(--border-light); border-radius: 18px;
+            overflow: hidden; background: var(--surface-2); transition: all 0.25s;
         }
 
-        .image-preview:hover {
-            border-color: var(--teal);
-            background: var(--teal-light);
-        }
+        .image-preview:hover { border-color: var(--amber); background: var(--amber-subtle); }
 
         .upload-placeholder {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-gray);
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: var(--text-light); gap: 8px; font-weight: 500; font-size: 14px;
         }
 
-        .image-preview img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        .image-preview img { width: 100%; height: 100%; object-fit: cover; }
 
+        /* ===== SHOPPING CARDS ===== */
         .shopping-card {
-            background: var(--white);
-            border-radius: 16px;
-            overflow: hidden;
-            margin-bottom: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            transition: all 0.3s ease;
-            animation: fadeIn 0.3s ease;
+            background: var(--surface); border-radius: 18px; overflow: hidden;
+            margin-bottom: 10px;
+            border: 1px solid var(--border);
+            transition: all 0.22s; animation: fadeInUp 0.22s ease;
         }
 
-        .shopping-card.purchased {
-            opacity: 0.6;
-        }
+        .shopping-card.purchased { opacity: 0.5; }
 
-        .shopping-image {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            background: #F8F9FA;
-        }
+        .shopping-image { width: 100%; height: 160px; object-fit: cover; background: var(--surface-2); }
 
-        .shopping-content {
-            padding: 16px;
-        }
+        .shopping-content { padding: 14px 16px; }
 
-        .shopping-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 12px;
-        }
+        .shopping-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
 
-        .shopping-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text-dark);
-            flex: 1;
-        }
+        .shopping-title { font-size: 15px; font-weight: 700; color: var(--text-dark); flex: 1; }
+        .shopping-title.purchased { text-decoration: line-through; color: var(--text-light); }
 
-        .shopping-title.purchased {
-            text-decoration: line-through;
-        }
+        .shopping-info { font-size: 12px; color: var(--text-gray); margin-bottom: 7px; font-weight: 500; }
 
-        .shopping-info {
-            font-size: 13px;
-            color: var(--text-gray);
-            margin-bottom: 8px;
-        }
+        .shopping-prices { display: flex; gap: 12px; margin-bottom: 10px; font-size: 14px; color: var(--text-dark); font-weight: 700; }
 
-        .shopping-prices {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 12px;
-            font-size: 14px;
-            color: var(--text-dark);
-            font-weight: 600;
-        }
-
-        .shopping-actions {
-            display: grid;
-            grid-template-columns: 1fr auto auto;
-            gap: 8px;
-        }
+        .shopping-actions { display: grid; grid-template-columns: 1fr auto auto; gap: 7px; }
 
         .btn-purchase {
-            padding: 10px;
-            border: 2px solid var(--teal);
-            background: var(--white);
-            color: var(--teal);
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            padding: 10px; border: 1.5px solid rgba(212,96,80,0.30);
+            background: var(--surface-2); color: var(--coral);
+            border-radius: 12px; font-size: 13px; font-weight: 700;
+            cursor: pointer; transition: all 0.22s;
+            font-family: 'Noto Sans TC', sans-serif;
         }
 
-        .btn-purchase:hover {
-            background: var(--teal-light);
-        }
+        .btn-purchase:hover { background: var(--amber-subtle); border-color: var(--coral); }
 
         .btn-purchase.purchased {
-            background: var(--teal);
-            color: var(--white);
+            background: linear-gradient(135deg, var(--coral) 0%, var(--coral-dark) 100%);
+            color: #FFFFFF; border-color: transparent;
         }
 
         .btn-icon {
-            width: 40px;
-            height: 40px;
-            border: none;
-            background: #F8F9FA;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 18px;
-            transition: all 0.3s ease;
+            width: 40px; height: 40px;
+            border: 1px solid var(--border);
+            background: var(--surface-2); border-radius: 12px;
+            cursor: pointer; font-size: 16px; transition: all 0.22s;
+            color: var(--text-gray);
         }
 
-        .btn-icon:hover {
-            background: #FFE5E5;
-            color: #E74C3C;
-        }
+        .btn-icon:hover { background: rgba(212,115,107,0.14); color: var(--rose); border-color: rgba(212,115,107,0.24); }
+        .btn-icon.edit:hover { background: var(--amber-subtle); color: var(--coral); border-color: rgba(212,96,80,0.28); }
 
-        .btn-icon.edit:hover {
-            background: var(--teal-light);
-            color: var(--teal);
-        }
-
+        /* ===== QUANTITY ===== */
         .shopping-quantity {
-            background: #F8F9FA;
-            padding: 12px;
-            border-radius: 12px;
-            margin: 12px 0;
+            background: var(--surface-2); padding: 12px;
+            border-radius: 12px; margin: 10px 0; border: 1px solid var(--border);
         }
 
-        .qty-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-dark);
-        }
+        .qty-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 13px; font-weight: 700; color: var(--text-dark); }
 
-        .qty-badge {
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 12px;
-            background: #FFE5B4;
-            color: #D97706;
-        }
+        .qty-badge { padding: 3px 10px; border-radius: 10px; font-size: 11px; font-weight: 700; background: rgba(212,115,107,0.14); color: var(--rose); border: 1px solid rgba(212,115,107,0.2); }
+        .qty-badge.complete { background: rgba(126,194,127,0.14); color: #7EC27F; border-color: rgba(126,194,127,0.2); }
 
-        .qty-badge.complete {
-            background: #D1FAE5;
-            color: #059669;
-        }
-
-        .qty-progress {
-            height: 6px;
-            background: #E5E7EB;
-            border-radius: 3px;
-            overflow: hidden;
-            margin-bottom: 8px;
-        }
+        .qty-progress { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: 10px; }
 
         .qty-progress-bar {
             height: 100%;
-            background: linear-gradient(90deg, var(--teal) 0%, #6CD9C8 100%);
-            transition: width 0.3s ease;
+            background: linear-gradient(90deg, var(--coral) 0%, var(--coral-lt) 100%);
+            transition: width 0.35s; border-radius: 3px;
         }
 
-        .qty-actions {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 16px;
-            margin-top: 8px;
-        }
+        .qty-actions { display: flex; justify-content: center; align-items: center; gap: 16px; }
 
         .qty-btn {
-            width: 32px;
-            height: 32px;
-            border: 2px solid var(--teal);
-            background: var(--white);
-            border-radius: 8px;
-            color: var(--teal);
-            font-size: 18px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 30px; height: 30px;
+            border: 1.5px solid rgba(212,96,80,0.30);
+            background: var(--surface);
+            border-radius: 8px; color: var(--coral);
+            font-size: 16px; font-weight: 800; cursor: pointer;
+            transition: all 0.2s; display: flex; align-items: center; justify-content: center;
         }
 
-        .qty-btn:hover {
-            background: var(--teal);
-            color: var(--white);
-        }
+        .qty-btn:hover { background: var(--coral); color: #FFFFFF; border-color: var(--coral); }
+        .qty-btn:active { transform: scale(0.9); }
+        .qty-actions > span { font-size: 16px; font-weight: 800; color: var(--text-dark); min-width: 28px; text-align: center; }
 
-        .qty-btn:active {
-            transform: scale(0.9);
-        }
-
-        .qty-actions > span {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--text-dark);
-            min-width: 30px;
-            text-align: center;
-        }
-
-        .filter-tabs {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding-bottom: 4px;
-        }
-
-        .filter-tabs::-webkit-scrollbar {
-            height: 4px;
-        }
-
-        .filter-tabs::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .filter-tabs::-webkit-scrollbar-thumb {
-            background: rgba(77, 184, 172, 0.3);
-            border-radius: 2px;
-        }
+        /* ===== FILTERS ===== */
+        .filter-tabs { display: flex; gap: 7px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+        .filter-tabs::-webkit-scrollbar { height: 3px; }
+        .filter-tabs::-webkit-scrollbar-track { background: transparent; }
+        .filter-tabs::-webkit-scrollbar-thumb { background: rgba(212,96,80,0.25); border-radius: 2px; }
 
         .filter-tab {
-            padding: 10px 16px;
-            border: 2px solid #E8ECF0;
-            background: var(--white);
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: var(--text-dark);
-            white-space: nowrap;
-            flex-shrink: 0;
+            padding: 9px 14px; border: 1.5px solid var(--border);
+            background: var(--surface-2); border-radius: 10px;
+            font-size: 12px; font-weight: 700; cursor: pointer;
+            transition: all 0.2s; color: var(--text-dark);
+            white-space: nowrap; flex-shrink: 0;
+            font-family: 'Noto Sans TC', sans-serif;
         }
 
         .filter-tab.active {
-            background: var(--teal);
-            color: var(--white);
-            border-color: var(--teal);
+            background: linear-gradient(135deg, var(--coral) 0%, var(--coral-dark) 100%);
+            color: #FFFFFF; border-color: transparent;
+            box-shadow: 0 3px 10px rgba(212,96,80,0.25);
         }
 
-        .filter-tab {
-            padding: 10px;
-            border: 2px solid #E8ECF0;
-            background: var(--white);
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: var(--text-dark);
-        }
-
-        .filter-tab.active {
-            background: var(--teal);
-            color: var(--white);
-            border-color: var(--teal);
-        }
-
-        .filter-options {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            flex-wrap: nowrap;
-        }
+        .filter-options { display: flex; gap: 7px; overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; }
 
         .filter-option-btn {
-            padding: 10px 16px;
-            border: 2px solid #E8ECF0;
-            background: #F8F9FA;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-            white-space: nowrap;
-            flex-shrink: 0;
+            padding: 9px 14px; border: 1.5px solid var(--border);
+            background: var(--surface-2); border-radius: 10px;
+            font-size: 12px; font-weight: 600; cursor: pointer;
+            transition: all 0.2s; text-align: center;
+            white-space: nowrap; flex-shrink: 0;
+            font-family: 'Noto Sans TC', sans-serif;
+            color: var(--text-dark);
         }
 
         .filter-option-btn:hover,
-        .filter-option-btn.active {
-            background: var(--teal-light);
-            border-color: var(--teal);
-            color: var(--teal-dark);
-        }
+        .filter-option-btn.active { background: var(--amber-subtle); border-color: var(--amber); color: var(--amber); }
 
         .btn-filter-clear {
-            padding: 8px 16px;
-            border: none;
-            background: #F8F9FA;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-gray);
-            cursor: pointer;
-            transition: all 0.3s ease;
+            padding: 7px 14px; border: 1px solid var(--border);
+            background: var(--surface-2);
+            border-radius: 8px; font-size: 12px; font-weight: 700;
+            color: var(--text-gray); cursor: pointer; transition: all 0.2s;
+            font-family: 'Noto Sans TC', sans-serif;
         }
 
-        .btn-filter-clear:hover {
-            background: #E8ECF0;
-        }
+        .btn-filter-clear:hover { background: var(--surface); color: var(--text-dark); }
 
-        .location-filters {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-        }
+        .location-filters { display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px; }
 
         .location-btn {
-            padding: 12px;
-            border: 2px solid #E8ECF0;
-            background: #F8F9FA;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: left;
+            padding: 11px; border: 1.5px solid var(--border);
+            background: var(--surface-2); border-radius: 12px;
+            font-size: 12px; font-weight: 600; cursor: pointer;
+            transition: all 0.2s; text-align: left;
+            font-family: 'Noto Sans TC', sans-serif;
+            color: var(--text-dark);
         }
 
         .location-btn:hover,
-        .location-btn.active {
-            background: var(--teal-light);
-            border-color: var(--teal);
-            color: var(--teal-dark);
-        }
+        .location-btn.active { background: var(--amber-subtle); border-color: var(--amber); color: var(--amber); }
 
+        /* ===== SPLIT CARDS ===== */
         .split-card {
-            background: var(--teal-light);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 16px;
-            border-left: 4px solid var(--teal);
+            background: linear-gradient(135deg, rgba(212,96,80,0.05) 0%, rgba(212,96,80,0.02) 100%);
+            border-radius: 18px; padding: 18px; margin-bottom: 12px;
+            border: 1px solid rgba(212,96,80,0.16);
+            border-left: 4px solid var(--coral);
+            box-shadow: 0 2px 10px rgba(44,36,32,0.06);
         }
 
-        .split-person-name {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 16px;
-        }
+        .split-person-name { font-size: 17px; font-weight: 800; color: var(--text-dark); margin-bottom: 14px; }
+        .split-stats { display: grid; gap: 7px; margin-bottom: 10px; }
+        .split-stat-row { display: flex; justify-content: space-between; font-size: 13px; }
+        .split-stat-label { color: var(--text-gray); font-weight: 500; }
+        .split-stat-value { font-weight: 700; color: var(--text-dark); }
+        .split-details { margin-top: 14px; padding-top: 14px; border-top: 1px dashed rgba(212,96,80,0.25); }
+        .split-detail-title { font-size: 11px; color: var(--text-gray); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+        .split-item { font-size: 12px; color: var(--text-dark); margin-bottom: 5px; padding-left: 8px; font-weight: 500; }
 
-        .split-stats {
-            display: grid;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-
-        .split-stat-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 14px;
-        }
-
-        .split-stat-label {
-            color: var(--text-gray);
-        }
-
-        .split-stat-value {
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
-        .split-details {
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px dashed var(--teal);
-        }
-
-        .split-detail-title {
-            font-size: 12px;
-            color: var(--text-gray);
-            margin-bottom: 8px;
-        }
-
-        .split-item {
-            font-size: 13px;
-            color: var(--text-dark);
-            margin-bottom: 6px;
-            padding-left: 8px;
-        }
-
-        /* 編輯彈窗 */
+        /* ===== EDIT MODAL ===== */
         .edit-modal-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.6);
+            inset: 0;
+            background: rgba(44,36,32,0.50);
+            backdrop-filter: blur(6px);
             z-index: 9998;
             display: none;
             align-items: center;
             justify-content: center;
-            animation: fadeIn 0.3s ease;
+            animation: fadeIn 0.25s ease;
         }
 
-        .edit-modal-overlay.show {
-            display: flex;
-        }
+        .edit-modal-overlay.show { display: flex; }
 
         .edit-modal {
-            background: white;
-            border-radius: 20px;
-            width: 90%;
+            background: #FFFFFF;
+            border-radius: 24px;
+            width: 92%;
             max-width: 500px;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            animation: slideUp 0.3s ease;
+            box-shadow: 0 24px 80px rgba(44,36,32,0.18), 0 0 0 1px rgba(212,96,80,0.10);
+            animation: slideUp 0.28s cubic-bezier(0.34,1.56,0.64,1);
+            border: 1px solid var(--border);
         }
 
         @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(40px) scale(0.96); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         .edit-modal-header {
-            padding: 24px;
-            background: linear-gradient(135deg, var(--navy) 0%, #2C4A6F 100%);
-            color: white;
-            border-radius: 20px 20px 0 0;
+            padding: 22px 24px;
+            background: linear-gradient(145deg, #EDE5D6 0%, #E6DDD0 100%);
+            color: var(--text-dark);
+            border-radius: 24px 24px 0 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 1px solid var(--border);
         }
 
-        .edit-modal-title {
-            font-size: 20px;
-            font-weight: 700;
-        }
+        .edit-modal-title { font-size: 18px; font-weight: 800; }
 
         .edit-modal-close {
-            width: 36px;
-            height: 36px;
-            border: none;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
+            width: 34px; height: 34px; border: none;
+            background: rgba(212,96,80,0.10); border-radius: 50%;
+            color: var(--coral); font-size: 18px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.25s;
         }
 
-        .edit-modal-close:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: rotate(90deg);
-        }
+        .edit-modal-close:hover { background: rgba(212,96,80,0.20); transform: rotate(90deg); }
 
-        .edit-modal-body {
-            padding: 24px;
-        }
+        .edit-modal-body { padding: 22px 24px; }
 
         .edit-modal-footer {
-            padding: 20px 24px;
-            background: #F7F9FC;
-            border-radius: 0 0 20px 20px;
+            padding: 18px 24px;
+            background: var(--surface-2);
+            border-radius: 0 0 24px 24px;
             display: flex;
-            gap: 12px;
+            gap: 10px;
+            border-top: 1px solid var(--border);
         }
 
-        .edit-modal-footer .btn {
-            flex: 1;
-        }
+        .edit-modal-footer .btn { flex: 1; }
 
-        /* 分類統計樣式 */
+        /* ===== CATEGORY STATS ===== */
         #categoryStats {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -1495,23 +1296,11 @@
 
         #categoryStats > div:nth-child(5),
         #categoryStats > div:nth-child(6),
-        #categoryStats > div:nth-child(7) {
-            grid-column: span 1;
-        }
+        #categoryStats > div:nth-child(7) { grid-column: span 1; }
 
-        #categoryStats::-webkit-scrollbar {
-            height: 6px;
-        }
-
-        #categoryStats::-webkit-scrollbar-track {
-            background: #F0F0F0;
-            border-radius: 3px;
-        }
-
-        #categoryStats::-webkit-scrollbar-thumb {
-            background: var(--teal);
-            border-radius: 3px;
-        }
+        #categoryStats::-webkit-scrollbar { height: 5px; }
+        #categoryStats::-webkit-scrollbar-track { background: var(--border); border-radius: 3px; }
+        #categoryStats::-webkit-scrollbar-thumb { background: var(--amber); border-radius: 3px; }
     </style>
 </head>
 <body>
@@ -1523,9 +1312,10 @@
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <div class="header-title">
-                            🇰🇷 여행 기록
+                            ✈️ 旅遊手帳
                         </div>
-                        <div class="header-subtitle">Korean Travel Expense Tracker</div>
+                        <div class="header-project-name" id="headerProjectName">載入中...</div>
+                        <div class="header-subtitle">Travel Expense Tracker</div>
                     </div>
                     <button class="hamburger-btn" onclick="toggleSidebar()">
                         <span></span>
@@ -1718,13 +1508,13 @@
                         <div id="splitContent" style="display: none; margin-top: 8px;">
                             <!-- 模式選擇 + 人員輸入 合併在同一行 -->
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                                <select id="splitModeSelect" onchange="handleSplitModeChange()" style="width: 100%; padding: 10px; border: 2px solid #E8ECF0; border-radius: 10px; background: #F8F9FA; font-size: 13px; font-family: 'Noto Sans TC', sans-serif;">
+                                <select id="splitModeSelect" onchange="handleSplitModeChange()" style="width: 100%; padding: 10px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--surface-2); font-size: 13px; font-family: 'Noto Sans TC', sans-serif;">
                                     <option value="split-equal">💰 平分</option>
                                     <option value="split-custom">💰 自訂</option>
                                     <option value="proxy">🎁 代購</option>
                                 </select>
                                 <div style="display: flex; gap: 6px;">
-                                    <input type="text" id="personName" placeholder="新增對象" style="flex: 1; padding: 10px; border: 2px solid #E8ECF0; border-radius: 10px; font-size: 13px;">
+                                    <input type="text" id="personName" placeholder="新增對象" style="flex: 1; padding: 10px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 13px;">
                                     <button class="btn-secondary" onclick="addPerson()" style="width: auto; padding: 10px 16px; font-size: 13px;">+</button>
                                 </div>
                             </div>
@@ -1736,7 +1526,7 @@
                             </div>
                             
                             <!-- 即時計算預覽 -->
-                            <div id="splitPreview" style="margin-top: 8px; padding: 8px; background: #F8F9FA; border-radius: 8px; font-size: 12px; color: var(--text-gray); line-height: 1.4;"></div>
+                            <div id="splitPreview" style="margin-top: 8px; padding: 8px; background: var(--surface-2); border-radius: 8px; font-size: 12px; color: var(--text-gray); line-height: 1.4;"></div>
                         </div>
                     </div>
 
@@ -1843,7 +1633,7 @@
                         </div>
                     </div>
                     <!-- ✅ 新增下載按鈕 -->
-                    <button class="btn btn-primary" id="downloadMyExpensesBtn" onclick="downloadMyExpenses()" style="margin-top: 20px; background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.5); backdrop-filter: blur(10px);">
+                    <button class="btn btn-primary" id="downloadMyExpensesBtn" onclick="downloadMyExpenses()" style="margin-top: 20px; background: rgba(212,96,80,0.12); border: 1.5px solid rgba(212,96,80,0.35); color: var(--coral);">
                         📥 下載我的消費清單
                     </button>
                 </div>
@@ -1896,6 +1686,14 @@
                 </div>
             </div>
             <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">我的行程</div>
+            <div class="project-list" id="projectList">
+                <!-- 由 renderProjectList() 渲染 -->
+            </div>
+            <button class="add-project-btn" onclick="showProjectModal(null)">＋ 新增行程</button>
         </div>
 
         <div class="sidebar-section">
@@ -1960,11 +1758,12 @@
         
         <!-- 隱藏的檔案輸入 -->
         <input type="file" id="importFile" accept=".csv" style="display: none;" onchange="importFromCSV(event)">
+        <input type="file" id="importProjectFile" accept=".json" style="display: none;" onchange="importProject(event)">
 
         <div class="sidebar-footer">
             <div style="font-size: 12px; color: var(--text-gray); text-align: center;">
-                韓國旅行記帳本 v5.0<br>
-                🇰🇷 여행 기록
+                旅遊手帳 v6.0<br>
+                ✈️ Travel Expense Tracker
             </div>
         </div>
     </div>
@@ -1973,10 +1772,10 @@
     <script>
         // ========== 全域變數 ==========
         const API_URL = 'https://script.google.com/macros/s/AKfycbwg73REqKMTqtaBXs-IlAmKXkpx1qOv0l5mMiXNSAk9ZiOjiip8CE8g1yKcAYGLzlvO/exec';
-        
+
         let currentUser = localStorage.getItem('currentUser') || 'Chi';
         let expenses = [];
-        let exchangeRate = 0.024; // 預設匯率: 1 KRW = 0.024 TWD
+        let exchangeRate = 0.024; // 1 KRW = ? TWD
         let splitPeople = [];
         let splitAllocations = {}; // { [name]: { krw: number, twd: number } }
         let shoppingList = [];
@@ -1986,6 +1785,11 @@
         let isSyncing = false;
         let editingExpenseId = null;
         let editingShoppingId = null;
+
+        // ===== 行程（專案）狀態 =====
+        let projects = [];
+        let currentProject = null;
+        let _selectedProjectColor = '#4DB8AC';
 
         // ========== 計算機功能 ==========
         
@@ -2141,7 +1945,8 @@
                     body: JSON.stringify({
                         action: 'syncAll',
                         userId: currentUser,
-                        expenses: expensesForCloud,  // ✅ 使用處理過的資料
+                        projectName: currentProject ? currentProject.name : '預設行程',
+                        expenses: expensesForCloud,
                         shopping: shoppingForCloud
                     })
                 });
@@ -2163,7 +1968,8 @@
             showSyncStatus(`下載 ${currentUser} 的資料中...`, 'downloading');
             
             try {
-                const response = await fetch(API_URL + `?action=getAll&userId=${currentUser}`, {
+                const projectName = currentProject ? encodeURIComponent(currentProject.name) : encodeURIComponent('預設行程');
+                const response = await fetch(API_URL + `?action=getAll&userId=${currentUser}&projectName=${projectName}`, {
                     method: 'GET',
                 });
                 
@@ -2227,7 +2033,7 @@
                 border-radius: 50px;
                 font-size: 14px;
                 font-weight: 600;
-                box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+                box-shadow: 0 4px 16px rgba(44,36,32,0.14);
                 z-index: 10000;
                 animation: slideDown 0.3s ease;
                 white-space: nowrap;
@@ -2287,16 +2093,20 @@
         // ========== 初始化 ==========
         
         function init() {
+            migrateToProjects();
+            loadProjects();
+
             document.getElementById('sidebarUserName').textContent = currentUser;
-            
             document.querySelectorAll('.user-btn-sidebar').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.user === currentUser);
             });
-            
+
             loadExpenses();
             loadShopping();
             loadExchangeRate();
             setCurrentDateTime();
+            renderProjectList();
+            renderHeaderProject();
         }
 
         function setCurrentDateTime() {
@@ -2490,13 +2300,13 @@
                     <div class="currency-item" style="margin-bottom: 10px;">
                         <div class="currency-label">👤 ${name} 應付</div>
                         <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <div class="currency-input" style="background:#fff; border:2px solid #E8ECF0; border-radius:12px; padding:12px 14px;">
+                        <div class="currency-input" style="background:var(--surface-2); border:1.5px solid var(--border); border-radius:12px; padding:12px 14px;">
                             <span class="currency-symbol">₩</span>
                             <input type="number" value="${a.krw || 0}" min="0"
                             style="border:none; background:transparent; width:100%; font-size:16px; font-weight:600;"
                             oninput="setPersonAllocation('${name}', 'krw', this.value)">
                         </div>
-                        <div class="currency-input" style="background:#fff; border:2px solid #E8ECF0; border-radius:12px; padding:12px 14px;">
+                        <div class="currency-input" style="background:var(--surface-2); border:1.5px solid var(--border); border-radius:12px; padding:12px 14px;">
                             <span class="currency-symbol">NT$</span>
                             <input type="number" value="${a.twd || 0}" min="0"
                             style="border:none; background:transparent; width:100%; font-size:16px; font-weight:600;"
@@ -2857,13 +2667,13 @@
                             </div>
                             <div id="edit-splitContent" style="display: ${expense.split ? 'block' : 'none'}; margin-top: 8px;">
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                                    <select id="edit-splitModeSelect" onchange="handleEditSplitModeChange()" style="width: 100%; padding: 10px; border: 2px solid #E8ECF0; border-radius: 10px; background: #F8F9FA; font-size: 13px; font-family: 'Noto Sans TC', sans-serif;">
+                                    <select id="edit-splitModeSelect" onchange="handleEditSplitModeChange()" style="width: 100%; padding: 10px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--surface-2); font-size: 13px; font-family: 'Noto Sans TC', sans-serif;">
                                         <option value="split-equal" ${splitModeValue === 'split-equal' ? 'selected' : ''}>💰 平分</option>
                                         <option value="split-custom" ${splitModeValue === 'split-custom' ? 'selected' : ''}>💰 自訂</option>
                                         <option value="proxy" ${splitModeValue === 'proxy' ? 'selected' : ''}>🎁 代購</option>
                                     </select>
                                     <div style="display: flex; gap: 6px;">
-                                        <input type="text" id="edit-personName" placeholder="新增對象" style="flex: 1; padding: 10px; border: 2px solid #E8ECF0; border-radius: 10px; font-size: 13px;">
+                                        <input type="text" id="edit-personName" placeholder="新增對象" style="flex: 1; padding: 10px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 13px;">
                                         <button class="btn-secondary" onclick="addEditPerson()" style="width: auto; padding: 10px 16px; font-size: 13px;">+</button>
                                     </div>
                                 </div>
@@ -2871,7 +2681,7 @@
                                 <div id="edit-splitAllocationsWrap" style="display:none; margin-top: 8px;">
                                     <div id="edit-splitAllocations"></div>
                                 </div>
-                                <div id="edit-splitPreview" style="margin-top: 8px; padding: 8px; background: #F8F9FA; border-radius: 8px; font-size: 12px; color: var(--text-gray); line-height: 1.4;"></div>
+                                <div id="edit-splitPreview" style="margin-top: 8px; padding: 8px; background: var(--surface-2); border-radius: 8px; font-size: 12px; color: var(--text-gray); line-height: 1.4;"></div>
                             </div>
                         </div>
 
@@ -3005,13 +2815,13 @@
                     <div class="currency-item" style="margin-bottom: 10px;">
                         <div class="currency-label">👤 ${name} 應付</div>
                         <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                            <div class="currency-input" style="background:#fff; border:2px solid #E8ECF0; border-radius:12px; padding:12px 14px;">
+                            <div class="currency-input" style="background:var(--surface-2); border:1.5px solid var(--border); border-radius:12px; padding:12px 14px;">
                                 <span class="currency-symbol">₩</span>
                                 <input type="number" value="${a.krw || 0}" min="0"
                                 style="border:none; background:transparent; width:100%; font-size:16px; font-weight:600;"
                                 oninput="setEditPersonAllocation('${name}', 'krw', this.value)">
                             </div>
-                            <div class="currency-input" style="background:#fff; border:2px solid #E8ECF0; border-radius:12px; padding:12px 14px;">
+                            <div class="currency-input" style="background:var(--surface-2); border:1.5px solid var(--border); border-radius:12px; padding:12px 14px;">
                                 <span class="currency-symbol">NT$</span>
                                 <input type="number" value="${a.twd || 0}" min="0"
                                 style="border:none; background:transparent; width:100%; font-size:16px; font-weight:600;"
@@ -3176,7 +2986,7 @@
                 }))].sort().reverse();
                 
                 content.innerHTML = `
-                    <select id="dateSelect" onchange="filterByDate()" style="width: 100%; padding: 12px; border-radius: 12px; border: 2px solid #E8ECF0;">
+                    <select id="dateSelect" onchange="filterByDate()" style="width: 100%; padding: 12px; border-radius: 12px; border: 1.5px solid var(--border);">
                         <option value="">選擇日期</option>
                         ${dates.map(date => `<option value="${date}">${date}</option>`).join('')}
                     </select>
@@ -3193,8 +3003,8 @@
             } else if (type === 'keyword') {
                 content.innerHTML = `
                     <div style="display: flex; gap: 8px;">
-                        <input type="text" id="searchKeyword" placeholder="搜尋項目名稱或備註..." style="flex: 1; padding: 12px; border: 2px solid #E8ECF0; border-radius: 10px; font-size: 14px;" onkeypress="if(event.key==='Enter') searchExpenses()">
-                        <button onclick="searchExpenses()" style="padding: 12px 20px; background: var(--teal); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;">搜尋</button>
+                        <input type="text" id="searchKeyword" placeholder="搜尋項目名稱或備註..." style="flex: 1; padding: 12px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 14px;" onkeypress="if(event.key==='Enter') searchExpenses()">
+                        <button onclick="searchExpenses()" style="padding: 12px 20px; background: linear-gradient(135deg,var(--coral),var(--coral-dark)); color: #FFFFFF; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;">搜尋</button>
                     </div>
                 `;
             }
@@ -3320,7 +3130,7 @@
             }
 
             container.innerHTML = sortedCategories.map(([category, data]) => `
-                <div style="display: flex; flex-direction: column; align-items: center; padding: 12px 8px; background: #F8F9FA; border-radius: 12px; border-top: 3px solid ${data.color}; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)';" onmouseout="this.style.transform=''; this.style.boxShadow='';">
+                <div style="display: flex; flex-direction: column; align-items: center; padding: 12px 8px; background: var(--surface-2); border-radius: 12px; border-top: 3px solid ${data.color}; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 4px 16px rgba(44,36,32,0.12)';" onmouseout="this.style.transform=''; this.style.boxShadow='';">
                     <div style="font-size: 28px; margin-bottom: 6px;">${data.icon}</div>
                     <div style="font-weight: 600; color: var(--text-dark); margin-bottom: 6px; font-size: 14px;">${category}</div>
                     <div style="display: flex; flex-direction: column; gap: 2px; align-items: center;">
@@ -3806,7 +3616,7 @@
                         <span class="split-stat-label">應付台幣</span>
                         <span class="split-stat-value">NT$${Math.round(person.totalTWD).toLocaleString()}</span>
                     </div>
-                    <div class="split-stat-row" style="border-top: 2px dashed #E8ECF0; padding-top: 8px; margin-top: 8px;">
+                    <div class="split-stat-row" style="border-top: 1px dashed var(--border-light); padding-top: 8px; margin-top: 8px;">
                         <span class="split-stat-label" style="font-weight: 700; color: var(--text-dark);">應付總額</span>
                         <span class="split-stat-value" style="font-size: 18px; font-weight: 700; color: var(--teal);">NT$${totalPayable.toLocaleString()}</span>
                     </div>
@@ -4197,14 +4007,15 @@
             
             const dialog = document.createElement('div');
             dialog.style.cssText = `
-                background: white;
+                background: var(--surface);
                 border-radius: 20px;
                 padding: 32px;
                 max-width: 450px;
                 width: 90%;
-                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+                box-shadow: 0 24px 80px rgba(44,36,32,0.16), 0 0 0 1px rgba(212,96,80,0.10);
+                border: 1px solid var(--border);
             `;
-            
+
             dialog.innerHTML = `
                 <div style="font-size: 24px; font-weight: 700; color: var(--text-dark); margin-bottom: 16px;">
                     ⚙️ 設定
@@ -4219,14 +4030,14 @@
                         💱 匯率設定 (NT$1 = ₩?)
                     </label>
                     <input type="number" id="exchangeRateInput" value="${twdToKrw}" step="0.01" min="0" 
-                           style="width: 100%; padding: 14px; border: 2px solid #E8ECF0; border-radius: 12px; font-size: 16px; font-weight: 600;">
+                           style="width: 100%; padding: 14px; border: 1.5px solid var(--border); border-radius: 12px; font-size: 16px; font-weight: 600;">
                     <div style="font-size: 12px; color: var(--text-gray); margin-top: 6px;">
                         範例: 41.67 表示 NT$1 = ₩41.67
                     </div>
                 </div>
                 
                 <!-- 分帳換算 -->
-                <div style="margin-bottom: 24px; padding: 16px; background: #F8F9FA; border-radius: 12px;">
+                <div style="margin-bottom: 24px; padding: 16px; background: var(--surface-2); border-radius: 12px;">
                     <div style="font-weight: 600; margin-bottom: 12px; color: var(--text-dark);">
                         💰 分帳金額換算
                     </div>
@@ -4234,16 +4045,16 @@
                         輸入韓元金額,自動換算台幣總額
                     </div>
                     <input type="number" id="krwAmountCalc" placeholder="輸入韓元金額" 
-                           style="width: 100%; padding: 12px; border: 2px solid #E8ECF0; border-radius: 10px; margin-bottom: 12px;"
+                           style="width: 100%; padding: 12px; border: 1.5px solid var(--border); border-radius: 10px; margin-bottom: 12px;"
                            oninput="calculateTWDInSettings()">
                     <div id="twdResult" style="font-size: 16px; font-weight: 600; color: var(--teal); min-height: 24px;"></div>
                 </div>
                 
                 <div style="display: grid; gap: 12px;">
-                    <button onclick="saveExchangeRate()" style="padding: 14px; background: var(--teal); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer;">
+                    <button onclick="saveExchangeRate()" style="padding: 14px; background: linear-gradient(135deg, var(--coral), var(--coral-dark)); color: #FFFFFF; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer;">
                         儲存匯率
                     </button>
-                    <button onclick="closeExchangeDialog()" style="padding: 12px; background: #F8F9FA; color: var(--text-gray); border: none; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer;">
+                    <button onclick="closeExchangeDialog()" style="padding: 12px; background: var(--surface-2); color: var(--text-gray); border: none; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer;">
                         取消
                     </button>
                 </div>
@@ -4269,34 +4080,34 @@
         
         function saveExchangeRate() {
             const twdToKrw = Number(document.getElementById('exchangeRateInput').value);
-            
-            if (!twdToKrw || twdToKrw <= 0) {
-                showToast('❌ 請輸入有效的匯率');
-                return;
-            }
-            
-            // 轉換成 1₩ = ?NT$ 儲存
+            if (!twdToKrw || twdToKrw <= 0) { showToast('❌ 請輸入有效的匯率'); return; }
+
             exchangeRate = 1 / twdToKrw;
-            localStorage.setItem(`exchangeRate_${currentUser}`, exchangeRate);
-            
-            // 更新側邊欄顯示
+
+            if (currentProject) {
+                currentProject[`exchangeRate_${currentUser}`] = exchangeRate;
+                _saveProjectsToStorage();
+            }
+
             document.getElementById('currentRateDisplay').textContent = `匯率: NT$1 = ₩${twdToKrw}`;
-            
             closeExchangeDialog();
             showToast(`✅ 匯率已設定: NT$1 = ₩${twdToKrw}`);
         }
-        
+
         function closeExchangeDialog() {
             const dialog = document.getElementById('exchangeRateDialog');
             if (dialog) dialog.remove();
         }
-        
+
         function loadExchangeRate() {
-            const saved = localStorage.getItem(`exchangeRate_${currentUser}`);
+            const saved = currentProject ? currentProject[`exchangeRate_${currentUser}`] : null;
             if (saved) {
                 exchangeRate = Number(saved);
                 const twdToKrw = (1 / exchangeRate).toFixed(2);
                 document.getElementById('currentRateDisplay').textContent = `匯率: NT$1 = ₩${twdToKrw}`;
+            } else {
+                exchangeRate = 0.024;
+                document.getElementById('currentRateDisplay').textContent = `匯率: NT$1 = ₩41.67`;
             }
         }
         
@@ -4309,13 +4120,13 @@
                 top: 20px;
                 left: 50%;
                 transform: translateX(-50%);
-                background: var(--teal);
-                color: white;
+                background: linear-gradient(135deg, var(--coral), var(--coral-dark));
+                color: #FFFFFF;
                 padding: 16px 32px;
                 border-radius: 50px;
                 font-size: 15px;
                 font-weight: 600;
-                box-shadow: 0 4px 16px rgba(77, 184, 172, 0.4);
+                box-shadow: 0 4px 20px rgba(212,96,80,0.38);
                 z-index: 10000;
                 animation: slideDown 0.3s ease;
             `;
@@ -4327,36 +4138,344 @@
             }, 2500);
         }
 
-        // LocalStorage
+        // ========== 行程（專案）管理 ==========
+
+        function migrateToProjects() {
+            const hasOldData = localStorage.getItem('koreaExpenses_Chi') !== null ||
+                               localStorage.getItem('koreaExpenses_Jhen') !== null;
+            const hasProjects = localStorage.getItem('projects') !== null;
+            if (!hasOldData || hasProjects) return;
+
+            const normalizeItems = arr => (arr || []).map(item => ({
+                ...item,
+                targetQty: item.targetQty !== undefined ? item.targetQty : 0,
+                purchasedQty: item.purchasedQty !== undefined ? item.purchasedQty : 0
+            }));
+
+            const projId = 'proj_' + Date.now();
+            const firstProject = {
+                id: projId,
+                name: '韓國行',
+                emoji: '🇰🇷',
+                color: '#FF6B6B',
+                destination: '韓國',
+                startDate: '',
+                endDate: '',
+                createdAt: new Date().toISOString(),
+                exchangeRate_Chi: parseFloat(localStorage.getItem('exchangeRate_Chi')) || 0.024,
+                exchangeRate_Jhen: parseFloat(localStorage.getItem('exchangeRate_Jhen')) || 0.024,
+                expenses_Chi: JSON.parse(localStorage.getItem('koreaExpenses_Chi') || '[]'),
+                expenses_Jhen: JSON.parse(localStorage.getItem('koreaExpenses_Jhen') || '[]'),
+                shopping_Chi: normalizeItems(JSON.parse(localStorage.getItem('koreaShopping_Chi') || '[]')),
+                shopping_Jhen: normalizeItems(JSON.parse(localStorage.getItem('koreaShopping_Jhen') || '[]')),
+            };
+
+            localStorage.setItem('projects', JSON.stringify([firstProject]));
+            localStorage.setItem('currentProjectId', projId);
+            ['koreaExpenses_Chi','koreaExpenses_Jhen','koreaShopping_Chi','koreaShopping_Jhen',
+             'exchangeRate_Chi','exchangeRate_Jhen'].forEach(k => localStorage.removeItem(k));
+        }
+
+        function loadProjects() {
+            const saved = localStorage.getItem('projects');
+            projects = saved ? JSON.parse(saved) : [];
+
+            if (projects.length === 0) {
+                currentProject = _createDefaultProject();
+                return;
+            }
+
+            const savedId = localStorage.getItem('currentProjectId');
+            currentProject = (savedId && projects.find(p => p.id === savedId)) || projects[0];
+            localStorage.setItem('currentProjectId', currentProject.id);
+        }
+
+        function _createDefaultProject() {
+            const proj = {
+                id: 'proj_' + Date.now(),
+                name: '我的旅行',
+                emoji: '✈️',
+                color: '#4DB8AC',
+                destination: '',
+                startDate: '',
+                endDate: '',
+                createdAt: new Date().toISOString(),
+                exchangeRate_Chi: 0.024,
+                exchangeRate_Jhen: 0.024,
+                expenses_Chi: [],
+                expenses_Jhen: [],
+                shopping_Chi: [],
+                shopping_Jhen: [],
+            };
+            projects.push(proj);
+            localStorage.setItem('projects', JSON.stringify(projects));
+            localStorage.setItem('currentProjectId', proj.id);
+            return proj;
+        }
+
+        function _saveProjectsToStorage() {
+            if (!currentProject) return;
+            const idx = projects.findIndex(p => p.id === currentProject.id);
+            if (idx >= 0) projects[idx] = currentProject;
+            localStorage.setItem('projects', JSON.stringify(projects));
+        }
+
+        function switchProject(projectId) {
+            if (currentProject && currentProject.id === projectId) { closeSidebar(); return; }
+            saveToStorage();
+            saveShopping();
+            currentProject = projects.find(p => p.id === projectId);
+            if (!currentProject) return;
+            localStorage.setItem('currentProjectId', projectId);
+            loadExpenses();
+            loadShopping();
+            loadExchangeRate();
+            renderExpenses();
+            renderShopping();
+            updateLocationFilters();
+            renderProjectList();
+            renderHeaderProject();
+            showToast(`切換到「${currentProject.emoji} ${currentProject.name}」`);
+            closeSidebar();
+        }
+
+        function createProject(data) {
+            const proj = {
+                id: 'proj_' + Date.now(),
+                name: data.name || '新行程',
+                emoji: data.emoji || '✈️',
+                color: data.color || '#4DB8AC',
+                destination: data.destination || '',
+                startDate: data.startDate || '',
+                endDate: data.endDate || '',
+                createdAt: new Date().toISOString(),
+                exchangeRate_Chi: currentProject ? currentProject.exchangeRate_Chi : 0.024,
+                exchangeRate_Jhen: currentProject ? currentProject.exchangeRate_Jhen : 0.024,
+                expenses_Chi: [],
+                expenses_Jhen: [],
+                shopping_Chi: [],
+                shopping_Jhen: [],
+            };
+            projects.push(proj);
+            _saveProjectsToStorage();
+            switchProject(proj.id);
+        }
+
+        function exportProject() {
+            if (!currentProject) return;
+            saveToStorage();
+            saveShopping();
+            const blob = new Blob([JSON.stringify(currentProject, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${currentProject.emoji}${currentProject.name}_backup.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast(`已匯出「${currentProject.name}」備份`);
+        }
+
+        function importProject(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const proj = JSON.parse(e.target.result);
+                    if (!proj.name || !proj.expenses_Chi) { showToast('❌ 無效的行程備份檔'); return; }
+                    if (projects.find(p => p.id === proj.id)) proj.id = 'proj_' + Date.now();
+                    projects.push(proj);
+                    _saveProjectsToStorage();
+                    switchProject(proj.id);
+                    showToast(`已匯入「${proj.emoji || ''}${proj.name}」`);
+                } catch(err) {
+                    showToast('❌ 匯入失敗，請確認檔案格式');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function renderProjectList() {
+            const container = document.getElementById('projectList');
+            if (!container) return;
+            if (projects.length === 0) {
+                container.innerHTML = '<div style="text-align:center;color:var(--text-gray);font-size:12px;padding:8px;">尚無行程</div>';
+                return;
+            }
+            container.innerHTML = projects.map(proj => {
+                const isActive = currentProject && currentProject.id === proj.id;
+                const dateRange = (proj.startDate && proj.endDate)
+                    ? `${proj.startDate} ~ ${proj.endDate}`
+                    : proj.destination || '';
+                return `<div style="display:flex;align-items:center;gap:6px;">
+                            <button class="project-item${isActive ? ' active' : ''}"
+                                onclick="switchProject('${proj.id}')"
+                                style="border-left-color:${proj.color || '#E8A03A'};flex:1;width:auto;">
+                                <span class="project-emoji">${proj.emoji || '✈️'}</span>
+                                <div class="project-info">
+                                    <div class="project-name">${proj.name}</div>
+                                    ${dateRange ? `<div class="project-date">${dateRange}</div>` : ''}
+                                </div>
+                            </button>
+                            <button class="project-edit-btn" onclick="showProjectModal('${proj.id}')" title="編輯行程">✎</button>
+                        </div>`;
+            }).join('');
+        }
+
+        function renderHeaderProject() {
+            const el = document.getElementById('headerProjectName');
+            if (!el || !currentProject) return;
+            el.textContent = `${currentProject.emoji || '✈️'} ${currentProject.name}`;
+        }
+
+        function selectProjectColor(color) {
+            _selectedProjectColor = color;
+            document.querySelectorAll('[data-proj-color]').forEach(btn => {
+                btn.style.border = `3px solid ${btn.dataset.projColor === color ? '#F0EBE0' : 'transparent'}`;
+            });
+        }
+
+        function showProjectModal(projectId) {
+            const existing = document.getElementById('projectModal');
+            if (existing) existing.remove();
+            const proj = projectId ? projects.find(p => p.id === projectId) : null;
+            const isEdit = !!proj;
+            const presetColors = ['#FF6B6B','#4DB8AC','#6B8EFF','#FFB84D','#A855F7','#22C55E'];
+            _selectedProjectColor = proj ? (proj.color || '#4DB8AC') : '#4DB8AC';
+
+            const modal = document.createElement('div');
+            modal.id = 'projectModal';
+            modal.style.cssText = 'position:fixed;inset:0;background:rgba(44,36,32,0.48);backdrop-filter:blur(4px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+            modal.innerHTML = `
+                <div style="background:#FFFFFF;border:1px solid var(--border);border-radius:24px;padding:24px;width:100%;max-width:400px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(44,36,32,0.16);">`
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                        <h3 style="font-size:18px;font-weight:700;color:var(--text-dark);">${isEdit ? '編輯行程' : '新增行程'}</h3>
+                        <button onclick="document.getElementById('projectModal').remove()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--text-gray);">✕</button>
+                    </div>
+                    <div style="margin-bottom:14px;">
+                        <label style="font-size:12px;color:var(--text-gray);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">行程名稱 *</label>
+                        <input id="projName" type="text" value="${proj ? proj.name : ''}" placeholder="例：首爾五天四夜"
+                            style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:15px;margin-top:6px;outline:none;font-family:inherit;background:var(--surface-2);color:var(--text-dark);">
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+                        <div>
+                            <label style="font-size:12px;color:var(--text-gray);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Emoji</label>
+                            <input id="projEmoji" type="text" value="${proj ? proj.emoji : '✈️'}" placeholder="✈️"
+                                style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:22px;margin-top:6px;text-align:center;outline:none;background:var(--surface-2);color:var(--text-dark);">
+                        </div>
+                        <div>
+                            <label style="font-size:12px;color:var(--text-gray);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">目的地</label>
+                            <input id="projDest" type="text" value="${proj ? (proj.destination||'') : ''}" placeholder="首爾"
+                                style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:15px;margin-top:6px;outline:none;font-family:inherit;background:var(--surface-2);color:var(--text-dark);">
+                        </div>
+                    </div>
+                    <div style="margin-bottom:14px;">
+                        <label style="font-size:12px;color:var(--text-gray);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">封面色彩</label>
+                        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+                            ${presetColors.map(c => `<button onclick="selectProjectColor('${c}')"
+                                data-proj-color="${c}"
+                                style="width:34px;height:34px;border-radius:50%;background:${c};border:3px solid ${c === _selectedProjectColor ? '#2C2420' : 'transparent'};cursor:pointer;transition:all 0.2s;flex-shrink:0;"></button>`).join('')}
+                        </div>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;">
+                        <div>
+                            <label style="font-size:12px;color:var(--text-gray);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">開始日期</label>
+                            <input id="projStart" type="date" value="${proj ? (proj.startDate||'') : ''}"
+                                style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;margin-top:6px;outline:none;background:var(--surface-2);color:var(--text-dark);">
+                        </div>
+                        <div>
+                            <label style="font-size:12px;color:var(--text-gray);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">結束日期</label>
+                            <input id="projEnd" type="date" value="${proj ? (proj.endDate||'') : ''}"
+                                style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;margin-top:6px;outline:none;background:var(--surface-2);color:var(--text-dark);">
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:8px;">
+                        ${isEdit ? `<button onclick="deleteProject('${proj.id}')"
+                            style="padding:12px 16px;background:rgba(212,115,107,0.14);color:var(--rose);border:1px solid rgba(212,115,107,0.24);border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;">刪除</button>` : ''}
+                        <button onclick="saveProjectModal('${projectId||''}',${isEdit})"
+                            style="flex:1;padding:12px;background:linear-gradient(135deg,var(--coral),var(--coral-dark));color:#FFFFFF;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;">
+                            ${isEdit ? '儲存變更' : '建立行程'}
+                        </button>
+                    </div>
+                    ${isEdit ? `
+                    <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);display:flex;gap:8px;">
+                        <button onclick="exportProject()" style="flex:1;padding:10px;background:var(--surface-2);color:var(--text-gray);border:1px solid var(--border);border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;">📦 匯出備份</button>
+                        <button onclick="document.getElementById('importProjectFile').click()" style="flex:1;padding:10px;background:var(--surface-2);color:var(--text-gray);border:1px solid var(--border);border-radius:12px;font-size:13px;font-weight:600;cursor:pointer;">📥 匯入行程</button>
+                    </div>` : ''}
+                </div>`;
+            document.body.appendChild(modal);
+        }
+
+        function saveProjectModal(projectId, isEdit) {
+            const name = (document.getElementById('projName').value || '').trim();
+            if (!name) { showToast('❌ 請輸入行程名稱'); return; }
+            const data = {
+                name,
+                emoji: (document.getElementById('projEmoji').value || '✈️').trim(),
+                color: _selectedProjectColor || '#4DB8AC',
+                destination: (document.getElementById('projDest').value || '').trim(),
+                startDate: document.getElementById('projStart').value,
+                endDate: document.getElementById('projEnd').value,
+            };
+            if (isEdit && projectId) {
+                const proj = projects.find(p => p.id === projectId);
+                if (proj) {
+                    Object.assign(proj, data);
+                    if (currentProject && currentProject.id === projectId) currentProject = proj;
+                    _saveProjectsToStorage();
+                    renderProjectList();
+                    renderHeaderProject();
+                    showToast(`已更新「${data.name}」`);
+                }
+            } else {
+                createProject(data);
+            }
+            document.getElementById('projectModal').remove();
+        }
+
+        function deleteProject(projectId) {
+            if (projects.length <= 1) { showToast('❌ 至少保留一個行程'); return; }
+            if (!confirm('確定要刪除這個行程？此操作無法復原。')) return;
+            projects = projects.filter(p => p.id !== projectId);
+            _saveProjectsToStorage();
+            document.getElementById('projectModal').remove();
+            if (currentProject && currentProject.id === projectId) {
+                currentProject = projects[0];
+                localStorage.setItem('currentProjectId', currentProject.id);
+                loadExpenses(); loadShopping(); loadExchangeRate();
+                renderExpenses(); renderShopping();
+            }
+            renderProjectList();
+            renderHeaderProject();
+            showToast('已刪除行程');
+        }
+
+        // ========== LocalStorage（行程版） ==========
+
         function saveToStorage() {
-            localStorage.setItem(`koreaExpenses_${currentUser}`, JSON.stringify(expenses));
+            if (!currentProject) return;
+            currentProject[`expenses_${currentUser}`] = expenses;
+            _saveProjectsToStorage();
         }
 
         function loadExpenses() {
-            const saved = localStorage.getItem(`koreaExpenses_${currentUser}`);
-            if (saved) {
-                expenses = JSON.parse(saved);
-            } else {
-                expenses = [];
-            }
+            expenses = currentProject ? (currentProject[`expenses_${currentUser}`] || []) : [];
         }
 
         function saveShopping() {
-            localStorage.setItem(`koreaShopping_${currentUser}`, JSON.stringify(shoppingList));
+            if (!currentProject) return;
+            currentProject[`shopping_${currentUser}`] = shoppingList;
+            _saveProjectsToStorage();
         }
 
         function loadShopping() {
-            const saved = localStorage.getItem(`koreaShopping_${currentUser}`);
-            if (saved) {
-                shoppingList = JSON.parse(saved);
-                shoppingList = shoppingList.map(item => ({
-                    ...item,
-                    targetQty: item.targetQty !== undefined ? item.targetQty : 0,
-                    purchasedQty: item.purchasedQty !== undefined ? item.purchasedQty : 0
-                }));
-            } else {
-                shoppingList = [];
-            }
+            const raw = currentProject ? (currentProject[`shopping_${currentUser}`] || []) : [];
+            shoppingList = raw.map(item => ({
+                ...item,
+                targetQty: item.targetQty !== undefined ? item.targetQty : 0,
+                purchasedQty: item.purchasedQty !== undefined ? item.purchasedQty : 0
+            }));
         }
 
         // 初始化
