@@ -4348,7 +4348,8 @@
             modal.id = 'projectModal';
             modal.style.cssText = 'position:fixed;inset:0;background:rgba(44,36,32,0.48);backdrop-filter:blur(4px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
             modal.innerHTML = `
-                <div style="background:#FFFFFF;border:1px solid var(--border);border-radius:24px;padding:24px;width:100%;max-width:400px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(44,36,32,0.16);">`
+                <div style="background:#FFFFFF;border:1px solid var(--border);border-radius:24px;padding:24px;width:100%;max-width:400px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(44,36,32,0.16);">
+
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
                         <h3 style="font-size:18px;font-weight:700;color:var(--text-dark);">${isEdit ? '編輯行程' : '新增行程'}</h3>
                         <button onclick="document.getElementById('projectModal').remove()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--text-gray);">✕</button>
