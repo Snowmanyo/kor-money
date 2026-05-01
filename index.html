@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>旅遊手帳 | Travel Expense Tracker</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -512,11 +512,20 @@
             padding: 13px 16px;
             border: 1.5px solid var(--border);
             border-radius: 14px;
-            font-size: 15px;
+            font-size: 16px;
             font-family: 'Noto Sans TC', sans-serif;
             transition: all 0.22s ease;
             background: var(--surface-2);
             color: var(--text-dark);
+            min-width: 0;
+        }
+
+        input[type="datetime-local"] {
+            -webkit-appearance: none;
+            appearance: none;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: 12px 10px;
         }
 
         input::placeholder, textarea::placeholder { color: var(--text-light); }
@@ -1301,6 +1310,16 @@
         #categoryStats::-webkit-scrollbar { height: 5px; }
         #categoryStats::-webkit-scrollbar-track { background: var(--border); border-radius: 3px; }
         #categoryStats::-webkit-scrollbar-thumb { background: var(--amber); border-radius: 3px; }
+
+        /* ── Mobile: prevent iOS Safari auto-zoom (triggers when font-size < 16px) ── */
+        @media screen and (max-width: 767px) {
+            input, textarea, select {
+                font-size: 16px !important;
+            }
+            input[type="datetime-local"] {
+                padding: 11px 8px !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1508,14 +1527,14 @@
                         <div id="splitContent" style="display: none; margin-top: 8px;">
                             <!-- 模式選擇 + 人員輸入 合併在同一行 -->
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                                <select id="splitModeSelect" onchange="handleSplitModeChange()" style="width: 100%; padding: 10px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--surface-2); font-size: 13px; font-family: 'Noto Sans TC', sans-serif;">
+                                <select id="splitModeSelect" onchange="handleSplitModeChange()" style="width: 100%; padding: 10px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--surface-2); font-size: 16px; font-family: 'Noto Sans TC', sans-serif;">
                                     <option value="split-equal">💰 平分</option>
                                     <option value="split-custom">💰 自訂</option>
                                     <option value="proxy">🎁 代購</option>
                                 </select>
                                 <div style="display: flex; gap: 6px;">
-                                    <input type="text" id="personName" placeholder="新增對象" style="flex: 1; padding: 10px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 13px;">
-                                    <button class="btn-secondary" onclick="addPerson()" style="width: auto; padding: 10px 16px; font-size: 13px;">+</button>
+                                    <input type="text" id="personName" placeholder="新增對象" style="flex: 1; padding: 10px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 16px;">
+                                    <button class="btn-secondary" onclick="addPerson()" style="width: auto; padding: 10px 16px; font-size: 16px;">+</button>
                                 </div>
                             </div>
                             <div class="split-people" id="splitPeople" style="margin-top: 8px;"></div>
@@ -2667,14 +2686,14 @@
                             </div>
                             <div id="edit-splitContent" style="display: ${expense.split ? 'block' : 'none'}; margin-top: 8px;">
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                                    <select id="edit-splitModeSelect" onchange="handleEditSplitModeChange()" style="width: 100%; padding: 10px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--surface-2); font-size: 13px; font-family: 'Noto Sans TC', sans-serif;">
+                                    <select id="edit-splitModeSelect" onchange="handleEditSplitModeChange()" style="width: 100%; padding: 10px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--surface-2); font-size: 16px; font-family: 'Noto Sans TC', sans-serif;">
                                         <option value="split-equal" ${splitModeValue === 'split-equal' ? 'selected' : ''}>💰 平分</option>
                                         <option value="split-custom" ${splitModeValue === 'split-custom' ? 'selected' : ''}>💰 自訂</option>
                                         <option value="proxy" ${splitModeValue === 'proxy' ? 'selected' : ''}>🎁 代購</option>
                                     </select>
                                     <div style="display: flex; gap: 6px;">
-                                        <input type="text" id="edit-personName" placeholder="新增對象" style="flex: 1; padding: 10px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 13px;">
-                                        <button class="btn-secondary" onclick="addEditPerson()" style="width: auto; padding: 10px 16px; font-size: 13px;">+</button>
+                                        <input type="text" id="edit-personName" placeholder="新增對象" style="flex: 1; padding: 10px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 16px;">
+                                        <button class="btn-secondary" onclick="addEditPerson()" style="width: auto; padding: 10px 16px; font-size: 16px;">+</button>
                                     </div>
                                 </div>
                                 <div class="split-people" id="edit-splitPeople" style="margin-top: 8px;"></div>
@@ -3003,7 +3022,7 @@
             } else if (type === 'keyword') {
                 content.innerHTML = `
                     <div style="display: flex; gap: 8px;">
-                        <input type="text" id="searchKeyword" placeholder="搜尋項目名稱或備註..." style="flex: 1; padding: 12px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 14px;" onkeypress="if(event.key==='Enter') searchExpenses()">
+                        <input type="text" id="searchKeyword" placeholder="搜尋項目名稱或備註..." style="flex: 1; padding: 12px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 16px;" onkeypress="if(event.key==='Enter') searchExpenses()">
                         <button onclick="searchExpenses()" style="padding: 12px 20px; background: linear-gradient(135deg,var(--coral),var(--coral-dark)); color: #FFFFFF; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;">搜尋</button>
                     </div>
                 `;
@@ -4357,7 +4376,7 @@
                     <div style="margin-bottom:14px;">
                         <label style="font-size:12px;color:var(--text-gray);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">行程名稱 *</label>
                         <input id="projName" type="text" value="${proj ? proj.name : ''}" placeholder="例：首爾五天四夜"
-                            style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:15px;margin-top:6px;outline:none;font-family:inherit;background:var(--surface-2);color:var(--text-dark);">
+                            style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:16px;margin-top:6px;outline:none;font-family:inherit;background:var(--surface-2);color:var(--text-dark);">
                     </div>
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
                         <div>
@@ -4368,7 +4387,7 @@
                         <div>
                             <label style="font-size:12px;color:var(--text-gray);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">目的地</label>
                             <input id="projDest" type="text" value="${proj ? (proj.destination||'') : ''}" placeholder="首爾"
-                                style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:15px;margin-top:6px;outline:none;font-family:inherit;background:var(--surface-2);color:var(--text-dark);">
+                                style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:16px;margin-top:6px;outline:none;font-family:inherit;background:var(--surface-2);color:var(--text-dark);">
                         </div>
                     </div>
                     <div style="margin-bottom:14px;">
@@ -4383,12 +4402,12 @@
                         <div>
                             <label style="font-size:12px;color:var(--text-gray);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">開始日期</label>
                             <input id="projStart" type="date" value="${proj ? (proj.startDate||'') : ''}"
-                                style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;margin-top:6px;outline:none;background:var(--surface-2);color:var(--text-dark);">
+                                style="width:100%;padding:10px 6px;border:1.5px solid var(--border);border-radius:12px;font-size:16px;margin-top:6px;outline:none;background:var(--surface-2);color:var(--text-dark);min-width:0;">
                         </div>
                         <div>
                             <label style="font-size:12px;color:var(--text-gray);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">結束日期</label>
                             <input id="projEnd" type="date" value="${proj ? (proj.endDate||'') : ''}"
-                                style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;margin-top:6px;outline:none;background:var(--surface-2);color:var(--text-dark);">
+                                style="width:100%;padding:10px 6px;border:1.5px solid var(--border);border-radius:12px;font-size:16px;margin-top:6px;outline:none;background:var(--surface-2);color:var(--text-dark);min-width:0;">
                         </div>
                     </div>
                     <div style="display:flex;gap:8px;">
@@ -4826,6 +4845,23 @@
             
             showToast(`✅ 已下載 ${expenses.length} 筆消費記錄！`);
         }
+
+        // ── iOS Safari: reset viewport zoom after input blur ──
+        // (Backup for any input that still triggers auto-zoom)
+        (function() {
+            var viewportMeta = document.querySelector('meta[name="viewport"]');
+            var originalContent = viewportMeta ? viewportMeta.getAttribute('content') : '';
+            document.addEventListener('focusout', function(e) {
+                if (!viewportMeta) return;
+                if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT')) {
+                    // Temporarily set maximum-scale=1 to snap zoom back, then restore
+                    viewportMeta.setAttribute('content', originalContent + ', maximum-scale=1');
+                    setTimeout(function() {
+                        viewportMeta.setAttribute('content', originalContent);
+                    }, 300);
+                }
+            }, true);
+        })();
 
     </script>
 </body>
