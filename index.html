@@ -4953,7 +4953,7 @@
 分類原則：餐廳/食物→食，服飾/美妝→衣，住宿→住，交通/地鐵→行，娛樂/景點→樂，交通卡儲值→儲值，其他→其他。`;
 
         async function _callGemini(apiKey, base64, mediaType) {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
             const resp = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -5079,8 +5079,13 @@
             } catch (e) {
                 console.error('scanReceipt error:', e);
                 statusEl.className = 'scan-status error';
-                statusEl.innerHTML = `❌ 識別失敗：${e.message}`;
-                showToast(`❌ 掃描失敗：${e.message}`);
+                const shortMsg = e.message.includes('quota') || e.message.includes('Quota')
+                    ? '超出免費額度，請稍後再試（約 1 分鐘）'
+                    : e.message.includes('API') || e.message.includes('key')
+                    ? 'API Key 無效，請至設定重新輸入'
+                    : (e.message.length > 60 ? e.message.slice(0, 60) + '…' : e.message);
+                statusEl.innerHTML = `❌ 識別失敗：${shortMsg}`;
+                showToast(`❌ 掃描失敗：${shortMsg}`);
             } finally {
                 input.value = '';
                 if (scanBtn) scanBtn.disabled = false;
