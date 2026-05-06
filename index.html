@@ -4969,7 +4969,9 @@
             });
             if (!resp.ok) {
                 const err = await resp.json().catch(() => ({}));
-                throw new Error(err.error?.message || `Gemini API 錯誤 ${resp.status}`);
+                const errMsg = err.error?.message || err.error?.status || `HTTP ${resp.status}`;
+                console.error('Gemini error:', resp.status, err);
+                throw new Error(errMsg);
             }
             const data = await resp.json();
             return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
@@ -5079,11 +5081,14 @@
             } catch (e) {
                 console.error('scanReceipt error:', e);
                 statusEl.className = 'scan-status error';
-                const shortMsg = e.message.includes('quota') || e.message.includes('Quota')
+                const msg = e.message || '';
+                const shortMsg = (msg.includes('quota') || msg.includes('Quota') || msg.includes('RESOURCE_EXHAUSTED'))
                     ? '超出免費額度，請稍後再試（約 1 分鐘）'
-                    : e.message.includes('API') || e.message.includes('key')
+                    : (msg.includes('API_KEY_INVALID') || msg.includes('invalid') || msg.includes('401'))
                     ? 'API Key 無效，請至設定重新輸入'
-                    : (e.message.length > 60 ? e.message.slice(0, 60) + '…' : e.message);
+                    : (msg.includes('fetch') || msg.includes('network') || msg.includes('Failed'))
+                    ? '網路連線失敗，請確認網路後重試'
+                    : (msg.length > 80 ? msg.slice(0, 80) + '…' : msg);
                 statusEl.innerHTML = `❌ 識別失敗：${shortMsg}`;
                 showToast(`❌ 掃描失敗：${shortMsg}`);
             } finally {
