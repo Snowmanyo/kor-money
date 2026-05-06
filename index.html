@@ -1311,46 +1311,6 @@
         #categoryStats::-webkit-scrollbar-track { background: var(--border); border-radius: 3px; }
         #categoryStats::-webkit-scrollbar-thumb { background: var(--amber); border-radius: 3px; }
 
-        /* ── 單據掃描按鈕 ── */
-        .scan-receipt-btn {
-            width: 100%;
-            padding: 14px 18px;
-            background: linear-gradient(135deg, var(--sage) 0%, var(--sage-dark) 100%);
-            color: #FFFFFF;
-            border: none;
-            border-radius: 14px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            font-family: 'Noto Sans TC', sans-serif;
-            letter-spacing: 0.3px;
-            box-shadow: 0 4px 16px rgba(122,158,126,0.35);
-            transition: all 0.22s ease;
-        }
-        .scan-receipt-btn:active {
-            transform: scale(0.98);
-            box-shadow: 0 2px 8px rgba(122,158,126,0.22);
-        }
-        .scan-icon { font-size: 20px; }
-        .scan-status {
-            margin-top: 10px;
-            padding: 10px 14px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            text-align: center;
-            background: var(--surface-2);
-            color: var(--text-gray);
-            line-height: 1.5;
-        }
-        .scan-status.success { color: var(--sage-dark); background: rgba(122,158,126,0.1); }
-        .scan-status.error { color: var(--coral); background: rgba(212,96,80,0.08); }
-        .scan-status.loading { color: var(--text-gray); }
-
         /* ── Mobile: prevent iOS Safari auto-zoom (triggers when font-size < 16px) ── */
         @media screen and (max-width: 767px) {
             input, textarea, select {
@@ -1399,16 +1359,6 @@
             <div class="tab-content active" id="expenseTab">
                 <div class="card">
                     <div class="card-title">✍️ <span id="formModeTitle">新增記帳</span></div>
-
-                    <!-- 單據掃描區塊（需設定 API Key 才顯示） -->
-                    <div class="form-group" id="scanArea" style="display:none;">
-                        <button type="button" class="scan-receipt-btn" onclick="document.getElementById('receiptInput').click()">
-                            <span class="scan-icon">📷</span>
-                            <span>掃描單據自動填入</span>
-                        </button>
-                        <input type="file" id="receiptInput" accept="image/*" capture="environment" style="display:none;" onchange="scanReceipt(this)">
-                        <div id="scanStatus" class="scan-status" style="display:none;"></div>
-                    </div>
 
                     <div class="form-group">
                         <label class="form-label">日期時間</label>
@@ -1843,7 +1793,6 @@
         const API_URL = 'https://script.google.com/macros/s/AKfycbwg73REqKMTqtaBXs-IlAmKXkpx1qOv0l5mMiXNSAk9ZiOjiip8CE8g1yKcAYGLzlvO/exec';
 
         let currentUser = localStorage.getItem('currentUser') || 'Chi';
-        const _DEFAULT_AI_KEY = '';
         let expenses = [];
         let exchangeRate = 0.024; // 1 KRW = ? TWD
         let splitPeople = [];
@@ -2177,7 +2126,6 @@
             setCurrentDateTime();
             renderProjectList();
             renderHeaderProject();
-            _updateScanBtnVisibility();
         }
 
         function setCurrentDateTime() {
@@ -4104,24 +4052,6 @@
                     </div>
                 </div>
 
-                <!-- AI 單據掃描 -->
-                <div style="margin-bottom: 20px; padding: 16px; background: rgba(122,158,126,0.08); border-radius: 14px; border: 1.5px solid rgba(122,158,126,0.25);">
-                    <div style="font-weight: 700; margin-bottom: 6px; color: var(--text-dark); display:flex; align-items:center; gap:8px;">
-                        <span>📷</span> AI 單據掃描
-                    </div>
-                    <div style="font-size: 12px; color: var(--text-gray); margin-bottom: 10px; line-height: 1.5;">
-                        貼上 API Key 即可拍照自動識別單據。金鑰僅存本機，不會上傳。<br>
-                        支援：<strong>OpenAI</strong>、<strong>Gemini</strong>、<strong>Claude</strong> 三擇一。
-                    </div>
-                    <input type="password" id="claudeApiKeyInput" value="${localStorage.getItem('claudeApiKey') || _DEFAULT_AI_KEY}"
-                           placeholder="OpenAI: sk-…  /  Gemini: AIzaSy…  /  Claude: sk-ant-…"
-                           style="width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 15px; font-family: monospace; background: var(--surface-2);">
-                    <div style="font-size: 11px; color: var(--text-light); margin-top: 6px; display:flex; gap:16px;">
-                        <a href="https://aistudio.google.com/apikey" target="_blank" style="color:var(--sage-dark);font-weight:600;">取得 Gemini Key（免費）→</a>
-                        <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:var(--text-gray);">Claude Key →</a>
-                    </div>
-                </div>
-
                 <!-- 分帳換算 -->
                 <div style="margin-bottom: 20px; padding: 16px; background: var(--surface-2); border-radius: 12px;">
                     <div style="font-weight: 600; margin-bottom: 12px; color: var(--text-dark);">
@@ -4175,38 +4105,11 @@
             }
             document.getElementById('currentRateDisplay').textContent = `匯率: NT$1 = ₩${twdToKrw}`;
 
-            // Save AI API key (Gemini or Claude, auto-detected by prefix)
-            const apiKey = (document.getElementById('claudeApiKeyInput').value || '').trim();
-            if (apiKey) {
-                localStorage.setItem('claudeApiKey', apiKey);
-                const provider = _detectApiProvider(apiKey);
-                const providerName = provider === 'gemini' ? 'Gemini' : provider === 'openai' ? 'OpenAI' : 'Claude';
-                _updateScanBtnVisibility();
-                closeExchangeDialog();
-                showToast(`✅ 設定已儲存，${providerName} 掃描已啟用`);
-            } else {
-                localStorage.removeItem('claudeApiKey');
-                _updateScanBtnVisibility();
-                closeExchangeDialog();
-                showToast('✅ 設定已儲存');
-            }
-        }
-
-        // 根據 key 前綴判斷是哪家 API
-        function _detectApiProvider(key) {
-            if (!key) return null;
-            if (key.startsWith('AIzaSy') || key.startsWith('AIza')) return 'gemini';
-            if ((key.startsWith('sk-') && !key.startsWith('sk-ant-'))) return 'openai';
-            return 'claude';
+            closeExchangeDialog();
+            showToast('✅ 設定已儲存');
         }
 
         function saveExchangeRate() { saveSettings(); }  // backward compat alias
-
-        function _updateScanBtnVisibility() {
-            const scanArea = document.getElementById('scanArea');
-            if (!scanArea) return;
-            scanArea.style.display = 'block'; // 永遠顯示（無 key 時用免費 OCR）
-        }
 
         function closeExchangeDialog() {
             const dialog = document.getElementById('exchangeRateDialog');
@@ -4941,274 +4844,6 @@
             showToast(`✅ 已下載 ${expenses.length} 筆消費記錄！`);
         }
 
-        // ========== AI 單據掃描 ==========
-
-        const _RECEIPT_PROMPT = `請識別這張收據/單據，以 JSON 格式回傳以下資訊（只回傳 JSON，不要其他說明）：
-{
-  "item": "店名或品項名稱（30字以內，優先取店名）",
-  "krw": 韓元總金額（純數字，折扣後金額，找不到填 0）,
-  "twd": 台幣金額（純數字，沒有填 0）,
-  "category": "分類，只能從以下選一個：食/衣/住/行/樂/儲值/其他",
-  "note": "備註（多個品項請列出，否則填空字串）"
-}
-分類原則：餐廳/食物→食，服飾/美妝→衣，住宿→住，交通/地鐵→行，娛樂/景點→樂，交通卡儲值→儲值，其他→其他。`;
-
-        async function _callGemini(apiKey, base64, mediaType) {
-            // 依序嘗試，自動找到可用模型
-            const models = [
-                'gemini-2.0-flash',
-                'gemini-2.0-flash-lite',
-                'gemini-2.5-flash-preview-04-17',
-                'gemini-1.5-flash',
-                'gemini-pro-vision'
-            ];
-            const body = JSON.stringify({
-                contents: [{
-                    parts: [
-                        { inline_data: { mime_type: mediaType, data: base64 } },
-                        { text: _RECEIPT_PROMPT }
-                    ]
-                }],
-                generationConfig: { maxOutputTokens: 512, temperature: 0.1 }
-            });
-
-            for (const model of models) {
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-                const resp = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body
-                });
-                const data = await resp.json();
-                if (resp.ok) {
-                    console.log('Gemini model used:', model);
-                    return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-                }
-                const errMsg = data.error?.message || '';
-                console.warn('Gemini model', model, 'failed:', errMsg);
-                const isSkippable = errMsg.includes('not found')
-                    || errMsg.includes('not supported')
-                    || errMsg.includes('RESOURCE_EXHAUSTED')
-                    || errMsg.includes('quota')
-                    || errMsg.includes('Quota');
-                // 找不到或額度耗盡 → 試下一個；auth 錯誤 → 立刻拋出
-                if (!isSkippable) {
-                    throw new Error(errMsg || `HTTP ${resp.status}`);
-                }
-            }
-            throw new Error('找不到可用的 Gemini 模型，請確認 API Key');
-        }
-
-        async function _callClaude(apiKey, base64, mediaType) {
-            const resp = await fetch('https://api.anthropic.com/v1/messages', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-api-key': apiKey,
-                    'anthropic-version': '2023-06-01',
-                    'anthropic-dangerous-direct-browser-access': 'true'
-                },
-                body: JSON.stringify({
-                    model: 'claude-3-5-haiku-20241022',
-                    max_tokens: 512,
-                    messages: [{
-                        role: 'user',
-                        content: [
-                            { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } },
-                            { type: 'text', text: _RECEIPT_PROMPT }
-                        ]
-                    }]
-                })
-            });
-            if (!resp.ok) {
-                const err = await resp.json().catch(() => ({}));
-                throw new Error(err.error?.message || `Claude API 錯誤 ${resp.status}`);
-            }
-            const data = await resp.json();
-            return data.content?.[0]?.text || '';
-        }
-
-        async function _callOpenAI(apiKey, base64, mediaType) {
-            const resp = await fetch('https://api.openai.com/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`
-                },
-                body: JSON.stringify({
-                    model: 'gpt-4o-mini',
-                    max_tokens: 512,
-                    messages: [{
-                        role: 'user',
-                        content: [
-                            { type: 'image_url', image_url: { url: `data:${mediaType};base64,${base64}`, detail: 'low' } },
-                            { type: 'text', text: _RECEIPT_PROMPT }
-                        ]
-                    }]
-                })
-            });
-            if (!resp.ok) {
-                const err = await resp.json().catch(() => ({}));
-                throw new Error(err.error?.message || `OpenAI API 錯誤 ${resp.status}`);
-            }
-            const data = await resp.json();
-            return data.choices?.[0]?.message?.content || '';
-        }
-
-        async function _callTesseract(base64, mediaType, statusEl) {
-            // 動態載入 Tesseract.js（只載入一次）
-            if (!window.Tesseract) {
-                statusEl.innerHTML = '⬇️ 載入 OCR 引擎中（首次約 10 秒）...';
-                await new Promise((resolve, reject) => {
-                    const s = document.createElement('script');
-                    s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
-                    s.onload = resolve; s.onerror = reject;
-                    document.head.appendChild(s);
-                });
-            }
-
-            statusEl.innerHTML = '🔍 辨識文字中 0%...';
-            const imageUrl = `data:${mediaType};base64,${base64}`;
-
-            const { data: { text } } = await Tesseract.recognize(imageUrl, 'kor+eng', {
-                logger: m => {
-                    if (m.status === 'recognizing text') {
-                        statusEl.innerHTML = `🔍 辨識中 ${Math.round(m.progress * 100)}%...`;
-                    }
-                }
-            });
-
-            // 解析收據文字
-            return _parseReceiptText(text);
-        }
-
-        function _parseReceiptText(text) {
-            const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-
-            // 找總金額：先找合計/결제 關鍵字那行，再取最大數字
-            const totalKw = /합계|총액|결제금액|합산|소계|대금|TOTAL|Total|total/;
-            let krw = 0;
-            for (const line of lines) {
-                if (totalKw.test(line)) {
-                    const nums = line.match(/[\d,]+/g) || [];
-                    const n = Math.max(...nums.map(n => parseInt(n.replace(/,/g, ''))).filter(n => !isNaN(n)));
-                    if (n > krw) krw = n;
-                }
-            }
-            // 備用：全文最大合理金額
-            if (!krw) {
-                const allNums = (text.match(/[\d,]+/g) || [])
-                    .map(n => parseInt(n.replace(/,/g, '')))
-                    .filter(n => n >= 100 && n <= 9000000);
-                if (allNums.length) krw = Math.max(...allNums);
-            }
-
-            // 店名：第一個有意義的非數字行
-            const nameLine = lines.find(l => l.length >= 2 && /[가-힣a-zA-Z]/.test(l)) || lines[0] || '';
-
-            // 分類猜測
-            const t = text;
-            let category = '其他';
-            if (/식당|레스토랑|맥도날드|버거|피자|치킨|카페|커피|편의점|마트|GS25|CU|세븐|음식|밥|국|찌개/.test(t)) category = '食';
-            else if (/지하철|버스|택시|KTX|기차|항공|공항|교통/.test(t)) category = '行';
-            else if (/호텔|숙박|모텔|펜션|리조트/.test(t)) category = '住';
-            else if (/의류|옷|패션|신발|코트|자켓|바지/.test(t)) category = '衣';
-            else if (/영화|공원|박물관|테마|놀이/.test(t)) category = '樂';
-            else if (/T-money|교통카드|충전|티머니/.test(t)) category = '儲值';
-
-            return JSON.stringify({ item: nameLine.slice(0, 30), krw, twd: 0, category, note: '' });
-        }
-
-        async function scanReceipt(input) {
-            const file = input.files[0];
-            if (!file) return;
-
-            const apiKey = localStorage.getItem('claudeApiKey') || _DEFAULT_AI_KEY;
-            const provider = apiKey ? _detectApiProvider(apiKey) : 'free';
-
-            const statusEl = document.getElementById('scanStatus');
-            statusEl.style.display = 'block';
-            statusEl.className = 'scan-status loading';
-            const providerLabel = provider === 'gemini' ? 'Gemini' : provider === 'openai' ? 'OpenAI' : provider === 'claude' ? 'Claude' : '本機 OCR';
-            statusEl.innerHTML = `🔍 ${providerLabel} 識別中，請稍候...`;
-
-            const scanBtn = document.querySelector('.scan-receipt-btn');
-            if (scanBtn) scanBtn.disabled = true;
-
-            try {
-                // Image → base64
-                const base64 = await new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = e => resolve(e.target.result.split(',')[1]);
-                    reader.onerror = reject;
-                    reader.readAsDataURL(file);
-                });
-                const mediaType = (file.type && file.type.startsWith('image/')) ? file.type : 'image/jpeg';
-
-                // Call correct API
-                const rawText = provider === 'free'
-                    ? await _callTesseract(base64, mediaType, statusEl)
-                    : provider === 'gemini'
-                    ? await _callGemini(apiKey, base64, mediaType)
-                    : provider === 'openai'
-                    ? await _callOpenAI(apiKey, base64, mediaType)
-                    : await _callClaude(apiKey, base64, mediaType);
-
-                // Parse JSON from response
-                const jsonMatch = rawText.trim().match(/\{[\s\S]*\}/);
-                if (!jsonMatch) throw new Error('AI 回應格式錯誤，請重試');
-                const result = JSON.parse(jsonMatch[0]);
-
-                // ── 填入表單 ──
-                let filled = [];
-
-                if (result.item) {
-                    document.getElementById('itemName').value = result.item;
-                    filled.push('品項');
-                }
-
-                const krwVal = Math.round(Number(result.krw) || 0);
-                if (krwVal > 0) {
-                    document.getElementById('krw').value = krwVal;
-                    filled.push('韓元');
-                    const twdVal = Math.round(Number(result.twd) || 0);
-                    const twdFromRate = (exchangeRate > 0) ? Math.round(krwVal * exchangeRate) : 0;
-                    document.getElementById('twd').value = twdVal > 0 ? twdVal : (twdFromRate > 0 ? twdFromRate : '');
-                }
-
-                if (result.note && result.note.trim()) {
-                    document.getElementById('note').value = result.note.trim();
-                }
-
-                const catMap = { '食':'cat-food', '衣':'cat-cloth', '住':'cat-hotel', '行':'cat-trans', '樂':'cat-fun', '儲值':'cat-topup', '其他':'cat-other' };
-                const catId = result.category ? catMap[result.category] : null;
-                if (catId && document.getElementById(catId)) {
-                    document.getElementById(catId).checked = true;
-                    filled.push('分類');
-                }
-
-                statusEl.className = 'scan-status success';
-                statusEl.innerHTML = `✅ 識別完成！已填入：${filled.join('、')}<br><span style="font-size:12px;font-weight:500;opacity:0.8;">請確認後點「儲存記帳」</span>`;
-                showToast('✅ 單據掃描成功！');
-
-            } catch (e) {
-                console.error('scanReceipt error:', e);
-                statusEl.className = 'scan-status error';
-                const msg = e.message || '';
-                const shortMsg = (msg.includes('quota') || msg.includes('Quota') || msg.includes('RESOURCE_EXHAUSTED'))
-                    ? '超出免費額度，請稍後再試（約 1 分鐘）'
-                    : (msg.includes('API_KEY_INVALID') || msg.includes('invalid') || msg.includes('401'))
-                    ? 'API Key 無效，請至設定重新輸入'
-                    : (msg.includes('fetch') || msg.includes('network') || msg.includes('Failed'))
-                    ? '網路連線失敗，請確認網路後重試'
-                    : (msg.length > 80 ? msg.slice(0, 80) + '…' : msg);
-                statusEl.innerHTML = `❌ 識別失敗：${shortMsg}`;
-                showToast(`❌ 掃描失敗：${shortMsg}`);
-            } finally {
-                input.value = '';
-                if (scanBtn) scanBtn.disabled = false;
-            }
-        }
 
         // ── iOS Safari: reset viewport zoom after input blur ──
         // (Backup for any input that still triggers auto-zoom)
