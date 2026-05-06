@@ -4985,8 +4985,13 @@
                 }
                 const errMsg = data.error?.message || '';
                 console.warn('Gemini model', model, 'failed:', errMsg);
-                // 找不到模型 → 試下一個；其他錯誤（quota/auth）→ 立刻拋出
-                if (!errMsg.includes('not found') && !errMsg.includes('not supported')) {
+                const isSkippable = errMsg.includes('not found')
+                    || errMsg.includes('not supported')
+                    || errMsg.includes('RESOURCE_EXHAUSTED')
+                    || errMsg.includes('quota')
+                    || errMsg.includes('Quota');
+                // 找不到或額度耗盡 → 試下一個；auth 錯誤 → 立刻拋出
+                if (!isSkippable) {
                     throw new Error(errMsg || `HTTP ${resp.status}`);
                 }
             }
