@@ -4953,28 +4953,44 @@
 分類原則：餐廳/食物→食，服飾/美妝→衣，住宿→住，交通/地鐵→行，娛樂/景點→樂，交通卡儲值→儲值，其他→其他。`;
 
         async function _callGemini(apiKey, base64, mediaType) {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
-            const resp = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [
-                            { inline_data: { mime_type: mediaType, data: base64 } },
-                            { text: _RECEIPT_PROMPT }
-                        ]
-                    }],
-                    generationConfig: { maxOutputTokens: 512, temperature: 0.1 }
-                })
+            // 依序嘗試，自動找到可用模型
+            const models = [
+                'gemini-2.0-flash',
+                'gemini-2.0-flash-lite',
+                'gemini-2.5-flash-preview-04-17',
+                'gemini-1.5-flash',
+                'gemini-pro-vision'
+            ];
+            const body = JSON.stringify({
+                contents: [{
+                    parts: [
+                        { inline_data: { mime_type: mediaType, data: base64 } },
+                        { text: _RECEIPT_PROMPT }
+                    ]
+                }],
+                generationConfig: { maxOutputTokens: 512, temperature: 0.1 }
             });
-            if (!resp.ok) {
-                const err = await resp.json().catch(() => ({}));
-                const errMsg = err.error?.message || err.error?.status || `HTTP ${resp.status}`;
-                console.error('Gemini error:', resp.status, err);
-                throw new Error(errMsg);
+
+            for (const model of models) {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+                const resp = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body
+                });
+                const data = await resp.json();
+                if (resp.ok) {
+                    console.log('Gemini model used:', model);
+                    return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                }
+                const errMsg = data.error?.message || '';
+                console.warn('Gemini model', model, 'failed:', errMsg);
+                // 找不到模型 → 試下一個；其他錯誤（quota/auth）→ 立刻拋出
+                if (!errMsg.includes('not found') && !errMsg.includes('not supported')) {
+                    throw new Error(errMsg || `HTTP ${resp.status}`);
+                }
             }
-            const data = await resp.json();
-            return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+            throw new Error('找不到可用的 Gemini 模型，請確認 API Key');
         }
 
         async function _callClaude(apiKey, base64, mediaType) {
