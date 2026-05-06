@@ -1843,6 +1843,7 @@
         const API_URL = 'https://script.google.com/macros/s/AKfycbwg73REqKMTqtaBXs-IlAmKXkpx1qOv0l5mMiXNSAk9ZiOjiip8CE8g1yKcAYGLzlvO/exec';
 
         let currentUser = localStorage.getItem('currentUser') || 'Chi';
+        const _DEFAULT_AI_KEY = 'AIzaSyArMs8wuK1aDWjb9O684ceY2kviiSvwTD0';
         let expenses = [];
         let exchangeRate = 0.024; // 1 KRW = ? TWD
         let splitPeople = [];
@@ -4112,7 +4113,7 @@
                         貼上 API Key 即可拍照自動識別單據。金鑰僅存本機，不會上傳。<br>
                         支援：<strong>Gemini</strong>（免費）或 <strong>Claude</strong> 二擇一。
                     </div>
-                    <input type="password" id="claudeApiKeyInput" value="${localStorage.getItem('claudeApiKey') || ''}"
+                    <input type="password" id="claudeApiKeyInput" value="${localStorage.getItem('claudeApiKey') || _DEFAULT_AI_KEY}"
                            placeholder="Gemini: AIzaSy…  或  Claude: sk-ant-…"
                            style="width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 15px; font-family: monospace; background: var(--surface-2);">
                     <div style="font-size: 11px; color: var(--text-light); margin-top: 6px; display:flex; gap:16px;">
@@ -4202,7 +4203,7 @@
         function _updateScanBtnVisibility() {
             const scanArea = document.getElementById('scanArea');
             if (!scanArea) return;
-            const hasKey = !!localStorage.getItem('claudeApiKey');
+            const hasKey = !!(localStorage.getItem('claudeApiKey') || _DEFAULT_AI_KEY);
             scanArea.style.display = hasKey ? 'block' : 'none';
         }
 
@@ -5007,7 +5008,7 @@
             const file = input.files[0];
             if (!file) return;
 
-            const apiKey = localStorage.getItem('claudeApiKey');
+            const apiKey = localStorage.getItem('claudeApiKey') || _DEFAULT_AI_KEY;
             if (!apiKey) {
                 showToast('❌ 請先在設定中輸入 API Key');
                 input.value = '';
