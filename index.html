@@ -1843,7 +1843,7 @@
         const API_URL = 'https://script.google.com/macros/s/AKfycbwg73REqKMTqtaBXs-IlAmKXkpx1qOv0l5mMiXNSAk9ZiOjiip8CE8g1yKcAYGLzlvO/exec';
 
         let currentUser = localStorage.getItem('currentUser') || 'Chi';
-        const _DEFAULT_AI_KEY = 'AIzaSyDEMp6yTnEfbDMURW7avrdp5u4NYiIdGY8';
+        const _DEFAULT_AI_KEY = 'AIzaSyAVgkZix4SXzwftLqjX_vTMGnoZVnyEaEg';
         let expenses = [];
         let exchangeRate = 0.024; // 1 KRW = ? TWD
         let splitPeople = [];
@@ -4953,7 +4953,7 @@
 分類原則：餐廳/食物→食，服飾/美妝→衣，住宿→住，交通/地鐵→行，娛樂/景點→樂，交通卡儲值→儲值，其他→其他。`;
 
         async function _callGemini(apiKey, base64, mediaType) {
-            const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
             const resp = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
